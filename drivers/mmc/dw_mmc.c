@@ -222,8 +222,9 @@ static unsigned int dwmci_get_timeout(struct mmc *mmc, const unsigned int size)
 static int dwmci_data_transfer(struct dwmci_host *host, struct mmc_data *data)
 {
 	struct mmc *mmc = host->mmc;
+	int reset_timeout = 100;
 	int ret = 0;
-	u32 timeout, mask, size, i, len = 0;
+	u32 timeout, status, ctrl, mask, size, i, len = 0;
 	u32 *buf = NULL;
 	ulong start = get_timer(0);
 
@@ -245,6 +246,28 @@ static int dwmci_data_transfer(struct dwmci_host *host, struct mmc_data *data)
 		/* Error during data transfer */
 		if (mask & (DWMCI_DATA_ERR | DWMCI_DATA_TOUT)) {
 			debug("%s: DATA ERROR!\n", __func__);
+			/*
+			 * It is necessary to wait for several cycles before
+			 * resetting the controller while data timeout or error.
+			 */
+			udelay(1);
+			dwmci_wait_reset(host, DWMCI_RESET_ALL);
+			dwmci_writel(host, DWMCI_CMD, DWMCI_CMD_PRV_DAT_WAIT |
+				     DWMCI_CMD_UPD_CLK | DWMCI_CMD_START);
+
+			do {
+				status = dwmci_readl(host, DWMCI_CMD);
+				if (reset_timeout-- < 0)
+					break;
+				udelay(100);
+			} while (status & DWMCI_CMD_START);
+
+			if (!host->fifo_mode) {
+				ctrl = dwmci_readl(host, DWMCI_BMOD);
+				ctrl |= DWMCI_BMOD_IDMAC_RESET;
+				dwmci_writel(host, DWMCI_BMOD, ctrl);
+			}
+
 			ret = -EINVAL;
 			break;
 		}
