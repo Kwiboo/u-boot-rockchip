@@ -181,6 +181,12 @@ config DRM_ROCKCHIP_LVDS
 	  support LVDS, rgb, dual LVDS output mode. say Y to enable its
 	  driver.
 
+config PHY_ROCKCHIP_NANENG_EDP
+	bool "Support Rockchip Naneng eDP Transmitter PHY"
+	depends on PHY && ARCH_ROCKCHIP
+	help
+	  Support for Rockchip eDP Transmitter PHY with Naneng IP block.
+
 config DRM_ROCKCHIP_RGB
 	bool "Rockchip RGB Support"
 	depends on DRM_ROCKCHIP
