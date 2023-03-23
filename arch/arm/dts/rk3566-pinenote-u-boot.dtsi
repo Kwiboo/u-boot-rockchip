@@ -1,0 +1,42 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (c) 2023 Collabora Ltd.
+ */
+
+#include "rk356x-u-boot.dtsi"
+
+/ {
+	chosen {
+		u-boot,spl-boot-order = "same-as-spl", &sdhci;
+	};
+};
+
+&i2c0 {
+	bootph-pre-ram;
+};
+
+&i2c0_xfer {
+	bootph-pre-ram;
+};
+
+&i2s1m0_mclk {
+	bootph-pre-ram;
+};
+
+&pmic_int_l {
+	bootph-pre-ram;
+};
+
+&pmic_sleep {
+	bootph-pre-ram;
+};
+
+&rk817 {
+	regulators {
+		bootph-pre-ram;
+	};
+};
+
+&sdhci {
+	cap-mmc-highspeed;
+};
