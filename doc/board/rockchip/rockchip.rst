@@ -106,6 +106,7 @@ List of mainline supported Rockchip boards:
      - Pine64 SOQuartz on CM4-IO (soquartz-cm4-rk3566)
      - Pine64 SOQuartz on Model A (soquartz-model-a-rk3566)
      - Radxa CM3 IO Board (radxa-cm3-io-rk3566)
+     - Radxa ROCK 3 Model C (rock-3c-rk3566)
 
 * rk3568
      - Rockchip Evb-RK3568 (evb-rk3568)
