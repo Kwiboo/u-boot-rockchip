@@ -173,6 +173,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
 
 dtb-$(CONFIG_ROCKCHIP_RK3568) += \
 	rk3566-anbernic-rgxx3.dtb \
+	rk3566-orangepi-3b.dtb \
 	rk3566-pinenote-v1.1.dts \
 	rk3566-pinenote-v1.2.dts \
 	rk3566-pinetab2-v0.1.dtb \
