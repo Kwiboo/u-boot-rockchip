@@ -5,7 +5,38 @@
 
 #include "rk3588s-u-boot.dtsi"
 
+/ {
+	vcc5v0_usb_otg0: regulator-5v0-vcc-usb-otg0 {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc5v0_usb_otg0";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		enable-active-high;
+		gpio = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&usb_otg_pwren_h>;
+		vin-supply = <&vcc5v0_sys>;
+	};
+};
+
+&pinctrl {
+	usb {
+		usb_otg_pwren_h: usb-otg-pwren-h {
+			rockchip,pins = <0 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};
+
 &sdhci {
 	cap-mmc-highspeed;
 	mmc-hs200-1_8v;
+};
+
+&u2phy0_otg {
+	phy-supply = <&vcc5v0_usb_otg0>;
+};
+
+&vcc5v0_host {
+	/delete-property/ regulator-always-on;
+	/delete-property/ regulator-boot-on;
 };
