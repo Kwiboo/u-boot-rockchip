@@ -17,6 +17,7 @@
 #include <efi_default_filename.h>
 #include <efi_loader.h>
 #include <fs.h>
+#include <init.h>
 #include <malloc.h>
 #include <mapmem.h>
 #include <mmc.h>
@@ -412,6 +413,14 @@ static int distro_efi_boot(struct udevice *dev, struct bootflow *bflow)
 		 * fixed here.
 		 */
 		fdt = env_get_hex("fdt_addr_r", 0);
+	}
+
+	/* init PCI first since this is often used to provide Ehternet */
+	if (IS_ENABLED(CONFIG_NETDEVICES) && IS_ENABLED(CONFIG_PCI) &&
+	    !eth_get_dev()) {
+		ret = pci_init();
+		if (ret)
+			return log_msg_ret("pci", ret);
 	}
 
 	if (bflow->flags & BOOTFLOWF_USE_BUILTIN_FDT) {
