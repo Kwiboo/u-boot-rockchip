@@ -19,6 +19,22 @@ DECLARE_GLOBAL_DATA_PTR;
 #define GRF_BASE		0xFF100000
 #define UART2_BASE		0xFF130000
 #define FW_DDR_CON_REG		0xFF7C0040
+#define EFUSE_NS_BASE		0xFF260000
+
+#define EFUSE_MOD		0x0000
+#define EFUSE_INT_CON		0x0014
+#define EFUSE_T_CSB_P		0x0028
+#define EFUSE_T_PGENB_P		0x002C
+#define EFUSE_T_LOAD_P		0x0030
+#define EFUSE_T_ADDR_P		0x0034
+#define EFUSE_T_STROBE_P	0x0038
+#define EFUSE_T_CSB_R		0x003C
+#define EFUSE_T_PGENB_R		0x0040
+#define EFUSE_T_LOAD_R		0x0044
+#define EFUSE_T_ADDR_R		0x0048
+#define EFUSE_T_STROBE_R	0x004C
+
+#define EFUSE_TIMING(s, l)	(((s) << 16) | (l))
 
 const char * const boot_devices[BROM_LAST_BOOTSOURCE + 1] = {
 	[BROM_BOOTSOURCE_EMMC] = "/mmc@ff520000",
@@ -54,6 +70,24 @@ int arch_cpu_init(void)
 
 	/* Disable the ddr secure region setting to make it non-secure */
 	rk_setreg(FW_DDR_CON_REG, 0x200);
+
+	/* Use efuse auto mode */
+	writel(0x46, EFUSE_NS_BASE + EFUSE_MOD);
+
+	/* Enable efuse finish and auto access err interrupt */
+	writel(0x07, EFUSE_NS_BASE + EFUSE_INT_CON);
+
+	/* Set efuse timing control */
+	writel(EFUSE_TIMING(1, 241), EFUSE_NS_BASE + EFUSE_T_CSB_P);
+	writel(EFUSE_TIMING(1, 241), EFUSE_NS_BASE + EFUSE_T_PGENB_P);
+	writel(EFUSE_TIMING(1, 241), EFUSE_NS_BASE + EFUSE_T_LOAD_P);
+	writel(EFUSE_TIMING(1, 241), EFUSE_NS_BASE + EFUSE_T_ADDR_P);
+	writel(EFUSE_TIMING(2, 240), EFUSE_NS_BASE + EFUSE_T_STROBE_P);
+	writel(EFUSE_TIMING(1, 4), EFUSE_NS_BASE + EFUSE_T_CSB_R);
+	writel(EFUSE_TIMING(1, 4), EFUSE_NS_BASE + EFUSE_T_PGENB_R);
+	writel(EFUSE_TIMING(1, 4), EFUSE_NS_BASE + EFUSE_T_LOAD_R);
+	writel(EFUSE_TIMING(1, 4), EFUSE_NS_BASE + EFUSE_T_ADDR_R);
+	writel(EFUSE_TIMING(2, 3), EFUSE_NS_BASE + EFUSE_T_STROBE_R);
 #endif
 	return 0;
 }
