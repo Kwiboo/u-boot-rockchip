@@ -16,6 +16,10 @@
 #define UART2_BASE		0xFF130000
 #define FW_DDR_CON_REG		0xFF7C0040
 #define EFUSE_NS_BASE		0xFF260000
+#define SERVICE_RKVDEC_R_BASE	0xFF750000
+#define SERVICE_RKVDEC_W_BASE	0xFF750080
+#define SERVICE_VOP_BASE	0xFF760000
+#define SERVICE_VPU_BASE	0xFF778000
 
 #define EFUSE_MOD		0x0000
 #define EFUSE_INT_CON		0x0014
@@ -32,6 +36,9 @@
 
 #define EFUSE_USER_MODE		0x1
 #define EFUSE_TIMING(s, l)	(((s) << 16) | (l))
+
+#define QOS_PRIORITY			0x08
+#define QOS_PRIORITY_LEVEL(p1, p0)	((((p1) & 3) << 2) | ((p0) & 3))
 
 const char * const boot_devices[BROM_LAST_BOOTSOURCE + 1] = {
 	[BROM_BOOTSOURCE_EMMC] = "/mmc@ff520000",
@@ -89,6 +96,12 @@ int arch_cpu_init(void)
 	writel(EFUSE_TIMING(1, 4), EFUSE_NS_BASE + EFUSE_T_LOAD_R);
 	writel(EFUSE_TIMING(1, 4), EFUSE_NS_BASE + EFUSE_T_ADDR_R);
 	writel(EFUSE_TIMING(2, 3), EFUSE_NS_BASE + EFUSE_T_STROBE_R);
+
+	/* Set interconnect qos priority */
+	writel(QOS_PRIORITY_LEVEL(2, 2), SERVICE_VPU_BASE + QOS_PRIORITY);
+	writel(QOS_PRIORITY_LEVEL(2, 2), SERVICE_RKVDEC_R_BASE + QOS_PRIORITY);
+	writel(QOS_PRIORITY_LEVEL(2, 2), SERVICE_RKVDEC_W_BASE + QOS_PRIORITY);
+	writel(QOS_PRIORITY_LEVEL(3, 3), SERVICE_VOP_BASE + QOS_PRIORITY);
 #endif
 	return 0;
 }
