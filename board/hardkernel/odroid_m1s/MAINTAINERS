@@ -1,0 +1,9 @@
+ODROID-M1S
+M:	Dongjin Kim <tobetter@gmail.com>
+S:	Maintained
+F:	arch/arm/dts/rk3566-odroid-m1s-u-boot.dtsi
+F:	arch/arm/dts/rk3566-odroid-m1s.dts
+F:	board/hardkernel/odroid_m1s/
+F:	board/hardkernel/odroid_m1s/board.c
+F:	configs/odroid-m1s-rk3566_defconfig
+F:	include/configs/odroid_m1s.h
