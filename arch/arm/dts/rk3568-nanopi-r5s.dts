@@ -118,19 +118,19 @@
 
 	gpio-leds {
 		lan1_led_pin: lan1-led-pin {
-			rockchip,pins = <3 RK_PD6 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <3 RK_PD6 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
 
 		lan2_led_pin: lan2-led-pin {
-			rockchip,pins = <3 RK_PD7 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <3 RK_PD7 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
 
 		power_led_pin: power-led-pin {
-			rockchip,pins = <4 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <4 RK_PD2 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
 
 		wan_led_pin: wan-led-pin {
-			rockchip,pins = <2 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <2 RK_PC1 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
 	};
 };
