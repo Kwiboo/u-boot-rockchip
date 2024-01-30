@@ -240,6 +240,8 @@ obj-$(CONFIG_X86) += x86/
 # Meson
 obj-$(CONFIG_CMD_MESON) += meson/
 
+obj-$(CONFIG_ARCH_ROCKCHIP) += atags.o
+
 obj-$(CONFIG_ARCH_MVEBU) += mvebu/
 
 # TI
