@@ -73,7 +73,7 @@ static int rk3568_set_to_rgmii(struct udevice *dev,
 {
 	struct eth_pdata *pdata = dev_get_plat(dev);
 	struct rockchip_platform_data *data = pdata->priv_pdata;
-	u32 con0, con1;
+	u32 con0, con1, val;
 
 	con0 = (data->id == 1) ? RK3568_GRF_GMAC1_CON0 :
 				 RK3568_GRF_GMAC0_CON0;
@@ -84,10 +84,12 @@ static int rk3568_set_to_rgmii(struct udevice *dev,
 		     RK3568_GMAC_CLK_RX_DL_CFG(rx_delay) |
 		     RK3568_GMAC_CLK_TX_DL_CFG(tx_delay));
 
-	regmap_write(data->grf, con1,
-		     RK3568_GMAC_PHY_INTF_SEL_RGMII |
-		     RK3568_GMAC_RXCLK_DLY_ENABLE |
-		     RK3568_GMAC_TXCLK_DLY_ENABLE);
+	val = RK3568_GMAC_PHY_INTF_SEL_RGMII;
+	if (rx_delay > 0)
+		val |= RK3568_GMAC_RXCLK_DLY_ENABLE;
+	if (tx_delay > 0)
+		val |= RK3568_GMAC_TXCLK_DLY_ENABLE;
+	regmap_write(data->grf, con1, val);
 
 	return 0;
 }
