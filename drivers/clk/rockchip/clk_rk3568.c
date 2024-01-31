@@ -4,6 +4,8 @@
  * Author: Elaine Zhang <zhangqing@rock-chips.com>
  */
 
+#define LOG_DEBUG
+
 #include <common.h>
 #include <bitfield.h>
 #include <clk-uclass.h>
@@ -357,7 +359,6 @@ static ulong rk3568_pmuclk_get_rate(struct clk *clk)
 		return -ENOENT;
 	}
 
-	debug("%s %ld\n", __func__, clk->id);
 	switch (clk->id) {
 	case PLL_PPLL:
 		rate = rockchip_pll_get_rate(&rk3568_pll_clks[PPLL],
@@ -381,9 +382,11 @@ static ulong rk3568_pmuclk_get_rate(struct clk *clk)
 		rate = rk3568_pmu_get_pmuclk(priv);
 		break;
 	default:
+		debug("%s(clk=%lu): ENOENT\n", __func__, clk->id);
 		return -ENOENT;
 	}
 
+	debug("%s(clk=%lu): rate=%lu\n", __func__, clk->id, rate);
 	return rate;
 }
 
@@ -397,19 +400,20 @@ static ulong rk3568_pmuclk_set_rate(struct clk *clk, ulong rate)
 		return -ENOENT;
 	}
 
-	debug("%s %ld %ld\n", __func__, clk->id, rate);
 	switch (clk->id) {
 	case PLL_PPLL:
 		ret = rockchip_pll_set_rate(&rk3568_pll_clks[PPLL],
 					    priv->pmucru, PPLL, rate);
 		priv->ppll_hz = rockchip_pll_get_rate(&rk3568_pll_clks[PPLL],
 						      priv->pmucru, PPLL);
+		ret = priv->ppll_hz;
 		break;
 	case PLL_HPLL:
 		ret = rockchip_pll_set_rate(&rk3568_pll_clks[HPLL],
 					    priv->pmucru, HPLL, rate);
 		priv->hpll_hz = rockchip_pll_get_rate(&rk3568_pll_clks[HPLL],
 						      priv->pmucru, HPLL);
+		ret = priv->hpll_hz;
 		break;
 	case CLK_RTC_32K:
 	case CLK_RTC32K_FRAC:
@@ -427,11 +431,14 @@ static ulong rk3568_pmuclk_set_rate(struct clk *clk, ulong rate)
 	case CLK_PCIEPHY0_REF:
 	case CLK_PCIEPHY1_REF:
 	case CLK_PCIEPHY2_REF:
-		return 0;
+		ret = rate;
+		break;
 	default:
+		debug("%s(clk=%lu, rate=%lu): ENOENT\n", __func__, clk->id, rate);
 		return -ENOENT;
 	}
 
+	debug("%s(clk=%lu, rate=%lu): ret=%lu\n", __func__, clk->id, rate, ret);
 	return ret;
 }
 
@@ -452,10 +459,13 @@ static int rk3568_rtc32k_set_parent(struct clk *clk, struct clk *parent)
 
 static int rk3568_pmuclk_set_parent(struct clk *clk, struct clk *parent)
 {
+	debug("%s(clk=%lu, parent=%lu)\n", __func__, clk->id, parent->id);
+
 	switch (clk->id) {
 	case CLK_RTC_32K:
 		return rk3568_rtc32k_set_parent(clk, parent);
 	default:
+		debug("%s(clk=%lu, parent=%lu): ENOENT\n", __func__, clk->id, parent->id);
 		return -ENOENT;
 	}
 }
@@ -2046,22 +2056,29 @@ static ulong rk3568_gmac_tx_rx_set_clk(struct rk3568_clk_priv *priv,
 			div_sel = RGMII0_CLK_SEL_2_5M;
 		else if (rate == 25000000)
 			div_sel = RGMII0_CLK_SEL_25M;
-		else
+		else {
 			div_sel = RGMII0_CLK_SEL_125M;
+			rate = 125 * MHz;
+		}
+		debug("%s: con=%x sel=%x div_sel=%x\n", __func__, con, sel, div_sel);
 		rk_clrsetreg(&cru->clksel_con[31 + mac_id * 2],
 			     RGMII0_CLK_SEL_MASK,
 			     div_sel << RGMII0_CLK_SEL_SHIFT);
 	} else if (sel == RMII0_MODE_SEL_RMII) {
 		if (rate == 2500000)
 			div_sel = RMII0_CLK_SEL_2_5M;
-		else
+		else {
 			div_sel = RMII0_CLK_SEL_25M;
+			rate = 25 * MHz;
+		}
+		debug("%s: con=%x sel=%x div_sel=%x\n", __func__, con, sel, div_sel);
 		rk_clrsetreg(&cru->clksel_con[31 + mac_id * 2],
 			     RMII0_CLK_SEL_MASK,
 			     div_sel << RMII0_CLK_SEL_SHIFT);
-	}
+	} else
+		return -ENOENT;
 
-	return 0;
+	return rate;
 }
 
 static ulong rk3568_ebc_get_clk(struct rk3568_clk_priv *priv)
@@ -2494,9 +2511,11 @@ static ulong rk3568_clk_get_rate(struct clk *clk)
 		rate = rk3568_cpll_div_get_rate(priv, clk->id);
 		break;
 	default:
+		debug("%s(clk=%lu): ENOENT\n", __func__, clk->id);
 		return -ENOENT;
 	}
 
+	debug("%s(clk=%lu): rate=%lu\n", __func__, clk->id, rate);
 	return rate;
 };
 
@@ -2522,16 +2541,21 @@ static ulong rk3568_clk_set_rate(struct clk *clk, ulong rate)
 					    CPLL, rate);
 		priv->cpll_hz = rockchip_pll_get_rate(&rk3568_pll_clks[CPLL],
 						      priv->cru, CPLL);
+		ret = priv->cpll_hz;
 		break;
 	case PLL_GPLL:
 		ret = rockchip_pll_set_rate(&rk3568_pll_clks[GPLL], priv->cru,
 					    GPLL, rate);
 		priv->gpll_hz = rockchip_pll_get_rate(&rk3568_pll_clks[GPLL],
 						      priv->cru, GPLL);
+		ret = priv->gpll_hz;
 		break;
 	case PLL_NPLL:
 		ret = rockchip_pll_set_rate(&rk3568_pll_clks[NPLL], priv->cru,
 					    NPLL, rate);
+		ret = rockchip_pll_get_rate(&rk3568_pll_clks[NPLL],
+						      priv->cru,
+						      NPLL);
 		break;
 	case PLL_VPLL:
 		ret = rockchip_pll_set_rate(&rk3568_pll_clks[VPLL], priv->cru,
@@ -2539,6 +2563,7 @@ static ulong rk3568_clk_set_rate(struct clk *clk, ulong rate)
 		priv->vpll_hz = rockchip_pll_get_rate(&rk3568_pll_clks[VPLL],
 						      priv->cru,
 						      VPLL);
+		ret = priv->vpll_hz;
 		break;
 	case ACLK_BUS:
 	case PCLK_BUS:
@@ -2679,9 +2704,11 @@ static ulong rk3568_clk_set_rate(struct clk *clk, ulong rate)
 		ret = rk3568_cpll_div_set_rate(priv, clk->id, rate);
 		break;
 	default:
+		debug("%s(clk=%lu, rate=%lu): ENOENT\n", __func__, clk->id, rate);
 		return -ENOENT;
 	}
 
+	debug("%s(clk=%lu, rate=%lu): ret=%lu\n", __func__, clk->id, rate, ret);
 	return ret;
 };
 
@@ -2831,6 +2858,8 @@ static int rk3568_rkvdec_set_parent(struct clk *clk, struct clk *parent)
 
 static int rk3568_clk_set_parent(struct clk *clk, struct clk *parent)
 {
+	debug("%s(clk=%lu, parent=%lu)\n", __func__, clk->id, parent->id);
+
 	switch (clk->id) {
 	case SCLK_GMAC0:
 		return rk3568_gmac0_src_set_parent(clk, parent);
@@ -2854,6 +2883,7 @@ static int rk3568_clk_set_parent(struct clk *clk, struct clk *parent)
 	case SCLK_GMAC1_RMII_SPEED:
 		break;
 	default:
+		debug("%s(clk=%lu, parent=%lu): ENOENT\n", __func__, clk->id, parent->id);
 		return -ENOENT;
 	}
 
