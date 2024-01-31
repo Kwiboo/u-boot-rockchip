@@ -49,6 +49,16 @@ static void rockchip_reset_to_dnl_mode(void)
 	do_reset(NULL, 0, 0, NULL);
 }
 
+#if IS_ENABLED(CONFIG_USB_FUNCTION_ROCKUSB)
+void rkusb_set_reboot_flag(int flag)
+{
+	if (flag == 0x03)
+		set_back_to_bootrom_dnl_flag();
+	else
+		writel(BOOT_NORMAL, CONFIG_ROCKCHIP_BOOT_MODE_REG);
+}
+#endif
+
 /*
  * detect download key status by adc, most rockchip
  * based boards use adc sample the download key status,
