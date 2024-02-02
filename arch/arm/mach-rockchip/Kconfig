@@ -521,6 +521,15 @@ config TPL_ROCKCHIP_EARLYRETURN_TO_BROM
 	  This enables support code in the BOOT0 hook for the TPL stage
 	  to allow multiple entries.
 
+config ROCKCHIP_HANG_TO_BROM
+	bool "Reset to bootrom download mode on hang"
+	select SHOW_BOOT_PROGRESS
+
+config SPL_ROCKCHIP_HANG_TO_BROM
+	bool "Reset to bootrom download mode on hang in SPL"
+	default y if ROCKCHIP_HANG_TO_BROM
+	select SPL_SHOW_BOOT_PROGRESS
+
 config SPL_MMC
 	default y if !SPL_ROCKCHIP_BACK_TO_BROM
 

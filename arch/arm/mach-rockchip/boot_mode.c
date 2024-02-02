@@ -5,6 +5,7 @@
 
 #include <common.h>
 #include <adc.h>
+#include <bootstage.h>
 #include <command.h>
 #include <env.h>
 #include <log.h>
@@ -23,9 +24,29 @@ int setup_boot_mode(void)
 
 #else
 
-void set_back_to_bootrom_dnl_flag(void)
+static void set_back_to_bootrom_dnl_flag(void)
 {
+	/*
+	 * These SOC_CON1 regs needs to be cleared before a reset or the
+	 * BOOT_MODE_REG do not retain its value and it is not possible
+	 * to reset to bootrom download mode once TF-A has been started.
+	 *
+	 * TF-A blobs for RK3568 already clear SOC_CON1 for PSCI reset.
+	 * However, the TF-A blobs for RK3588 does not clear SOC_CON1.
+	 */
+	if (IS_ENABLED(CONFIG_ROCKCHIP_RK3568))
+		writel(0x40000, 0xFDC20104);
+	if (IS_ENABLED(CONFIG_ROCKCHIP_RK3588))
+		writel(0xFFFF0000, 0xFD58A004);
+
 	writel(BOOT_BROM_DOWNLOAD, CONFIG_ROCKCHIP_BOOT_MODE_REG);
+}
+
+static void rockchip_reset_to_dnl_mode(void)
+{
+	puts("entering download mode ...\n");
+	set_back_to_bootrom_dnl_flag();
+	do_reset(NULL, 0, 0, NULL);
 }
 
 /*
@@ -71,12 +92,19 @@ __weak int rockchip_dnl_key_pressed(void)
 		return false;
 }
 
-void rockchip_dnl_mode_check(void)
+#if CONFIG_IS_ENABLED(ROCKCHIP_HANG_TO_BROM)
+void show_boot_progress(int val)
+{
+	if (val == -BOOTSTAGE_ID_NEED_RESET)
+		rockchip_reset_to_dnl_mode();
+}
+#endif
+
+static void rockchip_dnl_mode_check(void)
 {
 	if (rockchip_dnl_key_pressed()) {
-		printf("download key pressed, entering download mode...");
-		set_back_to_bootrom_dnl_flag();
-		do_reset(NULL, 0, 0, NULL);
+		puts("download key pressed, ");
+		rockchip_reset_to_dnl_mode();
 	}
 }
 
