@@ -66,9 +66,39 @@ u32 spl_boot_device(void)
 	return boot_device;
 }
 
+static bool rockchip_use_emmcboot(struct mmc *mmc)
+{
+	if (!IS_ENABLED(CONFIG_SUPPORT_EMMC_BOOT))
+		return false;
+
+	if (IS_SD(mmc) || mmc->part_config == MMCPART_NOAVAILABLE)
+		return false;
+
+	switch (EXT_CSD_EXTRACT_BOOT_PART(mmc->part_config)) {
+	case 1:
+	case 2:
+		return true;
+	default:
+		return false;
+	}
+}
+
 u32 spl_mmc_boot_mode(struct mmc *mmc, const u32 boot_device)
 {
+	/* Read FIT from a boot partition */
+	if (rockchip_use_emmcboot(mmc))
+		return MMCSD_MODE_EMMCBOOT;
+
 	return MMCSD_MODE_RAW;
+}
+
+unsigned long arch_spl_mmc_get_uboot_raw_sector(struct mmc *mmc, unsigned long raw_sect)
+{
+	/* Read FIT from sector 1024 (512 KiB) of boot partition */
+	if (rockchip_use_emmcboot(mmc))
+		return 0x400;
+
+	return raw_sect;
 }
 
 #define TIMER_LOAD_COUNT_L	0x00
