@@ -77,6 +77,14 @@
 	bootph-all;
 };
 
+&pcfg_pull_none {
+	bootph-pre-ram;
+};
+
+&pcfg_pull_up {
+	bootph-pre-ram;
+};
+
 &pinctrl {
 	bootph-pre-ram;
 };
@@ -108,6 +116,22 @@
 	bootph-pre-ram;
 	bootph-some-ram;
 	u-boot,spl-fifo-mode;
+};
+
+&sdmmc_bus4 {
+	bootph-pre-ram;
+};
+
+&sdmmc_cd {
+	bootph-pre-ram;
+};
+
+&sdmmc_clk {
+	bootph-pre-ram;
+};
+
+&sdmmc_cmd {
+	bootph-pre-ram;
 };
 
 &spi1 {
