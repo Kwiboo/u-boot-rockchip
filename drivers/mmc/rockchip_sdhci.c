@@ -21,6 +21,9 @@
 #include <syscon.h>
 #include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/hardware.h>
+#include <asm/global_data.h>
+
+DECLARE_GLOBAL_DATA_PTR;
 
 /* DWCMSHC specific Mode Select value */
 #define DWCMSHC_CTRL_HS400		0x7
@@ -591,12 +594,21 @@ static int rockchip_sdhci_probe(struct udevice *dev)
 		return ret;
 
 	/*
-	 * Disable use of DMA and force use of PIO mode in SPL to fix an issue
-	 * where loading part of TF-A into SRAM using DMA silently fails.
+	 * Use a bounce buffer or PIO mode in SPL to fix an issue where loading
+	 * part of TF-A directly into SRAM using DMA silently fails.
 	 */
 	if (IS_ENABLED(CONFIG_SPL_BUILD) &&
-	    dev_read_bool(dev, "u-boot,spl-fifo-mode"))
-		host->flags &= ~USE_DMA;
+	    dev_read_bool(dev, "u-boot,spl-fifo-mode")) {
+		if (CONFIG_IS_ENABLED(SYS_MALLOC_F) &&
+		    gd->malloc_limit > SDHCI_DEFAULT_BOUNDARY_SIZE) {
+			cfg->b_max = SDHCI_DEFAULT_BOUNDARY_SIZE /
+				     MMC_MAX_BLOCK_LEN;
+			host->force_align_buffer = true;
+			host->quirks |= SDHCI_QUIRK_32BIT_DMA_ADDR;
+		} else {
+			host->flags &= ~USE_DMA;
+		}
+	}
 
 	/*
 	 * Reading more than 4 blocks with a single CMD18 command in PIO mode

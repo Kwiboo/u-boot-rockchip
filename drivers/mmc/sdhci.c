@@ -736,7 +736,7 @@ static int sdhci_init(struct mmc *mmc)
 	host->force_align_buffer = true;
 #else
 	if (host->quirks & SDHCI_QUIRK_32BIT_DMA_ADDR) {
-		host->align_buffer = memalign(8, 512 * 1024);
+		host->align_buffer = memalign(8, SDHCI_DEFAULT_BOUNDARY_SIZE);
 		if (!host->align_buffer) {
 			printf("%s: Aligned buffer alloc failed!!!\n",
 			       __func__);
