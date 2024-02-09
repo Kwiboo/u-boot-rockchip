@@ -28,6 +28,10 @@
 #define MAX_VOLTAGE_1_8		1980000
 #define MAX_VOLTAGE_3_3		3600000
 
+#define RK3288_SOC_CON2			0x24c
+#define RK3288_SOC_CON2_FLASH0		BIT(7)
+#define RK3288_SOC_FLASH_SUPPLY_NUM	2
+
 #define RK3328_SOC_CON4			0x410
 #define RK3328_SOC_CON4_VCCIO2		BIT(7)
 #define RK3328_SOC_VCCIO2_SUPPLY_NUM	1
@@ -100,6 +104,22 @@ static int rockchip_iodomain_write(struct regmap *grf, uint offset, int idx, int
 	return regmap_write(grf, offset, val);
 }
 
+static int rk3288_iodomain_write(struct regmap *grf, uint offset, int idx, int uV)
+{
+	int ret = rockchip_iodomain_write(grf, offset, idx, uV);
+
+	if (!ret && idx == RK3288_SOC_FLASH_SUPPLY_NUM) {
+		/*
+		 * set flash0 iodomain to also use this framework
+		 * instead of a special gpio.
+		 */
+		u32 val = RK3288_SOC_CON2_FLASH0 | (RK3288_SOC_CON2_FLASH0 << 16);
+		ret = regmap_write(grf, RK3288_SOC_CON2, val);
+	}
+
+	return ret;
+}
+
 static int rk3328_iodomain_write(struct regmap *grf, uint offset, int idx, int uV)
 {
 	int ret = rockchip_iodomain_write(grf, offset, idx, uV);
@@ -131,6 +151,23 @@ static int rk3399_pmu_iodomain_write(struct regmap *grf, uint offset, int idx, i
 
 	return ret;
 }
+
+static const struct rockchip_iodomain_soc_data soc_data_rk3288 = {
+	.grf_offset = 0x380,
+	.supply_names = {
+		"lcdc-supply",		/* LCDC_VDD */
+		"dvp-supply",		/* DVPIO_VDD */
+		"flash0-supply",	/* FLASH0_VDD (emmc) */
+		"flash1-supply",	/* FLASH1_VDD (sdio1) */
+		"wifi-supply",		/* APIO3_VDD  (sdio0) */
+		"bb-supply",		/* APIO5_VDD */
+		"audio-supply",		/* APIO4_VDD */
+		"sdcard-supply",	/* SDMMC0_VDD (sdmmc) */
+		"gpio30-supply",	/* APIO1_VDD */
+		"gpio1830-supply",	/* APIO2_VDD */
+	},
+	.write = rk3288_iodomain_write,
+};
 
 static const struct rockchip_iodomain_soc_data soc_data_rk3328 = {
 	.grf_offset = 0x410,
@@ -191,6 +228,10 @@ static const struct rockchip_iodomain_soc_data soc_data_rk3568_pmu = {
 };
 
 static const struct udevice_id rockchip_iodomain_ids[] = {
+	{
+		.compatible = "rockchip,rk3288-io-voltage-domain",
+		.data = (ulong)&soc_data_rk3288,
+	},
 	{
 		.compatible = "rockchip,rk3328-io-voltage-domain",
 		.data = (ulong)&soc_data_rk3328,
