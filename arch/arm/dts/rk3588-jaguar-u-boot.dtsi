@@ -1,0 +1,38 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (c) 2023 Theobroma Systems Design und Consulting GmbH
+ */
+
+#include "rk3588-u-boot.dtsi"
+#include <dt-bindings/pinctrl/rockchip.h>
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/usb/pd.h>
+
+/ {
+	chosen {
+		u-boot,spl-boot-order = "same-as-spl", &sdhci, &sdmmc;
+	};
+};
+
+&emmc_pwrseq {
+	bootph-all;
+};
+
+&emmc_reset {
+	bootph-all;
+};
+
+&gpio0 {
+	bootph-all;
+};
+
+&gpio2 {
+	bootph-all;
+};
+
+&sdhci {
+	/* U-Boot currently cannot handle anything below HS200 for eMMC on RK3588 */
+	/delete-property/ mmc-ddr-1_8v;
+	/delete-property/ cap-mmc-highspeed;
+};
