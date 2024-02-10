@@ -60,6 +60,10 @@
 	spi-deactivate-delay = <200>;
 };
 
-&spi_flash {
+&spi1 {
 	bootph-all;
+
+	spi_flash: flash@0 {
+		bootph-all;
+	};
 };
