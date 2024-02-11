@@ -192,6 +192,8 @@ config ROCKCHIP_RK3328
 	imply MISC
 	imply ROCKCHIP_EFUSE
 	imply MISC_INIT_R
+	imply ARMV8_CRYPTO
+	imply BOOTSTD_FULL
 	help
 	  The Rockchip RK3328 is a ARM-based SoC with a quad-core Cortex-A53.
 	  including NEON and GPU, 1MB L2 cache, Mali-T7 graphics, two
@@ -273,6 +275,7 @@ config ROCKCHIP_RK3399
 	imply MISC
 	imply ROCKCHIP_EFUSE
 	imply MISC_INIT_R
+	imply ARMV8_CRYPTO
 	help
 	  The Rockchip RK3399 is a ARM-based SoC with a dual-core Cortex-A72
 	  and quad-core Cortex-A53.
@@ -299,8 +302,10 @@ config ROCKCHIP_RK3568
 	imply OF_LIBFDT_OVERLAY
 	imply ROCKCHIP_OTP
 	imply MISC_INIT_R
+	imply ARMV8_CRYPTO
 	imply MMC_HS200_SUPPORT if MMC_SDHCI_ROCKCHIP
 	imply SPL_MMC_HS200_SUPPORT if SPL_MMC && MMC_HS200_SUPPORT
+	imply BOOTSTD_FULL
 	help
 	  The Rockchip RK3568 is a ARM-based SoC with quad-core Cortex-A55,
 	  including NEON and GPU, 512K L3 cache, Mali-G52 based graphics,
@@ -326,6 +331,7 @@ config ROCKCHIP_RK3588
 	imply OF_LIBFDT_OVERLAY
 	imply ROCKCHIP_OTP
 	imply MISC_INIT_R
+	imply ARMV8_CRYPTO
 	imply MMC_HS200_SUPPORT if MMC_SDHCI_ROCKCHIP
 	imply SPL_MMC_HS200_SUPPORT if SPL_MMC && MMC_HS200_SUPPORT
 	imply CLK_SCMI
