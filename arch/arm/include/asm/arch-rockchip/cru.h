@@ -13,6 +13,8 @@
 
 #if defined(CONFIG_ROCKCHIP_RK3288)
 # include <asm/arch-rockchip/cru_rk3288.h>
+#elif defined(CONFIG_ROCKCHIP_RK3328)
+# include <asm/arch-rockchip/cru_rk3328.h>
 #elif defined(CONFIG_ROCKCHIP_RK3399)
 # include <asm/arch-rockchip/cru_rk3399.h>
 #elif defined(CONFIG_ROCKCHIP_RK3568)
