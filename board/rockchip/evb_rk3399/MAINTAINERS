@@ -97,6 +97,7 @@ F:	arch/arm/dts/rk3399-orangepi-u-boot.dtsi
 
 ROCK-4C+
 M:	FUKAUMI Naoki <naoki@radxa.com>
+R:	Jonas Karlman <jonas@kwiboo.se>
 S:	Maintained
 F:	configs/rock-4c-plus-rk3399_defconfig
 F:	arch/arm/dts/rk3399-rock-4c-plus.dts
@@ -104,6 +105,7 @@ F:	arch/arm/dts/rk3399-rock-4c-plus-u-boot.dtsi
 
 ROCK-4SE
 M:	Christopher Obbard <chris.obbard@collabora.com>
+R:	Jonas Karlman <jonas@kwiboo.se>
 S:	Maintained
 F:	configs/rock-4se-rk3399_defconfig
 F:	arch/arm/dts/rk3399-rock-4se.dts
@@ -111,6 +113,7 @@ F:	arch/arm/dts/rk3399-rock-4se-u-boot.dtsi
 
 ROCK-PI-4
 M:	Jagan Teki <jagan@amarulasolutions.com>
+R:	Jonas Karlman <jonas@kwiboo.se>
 S:	Maintained
 F:	configs/rock-pi-4-rk3399_defconfig
 F:	arch/arm/dts/rk3399-rock-pi-4.dtsi
