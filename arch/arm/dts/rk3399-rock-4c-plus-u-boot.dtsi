@@ -5,9 +5,9 @@
 #include "rk3399-rock-pi-4-u-boot.dtsi"
 
 &pcfg_pull_none_18ma {
-        bootph-pre-ram;
+	bootph-all;
 };
 
 &pcfg_pull_up_8ma {
-        bootph-pre-ram;
+	bootph-all;
 };

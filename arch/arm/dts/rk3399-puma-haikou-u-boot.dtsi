@@ -22,25 +22,12 @@
 	};
 
 	chosen {
-		stdout-path = "serial0:115200n8";
 		u-boot,spl-boot-order = \
 			"same-as-spl", &norflash, &sdhci, &sdmmc;
 	};
 
 	aliases {
 		spi5 = &spi5;
-	};
-
-	vdd_log: vdd-log {
-		compatible = "pwm-regulator";
-		pwms = <&pwm2 0 25000 1>;
-		regulator-name = "vdd_log";
-		regulator-always-on;
-		regulator-boot-on;
-		regulator-min-microvolt = <800000>;
-		regulator-max-microvolt = <1400000>;
-		regulator-init-microvolt = <950000>;
-		vin-supply = <&vcc5v0_sys>;
 	};
 };
 
@@ -91,22 +78,10 @@
 	bootph-all;
 };
 
-&pcfg_pull_none {
+&spi1 {
 	bootph-all;
 };
 
-&pcfg_pull_up {
-	bootph-all;
-};
-
-&sdmmc_bus4 {
-	bootph-all;
-};
-
-&sdmmc_clk {
-	bootph-all;
-};
-
-&sdmmc_cmd {
-	bootph-all;
+&vdd_log {
+	regulator-init-microvolt = <950000>;
 };

@@ -12,6 +12,10 @@
 		spi1 = &spi1;
 	};
 
+	chosen {
+		u-boot,spl-boot-order = "same-as-spl", &sdmmc, &sdhci;
+	};
+
 	cic: syscon@ff620000 {
 		bootph-all;
 		compatible = "rockchip,rk3399-cic", "syscon";
@@ -23,7 +27,6 @@
 		compatible = "rockchip,rk3399-pmusgrf", "syscon";
 		reg = <0x0 0xff330000 0x0 0xe3d4>;
 	};
-
 };
 
 #if defined(CONFIG_ROCKCHIP_SPI_IMAGE) && defined(CONFIG_HAS_ROM)
@@ -93,15 +96,11 @@
 	bootph-all;
 };
 
-&pmugrf {
-	bootph-all;
-};
-
-&pmu {
-	bootph-all;
-};
-
 &pmucru {
+	bootph-all;
+};
+
+&pmugrf {
 	bootph-all;
 };
 
