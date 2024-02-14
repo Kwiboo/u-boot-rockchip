@@ -2,7 +2,7 @@
 /*
  * (C) Copyright 2019 Rockchip Electronics Co., Ltd
  */
-
+#define LOG_DEBUG
 #include <common.h>
 #include <dm.h>
 #include <log.h>
@@ -57,9 +57,9 @@ static int rk3399_set_mux(struct rockchip_pin_bank *bank, int pin, int mux)
 	struct rockchip_pinctrl_priv *priv = bank->priv;
 	int iomux_num = (pin / 8);
 	struct regmap *regmap;
-	int reg, ret, mask, mux_type;
+	int reg, mask, mux_type;
 	u8 bit;
-	u32 data;
+	u32 data, rmask;
 
 	regmap = (bank->iomux[iomux_num].type & IOMUX_SOURCE_PMU)
 				? priv->regmap_pmu : priv->regmap_base;
@@ -70,10 +70,13 @@ static int rk3399_set_mux(struct rockchip_pin_bank *bank, int pin, int mux)
 	reg += rockchip_get_mux_data(mux_type, pin, &bit, &mask);
 
 	data = (mask << (bit + 16));
+	rmask = data | (data >> 16);
 	data |= (mux & mask) << bit;
-	ret = regmap_write(regmap, reg, data);
 
-	return ret;
+	if (data & (~rmask))
+		debug("%s: rmask=%x data=%x overflow\n", __func__, rmask, data);
+
+	return regmap_update_bits(regmap, reg, rmask, data);
 }
 
 #define RK3399_PULL_GRF_OFFSET		0xe040
@@ -112,7 +115,7 @@ static int rk3399_set_pull(struct rockchip_pin_bank *bank,
 	struct regmap *regmap;
 	int reg, ret;
 	u8 bit, type;
-	u32 data;
+	u32 data, rmask;
 
 	if (pull == PIN_CONFIG_BIAS_PULL_PIN_DEFAULT)
 		return -ENOTSUPP;
@@ -127,10 +130,13 @@ static int rk3399_set_pull(struct rockchip_pin_bank *bank,
 
 	/* enable the write to the equivalent lower bits */
 	data = ((1 << ROCKCHIP_PULL_BITS_PER_PIN) - 1) << (bit + 16);
+	rmask = data | (data >> 16);
 	data |= (ret << bit);
-	ret = regmap_write(regmap, reg, data);
 
-	return ret;
+	if (data & (~rmask))
+		debug("%s: rmask=%x data=%x overflow\n", __func__, rmask, data);
+
+	return regmap_update_bits(regmap, reg, rmask, data);
 }
 
 static void rk3399_calc_drv_reg_and_bit(struct rockchip_pin_bank *bank,
@@ -159,7 +165,7 @@ static int rk3399_set_drive(struct rockchip_pin_bank *bank,
 {
 	struct regmap *regmap;
 	int reg, ret;
-	u32 data, rmask_bits, temp;
+	u32 data, rmask, rmask_bits, temp;
 	u8 bit;
 	int drv_type = bank->drv[pin_num / 8].drv_type;
 
@@ -221,10 +227,13 @@ static int rk3399_set_drive(struct rockchip_pin_bank *bank,
 
 	/* enable the write to the equivalent lower bits */
 	data = ((1 << rmask_bits) - 1) << (bit + 16);
+	rmask = data | (data >> 16);
 	data |= (ret << bit);
-	ret = regmap_write(regmap, reg, data);
 
-	return ret;
+	if (data & (~rmask))
+		debug("%s: rmask=%x data=%x overflow\n", __func__, rmask, data);
+
+	return regmap_update_bits(regmap, reg, rmask, data);
 }
 
 static struct rockchip_pin_bank rk3399_pin_banks[] = {

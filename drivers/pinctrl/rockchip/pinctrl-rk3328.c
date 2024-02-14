@@ -5,20 +5,55 @@
 
 #include <common.h>
 #include <dm.h>
-#include <log.h>
 #include <dm/pinctrl.h>
 #include <regmap.h>
 #include <syscon.h>
-#include <linux/bitops.h>
+#include <dt-bindings/pinctrl/rockchip.h>
 
 #include "pinctrl-rockchip.h"
 
 static struct rockchip_mux_recalced_data rk3328_mux_recalced_data[] = {
 	{
 		.num = 2,
+		.pin = 8,
+		.reg = 0x24,
+		.bit = 0,
+		.mask = 0x3
+	}, {
+		.num = 2,
+		.pin = 9,
+		.reg = 0x24,
+		.bit = 2,
+		.mask = 0x3
+	}, {
+		.num = 2,
+		.pin = 10,
+		.reg = 0x24,
+		.bit = 4,
+		.mask = 0x3
+	}, {
+		.num = 2,
+		.pin = 11,
+		.reg = 0x24,
+		.bit = 6,
+		.mask = 0x3
+	}, {
+		.num = 2,
 		.pin = 12,
 		.reg = 0x24,
 		.bit = 8,
+		.mask = 0x3
+	}, {
+		.num = 2,
+		.pin = 13,
+		.reg = 0x24,
+		.bit = 10,
+		.mask = 0x3
+	}, {
+		.num = 2,
+		.pin = 14,
+		.reg = 0x24,
+		.bit = 12,
 		.mask = 0x3
 	}, {
 		.num = 2,
@@ -36,91 +71,21 @@ static struct rockchip_mux_recalced_data rk3328_mux_recalced_data[] = {
 };
 
 static struct rockchip_mux_route_data rk3328_mux_route_data[] = {
-	{
-		/* uart2dbg_rxm0 */
-		.bank_num = 1,
-		.pin = 1,
-		.func = 2,
-		.route_offset = 0x50,
-		.route_val = BIT(16) | BIT(16 + 1),
-	}, {
-		/* uart2dbg_rxm1 */
-		.bank_num = 2,
-		.pin = 1,
-		.func = 1,
-		.route_offset = 0x50,
-		.route_val = BIT(16) | BIT(16 + 1) | BIT(0),
-	}, {
-		/* gmac-m1_rxd0 */
-		.bank_num = 1,
-		.pin = 11,
-		.func = 2,
-		.route_offset = 0x50,
-		.route_val = BIT(16 + 2) | BIT(2),
-	}, {
-		/* gmac-m1-optimized_rxd3 */
-		.bank_num = 1,
-		.pin = 14,
-		.func = 2,
-		.route_offset = 0x50,
-		.route_val = BIT(16 + 10) | BIT(10),
-	}, {
-		/* pdm_sdi0m0 */
-		.bank_num = 2,
-		.pin = 19,
-		.func = 2,
-		.route_offset = 0x50,
-		.route_val = BIT(16 + 3),
-	}, {
-		/* pdm_sdi0m1 */
-		.bank_num = 1,
-		.pin = 23,
-		.func = 3,
-		.route_offset = 0x50,
-		.route_val =  BIT(16 + 3) | BIT(3),
-	}, {
-		/* spi_rxdm2 */
-		.bank_num = 3,
-		.pin = 2,
-		.func = 4,
-		.route_offset = 0x50,
-		.route_val =  BIT(16 + 4) | BIT(16 + 5) | BIT(5),
-	}, {
-		/* i2s2_sdim0 */
-		.bank_num = 1,
-		.pin = 24,
-		.func = 1,
-		.route_offset = 0x50,
-		.route_val = BIT(16 + 6),
-	}, {
-		/* i2s2_sdim1 */
-		.bank_num = 3,
-		.pin = 2,
-		.func = 6,
-		.route_offset = 0x50,
-		.route_val =  BIT(16 + 6) | BIT(6),
-	}, {
-		/* card_iom1 */
-		.bank_num = 2,
-		.pin = 22,
-		.func = 3,
-		.route_offset = 0x50,
-		.route_val =  BIT(16 + 7) | BIT(7),
-	}, {
-		/* tsp_d5m1 */
-		.bank_num = 2,
-		.pin = 16,
-		.func = 3,
-		.route_offset = 0x50,
-		.route_val =  BIT(16 + 8) | BIT(8),
-	}, {
-		/* cif_data5m1 */
-		.bank_num = 2,
-		.pin = 16,
-		.func = 4,
-		.route_offset = 0x50,
-		.route_val =  BIT(16 + 9) | BIT(9),
-	},
+        MR_DEFAULT(RK_GPIO1, RK_PA1, RK_FUNC_2, 0x50, RK_GENMASK_VAL(1, 0, 0)), /* uart2dbg_rxm0 */
+        MR_DEFAULT(RK_GPIO2, RK_PA1, RK_FUNC_1, 0x50, RK_GENMASK_VAL(1, 0, 1)), /* uart2dbg_rxm1 */
+        MR_DEFAULT(RK_GPIO1, RK_PB3, RK_FUNC_2, 0x50, RK_GENMASK_VAL(2, 2, 1)), /* gmac-m1_rxd0 */
+        MR_DEFAULT(RK_GPIO2, RK_PC3, RK_FUNC_2, 0x50, RK_GENMASK_VAL(3, 3, 0)), /* pdm_sdi0m0 */
+        MR_DEFAULT(RK_GPIO1, RK_PC7, RK_FUNC_3, 0x50, RK_GENMASK_VAL(3, 3, 1)), /* pdm_sdi0m1 */
+        MR_DEFAULT(RK_GPIO2, RK_PB2, RK_FUNC_1, 0x50, RK_GENMASK_VAL(5, 4, 0)), /* spi_rxdm0 */
+        MR_DEFAULT(RK_GPIO3, RK_PD0, RK_FUNC_2, 0x50, RK_GENMASK_VAL(5, 4, 1)), /* spi_rxdm1 */
+        MR_DEFAULT(RK_GPIO3, RK_PA2, RK_FUNC_4, 0x50, RK_GENMASK_VAL(5, 4, 2)), /* spi_rxdm2 */
+        MR_DEFAULT(RK_GPIO1, RK_PD0, RK_FUNC_1, 0x50, RK_GENMASK_VAL(6, 6, 0)), /* i2s2_sdim0 */
+        MR_DEFAULT(RK_GPIO3, RK_PA2, RK_FUNC_6, 0x50, RK_GENMASK_VAL(6, 6, 1)), /* i2s2_sdim1 */
+        MR_DEFAULT(RK_GPIO2, RK_PC6, RK_FUNC_3, 0x50, RK_GENMASK_VAL(7, 7, 1)), /* card_iom1 */
+        MR_DEFAULT(RK_GPIO2, RK_PC0, RK_FUNC_3, 0x50, RK_GENMASK_VAL(8, 8, 1)), /* tsp_d5m1 */
+        MR_DEFAULT(RK_GPIO3, RK_PB1, RK_FUNC_2, 0x50, RK_GENMASK_VAL(9, 9, 0)), /* cif_data5m0 */
+        MR_DEFAULT(RK_GPIO2, RK_PC0, RK_FUNC_4, 0x50, RK_GENMASK_VAL(9, 9, 1)), /* cif_data5m1 */
+        MR_DEFAULT(RK_GPIO1, RK_PB6, RK_FUNC_2, 0x50, RK_GENMASK_VAL(10, 10, 1)), /* gmac-m1-optimized_rxd3 */
 };
 
 static int rk3328_set_mux(struct rockchip_pin_bank *bank, int pin, int mux)
@@ -128,9 +93,9 @@ static int rk3328_set_mux(struct rockchip_pin_bank *bank, int pin, int mux)
 	struct rockchip_pinctrl_priv *priv = bank->priv;
 	int iomux_num = (pin / 8);
 	struct regmap *regmap;
-	int reg, ret, mask, mux_type;
+	int reg, mask, mux_type;
 	u8 bit;
-	u32 data;
+	u32 data, rmask;
 
 	regmap = (bank->iomux[iomux_num].type & IOMUX_SOURCE_PMU)
 				? priv->regmap_pmu : priv->regmap_base;
@@ -144,10 +109,10 @@ static int rk3328_set_mux(struct rockchip_pin_bank *bank, int pin, int mux)
 		rockchip_get_recalced_mux(bank, pin, &reg, &bit, &mask);
 
 	data = (mask << (bit + 16));
+	rmask = data | (data >> 16);
 	data |= (mux & mask) << bit;
-	ret = regmap_write(regmap, reg, data);
 
-	return ret;
+	return regmap_update_bits(regmap, reg, rmask, data);
 }
 
 #define RK3328_PULL_OFFSET		0x100
@@ -173,7 +138,7 @@ static int rk3328_set_pull(struct rockchip_pin_bank *bank,
 	struct regmap *regmap;
 	int reg, ret;
 	u8 bit, type;
-	u32 data;
+	u32 data, rmask;
 
 	if (pull == PIN_CONFIG_BIAS_PULL_PIN_DEFAULT)
 		return -ENOTSUPP;
@@ -188,10 +153,10 @@ static int rk3328_set_pull(struct rockchip_pin_bank *bank,
 
 	/* enable the write to the equivalent lower bits */
 	data = ((1 << ROCKCHIP_PULL_BITS_PER_PIN) - 1) << (bit + 16);
+	rmask = data | (data >> 16);
 	data |= (ret << bit);
-	ret = regmap_write(regmap, reg, data);
 
-	return ret;
+	return regmap_update_bits(regmap, reg, rmask, data);
 }
 
 #define RK3328_DRV_GRF_OFFSET		0x200
@@ -216,7 +181,7 @@ static int rk3328_set_drive(struct rockchip_pin_bank *bank,
 {
 	struct regmap *regmap;
 	int reg, ret;
-	u32 data;
+	u32 data, rmask;
 	u8 bit;
 	int type = bank->drv[pin_num / 8].drv_type;
 
@@ -229,10 +194,10 @@ static int rk3328_set_drive(struct rockchip_pin_bank *bank,
 
 	/* enable the write to the equivalent lower bits */
 	data = ((1 << ROCKCHIP_DRV_BITS_PER_PIN) - 1) << (bit + 16);
+	rmask = data | (data >> 16);
 	data |= (ret << bit);
-	ret = regmap_write(regmap, reg, data);
 
-	return ret;
+	return regmap_update_bits(regmap, reg, rmask, data);
 }
 
 #define RK3328_SCHMITT_BITS_PER_PIN		1
@@ -263,13 +228,16 @@ static int rk3328_set_schmitt(struct rockchip_pin_bank *bank,
 	struct regmap *regmap;
 	int reg;
 	u8 bit;
-	u32 data;
+	u32 data, rmask;
 
 	rk3328_calc_schmitt_reg_and_bit(bank, pin_num, &regmap, &reg, &bit);
-	/* enable the write to the equivalent lower bits */
-	data = BIT(bit + 16) | (enable << bit);
 
-	return regmap_write(regmap, reg, data);
+	/* enable the write to the equivalent lower bits */
+	data = BIT(bit + 16);
+	rmask = data | (data >> 16);
+	data |= (enable ? 0x1 : 0x0) << bit;
+
+	return regmap_update_bits(regmap, reg, rmask, data);
 }
 
 static struct rockchip_pin_bank rk3328_pin_banks[] = {
