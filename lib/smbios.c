@@ -592,7 +592,7 @@ ulong write_smbios_table(ulong addr)
 		ctx.subnode_name = NULL;
 		if (method->subnode_name) {
 			ctx.subnode_name = method->subnode_name;
-			if (IS_ENABLED(CONFIG_OF_CONTROL))
+			if (IS_ENABLED(CONFIG_OF_CONTROL) && ofnode_valid(parent_node))
 				ctx.node = ofnode_find_subnode(parent_node,
 							       method->subnode_name);
 		}

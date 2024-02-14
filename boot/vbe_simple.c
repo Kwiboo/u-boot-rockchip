@@ -186,6 +186,9 @@ static int bootmeth_vbe_simple_probe(struct udevice *dev)
 {
 	struct simple_priv *priv = dev_get_priv(dev);
 
+	if (!ofnode_valid(dev_ofnode(dev)))
+		return log_msg_ret("dev", -EINVAL);
+
 	memset(priv, '\0', sizeof(*priv));
 	if (dev_read_u32(dev, "area-start", &priv->area_start) ||
 	    dev_read_u32(dev, "area-size", &priv->area_size) ||
