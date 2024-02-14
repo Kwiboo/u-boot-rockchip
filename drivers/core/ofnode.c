@@ -314,8 +314,8 @@ int ofnode_read_u8(ofnode node, const char *propname, u8 *outp)
 	const u8 *cell;
 	int len;
 
-	assert(ofnode_valid(node));
 	debug("%s: %s: ", __func__, propname);
+	assert(ofnode_valid(node));
 
 	if (ofnode_is_np(node))
 		return of_read_u8(ofnode_to_np(node), propname, outp);
@@ -345,8 +345,8 @@ int ofnode_read_u16(ofnode node, const char *propname, u16 *outp)
 	const fdt16_t *cell;
 	int len;
 
-	assert(ofnode_valid(node));
 	debug("%s: %s: ", __func__, propname);
+	assert(ofnode_valid(node));
 
 	if (ofnode_is_np(node))
 		return of_read_u16(ofnode_to_np(node), propname, outp);
@@ -390,8 +390,8 @@ int ofnode_read_u32_index(ofnode node, const char *propname, int index,
 	const fdt32_t *cell;
 	int len;
 
-	assert(ofnode_valid(node));
 	debug("%s: %s: ", __func__, propname);
+	assert(ofnode_valid(node));
 
 	if (ofnode_is_np(node))
 		return of_read_u32_index(ofnode_to_np(node), propname, index,
@@ -467,8 +467,8 @@ int ofnode_read_u64(ofnode node, const char *propname, u64 *outp)
 	const unaligned_fdt64_t *cell;
 	int len;
 
-	assert(ofnode_valid(node));
 	debug("%s: %s: ", __func__, propname);
+	assert(ofnode_valid(node));
 
 	if (ofnode_is_np(node))
 		return of_read_u64(ofnode_to_np(node), propname, outp);
@@ -498,8 +498,8 @@ bool ofnode_read_bool(ofnode node, const char *propname)
 {
 	bool prop;
 
-	assert(ofnode_valid(node));
 	debug("%s: %s: ", __func__, propname);
+	assert(ofnode_valid(node));
 
 	prop = ofnode_has_property(node, propname);
 
@@ -513,8 +513,8 @@ const void *ofnode_read_prop(ofnode node, const char *propname, int *sizep)
 	const char *val = NULL;
 	int len;
 
-	assert(ofnode_valid(node));
 	debug("%s: %s: ", __func__, propname);
+	assert(ofnode_valid(node));
 
 	if (ofnode_is_np(node)) {
 		struct property *prop = of_find_property(
@@ -572,8 +572,8 @@ ofnode ofnode_find_subnode(ofnode node, const char *subnode_name)
 {
 	ofnode subnode;
 
-	assert(ofnode_valid(node));
 	debug("%s: %s: ", __func__, subnode_name);
+	assert(ofnode_valid(node));
 
 	if (ofnode_is_np(node)) {
 		struct device_node *np = ofnode_to_np(node);
@@ -597,8 +597,8 @@ ofnode ofnode_find_subnode(ofnode node, const char *subnode_name)
 int ofnode_read_u32_array(ofnode node, const char *propname,
 			  u32 *out_values, size_t sz)
 {
-	assert(ofnode_valid(node));
 	debug("%s: %s: ", __func__, propname);
+	assert(ofnode_valid(node));
 
 	if (ofnode_is_np(node)) {
 		return of_read_u32_array(ofnode_to_np(node), propname,
@@ -1629,9 +1629,8 @@ int ofnode_write_prop(ofnode node, const char *propname, const void *value,
 
 int ofnode_write_string(ofnode node, const char *propname, const char *value)
 {
-	assert(ofnode_valid(node));
-
 	debug("%s: %s = %s", __func__, propname, value);
+	assert(ofnode_valid(node));
 
 	return ofnode_write_prop(node, propname, value, strlen(value) + 1,
 				 false);
