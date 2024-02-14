@@ -2,7 +2,7 @@
 /*
  * Copyright (c) 2016, NVIDIA CORPORATION.
  */
-
+#define LOG_DEBUG
 #define LOG_CATEGORY UCLASS_RESET
 
 #include <common.h>

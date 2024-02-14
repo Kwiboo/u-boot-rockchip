@@ -5,6 +5,8 @@
  * Ported from linux drivers/soc/rockchip/io-domain.c
  */
 
+#define LOG_DEBUG
+
 #include <common.h>
 #include <dm.h>
 #include <dm/device_compat.h>
@@ -270,6 +272,8 @@ static int rockchip_iodomain_probe(struct udevice *dev)
 	struct regmap *grf;
 	int ret;
 
+	debug("%s(dev=%p)\n", __func__, dev);
+
 	grf = syscon_get_regmap(dev_get_parent(dev));
 	if (IS_ERR(grf))
 		return PTR_ERR(grf);
@@ -287,6 +291,7 @@ static int rockchip_iodomain_probe(struct udevice *dev)
 			continue;
 
 		ret = regulator_autoset(reg);
+		debug("%s(dev=%p): regulator_autoset(%s): ret=%d\n", __func__, dev, supply_name, ret);
 		if (ret && ret != -EALREADY && ret != -EMEDIUMTYPE &&
 		    ret != -ENOSYS)
 			continue;

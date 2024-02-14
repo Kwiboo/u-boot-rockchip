@@ -7,7 +7,7 @@
 /*
  * Designware ethernet IP driver for U-Boot
  */
-
+#define LOG_DEBUG
 #include <common.h>
 #include <clk.h>
 #include <cpu_func.h>

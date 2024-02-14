@@ -2,7 +2,7 @@
 /*
  * (C) Copyright 2019 Rockchip Electronics Co., Ltd
  */
-
+#define LOG_DEBUG
 #include <common.h>
 #include <dm.h>
 #include <log.h>

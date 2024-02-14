@@ -1241,7 +1241,7 @@ static void *fdt_find_separate(void)
 	/* FDT is at end of image */
 	fdt_blob = (ulong *)_end;
 
-	if (_DEBUG && !fdtdec_prepare_fdt(fdt_blob)) {
+	if (true && !fdtdec_prepare_fdt(fdt_blob)) {
 		int stack_ptr;
 		const void *top = fdt_blob + fdt_totalsize(fdt_blob);
 
@@ -1259,7 +1259,7 @@ static void *fdt_find_separate(void)
 		 * any memory allocated by board_init_f_alloc_reserve().
 		 */
 		if (top > (void *)gd || top > (void *)&stack_ptr) {
-			printf("FDT %p gd %p\n", fdt_blob, gd);
+			printf("FDT %p top %p gd %p sp %p\n", fdt_blob, top, gd, &stack_ptr);
 			panic("FDT overlap");
 		}
 	}

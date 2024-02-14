@@ -3,7 +3,7 @@
  * (C) Copyright 2019
  * Alex Marginean, NXP
  */
-
+#define LOG_DEBUG
 #include <common.h>
 #include <dm.h>
 #include <log.h>

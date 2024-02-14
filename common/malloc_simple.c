@@ -5,6 +5,7 @@
  * Copyright (c) 2014 Google, Inc
  */
 
+#define LOG_DEBUG
 #define LOG_CATEGORY LOGC_ALLOC
 
 #include <common.h>

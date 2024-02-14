@@ -4,7 +4,7 @@
  *
  * Copyright (C) 2023 StarFive Technology Co., Ltd.
  */
-
+#define LOG_DEBUG
 #include <config.h>
 #include <common.h>
 #include <malloc.h>

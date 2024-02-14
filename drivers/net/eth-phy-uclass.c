@@ -3,6 +3,7 @@
  * Copyright 2020 NXP
  */
 
+#define LOG_DEBUG
 #define LOG_CATEGORY UCLASS_ETH_PHY
 
 #include <common.h>
