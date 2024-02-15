@@ -574,30 +574,28 @@ static int _dw_free_pkt(struct dw_eth_dev *priv)
 
 static int dw_phy_init(struct dw_eth_dev *priv, void *dev)
 {
-	struct phy_device *phydev;
-	int ret;
-
-	if (IS_ENABLED(CONFIG_DM_ETH_PHY))
-		eth_phy_set_mdio_bus(dev, NULL);
-
-#if IS_ENABLED(CONFIG_DM_MDIO)
-	phydev = dm_eth_phy_connect(dev);
-	if (!phydev)
-		return -ENODEV;
-#else
-	int phy_addr = -1;
-
-	if (IS_ENABLED(CONFIG_DM_ETH_PHY))
-		phy_addr = eth_phy_get_addr(dev);
+	struct phy_device *phydev = NULL;
+	int ret, phy_addr = -1;
 
 #ifdef CONFIG_PHY_ADDR
 	phy_addr = CONFIG_PHY_ADDR;
 #endif
 
-	phydev = phy_connect(priv->bus, phy_addr, dev, priv->interface);
+	if (IS_ENABLED(CONFIG_DM_ETH_PHY)) {
+		ret = eth_phy_get_addr(dev);
+		if (ret >= 0)
+			phy_addr = ret;
+
+		/* Probe eth phy to reset before phy connect */
+		eth_phy_get_mdio_bus(dev);
+	}
+
+	if (IS_ENABLED(CONFIG_DM_MDIO))
+		phydev = dm_eth_phy_connect(dev);
+	if (!phydev)
+		phydev = phy_connect(priv->bus, phy_addr, dev, priv->interface);
 	if (!phydev)
 		return -ENODEV;
-#endif
 
 	phydev->supported &= PHY_GBIT_FEATURES;
 	if (priv->max_speed) {
