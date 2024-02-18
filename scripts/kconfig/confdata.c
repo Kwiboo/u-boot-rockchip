@@ -197,14 +197,18 @@ static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
 	case S_STRING:
 		if (*p++ != '"')
 			break;
-		/* Last char has to be a '"' */
-		if (p[strlen(p) - 1] != '"') {
+		for (p2 = p; (p2 = strpbrk(p2, "\"\\")); p2++) {
+			if (*p2 == '"') {
+				*p2 = 0;
+				break;
+			}
+			memmove(p2, p2 + 1, strlen(p2));
+		}
+		if (!p2) {
 			if (def != S_DEF_AUTO)
 				conf_warning("invalid string found");
 			return 1;
 		}
-		/* Overwrite '"' with \0 for string termination */
-		p[strlen(p) - 1] = 0;
 		/* fall through */
 	case S_INT:
 	case S_HEX:
@@ -663,7 +667,6 @@ static void conf_write_symbol(FILE *fp, struct symbol *sym,
 			      struct conf_printer *printer, void *printer_arg)
 {
 	const char *str;
-	char *str2;
 
 	switch (sym->type) {
 	case S_OTHER:
@@ -671,10 +674,9 @@ static void conf_write_symbol(FILE *fp, struct symbol *sym,
 		break;
 	case S_STRING:
 		str = sym_get_string_value(sym);
-		str2 = xmalloc(strlen(str) + 3);
-		sprintf(str2, "\"%s\"", str);
-		printer->print_symbol(fp, sym, str2, printer_arg);
-		free((void *)str2);
+		str = sym_escape_string_value(str);
+		printer->print_symbol(fp, sym, str, printer_arg);
+		free((void *)str);
 		break;
 	default:
 		str = sym_get_string_value(sym);
@@ -1011,12 +1013,16 @@ out:
 	return res;
 }
 
-int conf_write_autoconf(void)
+int conf_write_autoconf(int overwrite)
 {
 	struct symbol *sym;
 	const char *name;
+	const char *autoconf_name = conf_get_autoconfig_name();
 	FILE *out, *tristate, *out_h;
 	int i;
+
+	if (!overwrite && is_present(autoconf_name))
+		return 0;
 
 	sym_clear_all_valid();
 
@@ -1080,14 +1086,13 @@ int conf_write_autoconf(void)
 	if (rename(".tmpconfig_tristate", name))
 		return 1;
 
-	name = conf_get_autoconfig_name();
-	if (make_parent_dir(name))
+	if (make_parent_dir(autoconf_name))
 		return 1;
 	/*
 	 * This must be the last step, kbuild has a dependency on auto.conf
 	 * and this marks the successful completion of the previous steps.
 	 */
-	if (rename(".tmpconfig", name))
+	if (rename(".tmpconfig", autoconf_name))
 		return 1;
 
 	return 0;

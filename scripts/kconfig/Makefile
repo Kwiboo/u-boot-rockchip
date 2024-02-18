@@ -50,7 +50,7 @@ build_xconfig: $(obj)/qconf
 
 localyesconfig localmodconfig: $(obj)/conf
 	$(Q)perl $(srctree)/$(src)/streamline_config.pl --$@ $(srctree) $(Kconfig) > .tmp.config
-	$(Q)if [ -f .config ]; then					\
+	$(Q)if [ -f .config ]; then 					\
 			cmp -s .tmp.config .config ||			\
 			(mv -f .config .config.old.1;			\
 			 mv -f .tmp.config .config;			\
@@ -211,7 +211,7 @@ $(obj)/%.moc: $(src)/%.h $(obj)/.qconf-cfg
 hostprogs-y	+= gconf
 gconf-objs	:= gconf.o zconf.tab.o
 
-HOSTLDLIBS_gconf = $(shell . $(obj)/.gconf-cfg && echo $$libs)
+HOSTLDLIBS_gconf    = $(shell . $(obj)/.gconf-cfg && echo $$libs)
 HOSTCFLAGS_gconf.o  = $(shell . $(obj)/.gconf-cfg && echo $$cflags)
 
 $(obj)/gconf.o: $(obj)/.gconf-cfg

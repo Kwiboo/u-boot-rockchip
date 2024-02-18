@@ -1534,6 +1534,8 @@ bool ConfigMainWindow::saveConfig(void)
 		QMessageBox::information(this, "qconf", "Unable to save configuration!");
 		return false;
 	}
+	conf_write_autoconf(0);
+
 	return true;
 }
 
