@@ -110,7 +110,7 @@ config I2C_CROS_EC_TUNNEL
 config I2C_CROS_EC_LDO
 	bool "Provide access to LDOs on the Chrome OS EC"
 	depends on CROS_EC
-	---help---
+	help
 	On many Chromebooks the main PMIC is inaccessible to the AP. This is
 	often dealt with by using an I2C pass-through interface provided by
 	the EC. On some unfortunate models (e.g. Spring) the pass-through

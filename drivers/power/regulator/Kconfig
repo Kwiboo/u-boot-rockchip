@@ -1,7 +1,7 @@
 config DM_REGULATOR
 	bool "Enable Driver Model for REGULATOR drivers (UCLASS_REGULATOR)"
 	depends on DM
-	---help---
+	help
 	This config enables the driver model regulator support.
 	UCLASS_REGULATOR - designed to provide a common API for basic regulator's
 	functions, like get/set Voltage or Current value, enable state, etc...
@@ -19,7 +19,7 @@ config DM_REGULATOR
 config SPL_DM_REGULATOR
 	bool "Enable regulators for SPL"
 	depends on DM_REGULATOR && SPL_POWER
-	---help---
+	help
 	Regulators are seldom needed in SPL. Even if they are accessed, some
 	code space can be saved by accessing the PMIC registers directly.
 	Enable this option if you need regulators in SPL and can cope with
@@ -28,7 +28,7 @@ config SPL_DM_REGULATOR
 config REGULATOR_ACT8846
 	bool "Enable driver for ACT8846 regulator"
 	depends on DM_REGULATOR && PMIC_ACT8846
-	---help---
+	help
 	Enable support for the regulator functions of the ACT8846 PMIC. The
 	driver implements get/set api for the various BUCKS and LDOS supported
 	by the PMIC device. This driver is controlled by a device tree node
@@ -119,7 +119,7 @@ config SPL_DM_REGULATOR_DA9063
 config DM_REGULATOR_PFUZE100
 	bool "Enable Driver Model for REGULATOR PFUZE100"
 	depends on DM_REGULATOR && DM_PMIC_PFUZE100
-	---help---
+	help
 	This config enables implementation of driver-model regulator uclass
 	features for REGULATOR PFUZE100. The driver implements get/set api for:
 	value, enable and mode.
@@ -127,7 +127,7 @@ config DM_REGULATOR_PFUZE100
 config REGULATOR_PWM
 	bool "Enable driver for PWM regulators"
 	depends on DM_REGULATOR
-	---help---
+	help
 	Enable support for the PWM regulator functions which voltage are
 	controlled by PWM duty ratio. Some of Rockchip board using this kind
 	of regulator. The driver implements get/set api for the various BUCKS.
@@ -144,7 +144,7 @@ config SPL_REGULATOR_PWM
 config DM_REGULATOR_MAX77663
 	bool "Enable Driver Model for REGULATOR MAX77663"
 	depends on DM_REGULATOR && DM_PMIC_MAX77663
-	---help---
+	help
 	This config enables implementation of driver-model regulator uclass
 	features for REGULATOR MAX77663. The driver supports both DC-to-DC
 	Step-Down (SD) Regulators and Low-Dropout Linear (LDO) Regulators
@@ -153,7 +153,7 @@ config DM_REGULATOR_MAX77663
 config DM_REGULATOR_MAX77686
 	bool "Enable Driver Model for REGULATOR MAX77686"
 	depends on DM_REGULATOR && DM_PMIC_MAX77686
-	---help---
+	help
 	This config enables implementation of driver-model regulator uclass
 	features for REGULATOR MAX77686. The driver implements get/set api for:
 	value, enable and mode.
@@ -194,7 +194,7 @@ config DM_REGULATOR_FIXED
 	bool "Enable Driver Model for REGULATOR Fixed value"
 	depends on DM_REGULATOR
 	select DM_REGULATOR_COMMON
-	---help---
+	help
 	This config enables implementation of driver-model regulator uclass
 	features for fixed value regulators. The driver implements get/set api
 	for enable and get only for voltage value.
@@ -203,7 +203,7 @@ config SPL_DM_REGULATOR_FIXED
 	bool "Enable Driver Model for REGULATOR Fixed value in SPL"
 	depends on DM_REGULATOR_FIXED && SPL
 	select SPL_DM_REGULATOR_COMMON
-	---help---
+	help
 	This config enables implementation of driver-model regulator uclass
 	features for fixed value regulators in SPL.
 
@@ -211,7 +211,7 @@ config DM_REGULATOR_GPIO
 	bool "Enable Driver Model for GPIO REGULATOR"
 	depends on DM_REGULATOR && DM_GPIO
 	select DM_REGULATOR_COMMON
-	---help---
+	help
 	This config enables implementation of driver-model regulator uclass
 	features for gpio regulators. The driver implements get/set for
 	voltage value.
@@ -220,14 +220,14 @@ config SPL_DM_REGULATOR_GPIO
 	bool "Enable Driver Model for GPIO REGULATOR in SPL"
 	depends on DM_REGULATOR_GPIO && SPL_GPIO
 	select SPL_DM_REGULATOR_COMMON
-	---help---
+	help
 	This config enables implementation of driver-model regulator uclass
 	features for gpio regulators in SPL.
 
 config REGULATOR_RK8XX
 	bool "Enable driver for RK8XX regulators"
 	depends on DM_REGULATOR && PMIC_RK8XX
-	---help---
+	help
 	Enable support for the regulator functions of the RK8XX PMIC. The
 	driver implements get/set api for the various BUCKS and LDOs supported
 	by the PMIC device. This driver is controlled by a device tree node
@@ -236,7 +236,7 @@ config REGULATOR_RK8XX
 config DM_REGULATOR_S2MPS11
 	bool "Enable driver for S2MPS11 regulator"
 	depends on DM_REGULATOR && PMIC_S2MPS11
-	---help---
+	help
 	This enables implementation of driver-model regulator uclass
 	features for REGULATOR S2MPS11.
 	The driver implements get/set api for: value and enable.
@@ -244,7 +244,7 @@ config DM_REGULATOR_S2MPS11
 config REGULATOR_S5M8767
 	bool "Enable support for S5M8767 regulator"
 	depends on DM_REGULATOR && PMIC_S5M8767
-	---help---
+	help
 	This enables the regulator features of the S5M8767, allowing voltages
 	to be set, etc. The driver is not fully complete but supports most
 	common requirements, including all LDOs and BUCKs. This allows many
@@ -253,7 +253,7 @@ config REGULATOR_S5M8767
 config DM_REGULATOR_SANDBOX
 	bool "Enable Driver Model for Sandbox PMIC regulator"
 	depends on DM_REGULATOR && DM_PMIC_SANDBOX
-	---help---
+	help
 	Enable the regulator driver for emulated Sandbox PMIC.
 	The emulated PMIC device depends on two drivers:
 	- sandbox PMIC I/O driver - implements dm pmic operations
@@ -283,7 +283,7 @@ config DM_REGULATOR_SANDBOX
 config REGULATOR_TPS65090
 	bool "Enable driver for TPS65090 PMIC regulators"
 	depends on PMIC_TPS65090
-	---help---
+	help
 	The TPS65090 provides several FETs (Field-effect Transistors,
 	effectively switches) which are supported by this driver as
 	regulators, one for each FET. The standard regulator interface is
@@ -293,7 +293,7 @@ config REGULATOR_TPS65090
 config DM_REGULATOR_PALMAS
 	bool "Enable driver for PALMAS PMIC regulators"
        depends on PMIC_PALMAS
-	---help---
+	help
 	This enables implementation of driver-model regulator uclass
 	features for REGULATOR PALMAS and the family of PALMAS PMICs.
 	The driver implements get/set api for: value and enable.
@@ -303,7 +303,7 @@ config DM_REGULATOR_PBIAS
 	depends on DM_REGULATOR
 	select REGMAP
 	select SYSCON
-	---help---
+	help
 	This enables implementation of driver-model regulator uclass
 	features for pseudo-regulator PBIAS found in the OMAP SOCs.
 	This pseudo-regulator is used to provide a BIAS voltage to MMC1
@@ -314,7 +314,7 @@ config DM_REGULATOR_PBIAS
 config DM_REGULATOR_LP873X
 	bool "Enable driver for LP873X PMIC regulators"
         depends on PMIC_LP873X
-	---help---
+	help
 	This enables implementation of driver-model regulator uclass
 	features for REGULATOR LP873X and the family of LP873X PMICs.
 	The driver implements get/set api for: value and enable.
@@ -322,7 +322,7 @@ config DM_REGULATOR_LP873X
 config DM_REGULATOR_LP87565
 	bool "Enable driver for LP87565 PMIC regulators"
         depends on PMIC_LP87565
-	---help---
+	help
 	This enables implementation of driver-model regulator uclass
 	features for REGULATOR LP87565 and the family of LP87565 PMICs.
 	LP87565 series of PMICs have 4 single phase BUCKs that can also
@@ -341,7 +341,7 @@ config DM_REGULATOR_STM32_VREFBUF
 config DM_REGULATOR_TPS65910
 	bool "Enable driver for TPS65910 PMIC regulators"
 	depends on DM_PMIC_TPS65910
-	---help---
+	help
 	The TPS65910 PMIC provides 4 SMPSs and 8 LDOs. This driver supports all
 	regulator types of the TPS65910 (BUCK, BOOST and LDO). It implements
 	the get/set api for value and enable.
@@ -349,7 +349,7 @@ config DM_REGULATOR_TPS65910
 config DM_REGULATOR_TPS65911
 	bool "Enable driver for TPS65911 PMIC regulators"
 	depends on DM_PMIC_TPS65910
-	---help---
+	help
 	This config enables implementation of driver-model regulator
 	uclass features for the TPS65911 PMIC. The driver supports Step-Down
 	DC-DC Converters for Processor Cores (VDD1 and VDD2), Step-Down DC-DC
@@ -370,7 +370,7 @@ config DM_REGULATOR_TPS62360
 config DM_REGULATOR_TPS80031
 	bool "Enable driver for TPS80031/TPS80032 PMIC regulators"
 	depends on DM_PMIC_TPS80031
-	---help---
+	help
 	This enables implementation of driver-model regulator uclass
 	features for TPS80031/TPS80032 PMICs. The driver implements
 	get/set api for: value and enable.
@@ -378,7 +378,7 @@ config DM_REGULATOR_TPS80031
 config DM_REGULATOR_STPMIC1
 	bool "Enable driver for STPMIC1 regulators"
 	depends on DM_REGULATOR && PMIC_STPMIC1
-	---help---
+	help
 	Enable support for the regulator functions of the STPMIC1 PMIC. The
 	driver implements get/set api for the various BUCKS and LDOs supported
 	by the PMIC device. This driver is controlled by a device tree node

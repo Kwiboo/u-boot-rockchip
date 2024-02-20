@@ -167,12 +167,12 @@ config SYS_SOC
 config SYS_MALLOC_F_LEN
 	default 0x80000
 
-source board/edgeble/neural-compute-module-6/Kconfig
-source board/friendlyelec/nanopc-t6-rk3588/Kconfig
-source board/pine64/quartzpro64-rk3588/Kconfig
-source board/turing/turing-rk1-rk3588/Kconfig
-source board/rockchip/evb_rk3588/Kconfig
-source board/radxa/rock5a-rk3588s/Kconfig
-source board/radxa/rock5b-rk3588/Kconfig
+source "board/edgeble/neural-compute-module-6/Kconfig"
+source "board/friendlyelec/nanopc-t6-rk3588/Kconfig"
+source "board/pine64/quartzpro64-rk3588/Kconfig"
+source "board/turing/turing-rk1-rk3588/Kconfig"
+source "board/rockchip/evb_rk3588/Kconfig"
+source "board/radxa/rock5a-rk3588s/Kconfig"
+source "board/radxa/rock5b-rk3588/Kconfig"
 
 endif

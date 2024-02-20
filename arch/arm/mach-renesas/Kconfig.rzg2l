@@ -19,9 +19,9 @@ config TARGET_RZG2L_SMARC_EVK
 	help
 	  Enable support for the RZ/G2L SMARC evaluation board.
 
-source "board/renesas/rzg2l/Kconfig"
-
 endchoice
+
+source "board/renesas/rzg2l/Kconfig"
 
 config MULTI_DTB_FIT_UNCOMPRESS_SZ
 	default 0x80000 if TARGET_RZG2L_SMARC_EVK

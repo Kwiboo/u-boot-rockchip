@@ -473,7 +473,7 @@ config FRAMEBUFFER_VESA_MODE
 
 config VIDEO_LCD_ANX9804
 	bool "ANX9804 bridge chip"
-	---help---
+	help
 	Support for the ANX9804 bridge chip, which can take pixel data coming
 	from a parallel LCD interface and translate it on the fy into a DP
 	interface for driving eDP TFT displays. It uses I2C for configuration.
@@ -548,7 +548,7 @@ config VIDEO_LCD_RENESAS_R69328
 
 config VIDEO_LCD_SSD2828
 	bool "SSD2828 bridge chip"
-	---help---
+	help
 	Support for the SSD2828 bridge chip, which can take pixel data coming
 	from a parallel LCD interface and translate it on the fly into MIPI DSI
 	interface for driving a MIPI compatible LCD panel. It uses SPI for
@@ -558,7 +558,7 @@ config VIDEO_LCD_SSD2828_TX_CLK
 	int "SSD2828 TX_CLK frequency (in MHz)"
 	depends on VIDEO_LCD_SSD2828
 	default 0
-	---help---
+	help
 	The frequency of the crystal, which is clocking SSD2828. It may be
 	anything in the 8MHz-30MHz range and the exact value should be
 	retrieved from the board schematics. Or in the case of Allwinner
@@ -570,7 +570,7 @@ config VIDEO_LCD_SSD2828_RESET
 	string "RESET pin of SSD2828"
 	depends on VIDEO_LCD_SSD2828
 	default ""
-	---help---
+	help
 	The reset pin of SSD2828 chip. This takes a string in the format
 	understood by 'sunxi_name_to_gpio' function, e.g. PH1 for pin 1 of port H.
 
@@ -583,7 +583,7 @@ config VIDEO_LCD_TDO_TL070WSH30
 
 config VIDEO_LCD_HITACHI_TX18D42VM
 	bool "Hitachi tx18d42vm LVDS LCD panel support"
-	---help---
+	help
 	Support for Hitachi tx18d42vm LVDS LCD panels, these panels have a
 	lcd controller which needs to be initialized over SPI, once that is
 	done they work like a regular LVDS panel.
@@ -592,7 +592,7 @@ config VIDEO_LCD_SPI_CS
 	string "SPI CS pin for LCD related config job"
 	depends on VIDEO_LCD_SSD2828 || VIDEO_LCD_HITACHI_TX18D42VM
 	default ""
-	---help---
+	help
 	This is one of the SPI communication pins, involved in setting up a
 	working LCD configuration. The exact role of SPI may differ for
 	different hardware setups. The option takes a string in the format
@@ -602,7 +602,7 @@ config VIDEO_LCD_SPI_SCLK
 	string "SPI SCLK pin for LCD related config job"
 	depends on VIDEO_LCD_SSD2828 || VIDEO_LCD_HITACHI_TX18D42VM
 	default ""
-	---help---
+	help
 	This is one of the SPI communication pins, involved in setting up a
 	working LCD configuration. The exact role of SPI may differ for
 	different hardware setups. The option takes a string in the format
@@ -612,7 +612,7 @@ config VIDEO_LCD_SPI_MOSI
 	string "SPI MOSI pin for LCD related config job"
 	depends on VIDEO_LCD_SSD2828 || VIDEO_LCD_HITACHI_TX18D42VM
 	default ""
-	---help---
+	help
 	This is one of the SPI communication pins, involved in setting up a
 	working LCD configuration. The exact role of SPI may differ for
 	different hardware setups. The option takes a string in the format
@@ -622,7 +622,7 @@ config VIDEO_LCD_SPI_MISO
 	string "SPI MISO pin for LCD related config job (optional)"
 	depends on VIDEO_LCD_SSD2828
 	default ""
-	---help---
+	help
 	This is one of the SPI communication pins, involved in setting up a
 	working LCD configuration. The exact role of SPI may differ for
 	different hardware setups. If wired up, this pin may provide additional
@@ -635,7 +635,7 @@ source "drivers/video/meson/Kconfig"
 
 config VIDEO_MVEBU
 	bool "Armada XP LCD controller"
-	---help---
+	help
 	Support for the LCD controller integrated in the Marvell
 	Armada XP SoC.
 

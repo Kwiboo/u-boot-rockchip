@@ -71,7 +71,7 @@ config USB_MUSB_SUNXI
 	depends on PHY_SUN4I_USB
 	select USB_MUSB_PIO_ONLY
 	default y
-	---help---
+	help
 	Say y here to enable support for the sunxi OTG / DRC USB controller
 	used on almost all sunxi boards.
 
