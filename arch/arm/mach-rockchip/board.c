@@ -297,6 +297,20 @@ int board_usb_cleanup(int index, enum usb_init_type init)
 }
 #endif /* CONFIG_USB_GADGET_DWC2_OTG */
 
+#if IS_ENABLED(CONFIG_USB_GADGET_DOWNLOAD)
+#define ROCKCHIP_G_DNL_UMS_PRODUCT_NUM	0x0010
+
+int g_dnl_bind_fixup(struct usb_device_descriptor *dev, const char *name)
+{
+	if (!strcmp(name, "usb_dnl_ums"))
+		put_unaligned(ROCKCHIP_G_DNL_UMS_PRODUCT_NUM, &dev->idProduct);
+	else
+		put_unaligned(CONFIG_USB_GADGET_PRODUCT_NUM, &dev->idProduct);
+
+	return 0;
+}
+#endif
+
 #if IS_ENABLED(CONFIG_FASTBOOT)
 int fastboot_set_reboot_flag(enum fastboot_reboot_reason reason)
 {
