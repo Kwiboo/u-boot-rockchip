@@ -3,7 +3,6 @@
  * Copyright (c) 2020 Fuzhou Rockchip Electronics Co., Ltd
  */
 #include <asm/arch-rockchip/hardware.h>
-#include <asm/io.h>
 #include <common.h>
 #include <dm.h>
 #include <linux/bitops.h>
