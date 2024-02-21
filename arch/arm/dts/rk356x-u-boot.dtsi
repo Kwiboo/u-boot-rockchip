@@ -127,15 +127,17 @@
 
 &sdhci {
 	bootph-pre-ram;
+	bootph-some-ram;
 	max-frequency = <200000000>;
 };
 
 &sdmmc0 {
 	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &uart2 {
-	bootph-pre-ram;
+	bootph-all;
 	clock-frequency = <24000000>;
 };
 
