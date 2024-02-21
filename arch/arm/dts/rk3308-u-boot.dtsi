@@ -11,6 +11,10 @@
 		mmc1 = &sdmmc;
 	};
 
+	chosen {
+		u-boot,spl-boot-order = "same-as-spl", &sdmmc, &emmc;
+	};
+
 	otp: nvmem@ff210000 {
 		compatible = "rockchip,rk3308-otp";
 		reg = <0x0 0xff210000 0x0 0x4000>;
@@ -32,21 +36,81 @@
 };
 
 &emmc {
-	/* mmc to sram can't do dma, prevent aborts transferring TF-A parts */
+	bootph-pre-ram;
+	bootph-some-ram;
 	u-boot,spl-fifo-mode;
+};
+
+&emmc_bus8 {
 	bootph-all;
 };
 
-&sdmmc {
+&emmc_clk {
 	bootph-all;
-	u-boot,spl-fifo-mode;
+};
+
+&emmc_cmd {
+	bootph-all;
 };
 
 &grf {
 	bootph-all;
 };
 
-&saradc {
+&pcfg_pull_none {
 	bootph-all;
-	status = "okay";
+};
+
+&pcfg_pull_none_4ma {
+	bootph-all;
+};
+
+&pcfg_pull_none_8ma {
+	bootph-all;
+};
+
+&pcfg_pull_up {
+	bootph-all;
+};
+
+&pcfg_pull_up_4ma {
+	bootph-all;
+};
+
+&pcfg_pull_up_8ma {
+	bootph-all;
+};
+
+&pinctrl {
+	bootph-all;
+};
+
+&rtc_32k {
+	bootph-all;
+};
+
+&sdmmc {
+	bootph-pre-ram;
+	bootph-some-ram;
+	u-boot,spl-fifo-mode;
+};
+
+&sdmmc_bus4 {
+	bootph-all;
+};
+
+&sdmmc_clk {
+	bootph-all;
+};
+
+&sdmmc_cmd {
+	bootph-all;
+};
+
+&sdmmc_det {
+	bootph-all;
+};
+
+&xin24m {
+	bootph-all;
 };
