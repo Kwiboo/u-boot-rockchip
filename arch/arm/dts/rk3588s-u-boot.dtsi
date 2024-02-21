@@ -150,6 +150,10 @@
 	bootph-all;
 };
 
+&pcfg_pull_down {
+	bootph-all;
+};
+
 &pcfg_pull_none {
 	bootph-all;
 };
@@ -167,11 +171,11 @@
 };
 
 &cru {
-	bootph-pre-ram;
+	bootph-all;
 };
 
 &sys_grf {
-	bootph-pre-ram;
+	bootph-all;
 };
 
 &pmu1grf {
@@ -215,7 +219,7 @@
 };
 
 &uart2 {
-	bootph-pre-ram;
+	bootph-all;
 	clock-frequency = <24000000>;
 };
 
@@ -224,7 +228,7 @@
 };
 
 &ioc {
-	bootph-pre-ram;
+	bootph-all;
 };
 
 #ifdef CONFIG_ROCKCHIP_SPI_IMAGE
