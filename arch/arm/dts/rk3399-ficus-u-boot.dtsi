@@ -11,3 +11,11 @@
 		u-boot,spl-boot-order = "same-as-spl", &sdhci, &sdmmc;
 	};
 };
+
+&pcfg_pull_none_18ma {
+	bootph-pre-ram;
+};
+
+&pcfg_pull_up_8ma {
+	bootph-pre-ram;
+};
