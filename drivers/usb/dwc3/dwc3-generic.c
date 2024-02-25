@@ -192,7 +192,7 @@ static int dwc3_generic_of_to_plat(struct udevice *dev)
 	return 0;
 }
 
-#if CONFIG_IS_ENABLED(DM_USB_GADGET)
+#if IS_ENABLED(CONFIG_USB_DWC3_GADGET) && CONFIG_IS_ENABLED(DM_USB_GADGET)
 int dm_usb_gadget_handle_interrupts(struct udevice *dev)
 {
 	struct dwc3_generic_priv *priv = dev_get_priv(dev);
@@ -435,7 +435,7 @@ static int dwc3_glue_bind_common(struct udevice *parent, ofnode node)
 	if (!dr_mode)
 		dr_mode = usb_get_dr_mode(node);
 
-	if (CONFIG_IS_ENABLED(DM_USB_GADGET) &&
+	if (IS_ENABLED(CONFIG_USB_DWC3_GADGET) && CONFIG_IS_ENABLED(DM_USB_GADGET) &&
 	    (dr_mode == USB_DR_MODE_PERIPHERAL || dr_mode == USB_DR_MODE_OTG)) {
 		debug("%s: dr_mode: OTG or Peripheral\n", __func__);
 		driver = "dwc3-generic-peripheral";
