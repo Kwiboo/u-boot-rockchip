@@ -126,27 +126,35 @@
 	};
 };
 
-&emmc_bus8 {
+&cru {
 	bootph-all;
+};
+
+&emmc_bus8 {
+	bootph-pre-ram;
 };
 
 &emmc_clk {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &emmc_cmd {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &emmc_data_strobe {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &emmc_rstnout {
+	bootph-pre-ram;
+};
+
+&ioc {
 	bootph-all;
 };
 
-&pinctrl {
+&pcfg_pull_down {
 	bootph-all;
 };
 
@@ -155,23 +163,19 @@
 };
 
 &pcfg_pull_up_drv_level_2 {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &pcfg_pull_up {
 	bootph-all;
 };
 
-&xin24m {
+&php_grf {
 	bootph-all;
 };
 
-&cru {
-	bootph-pre-ram;
-};
-
-&sys_grf {
-	bootph-pre-ram;
+&pinctrl {
+	bootph-all;
 };
 
 &pmu1grf {
@@ -186,36 +190,46 @@
 	bootph-pre-ram;
 };
 
-&sdmmc {
-	bootph-pre-ram;
-	bootph-some-ram;
-	u-boot,spl-fifo-mode;
-};
-
 &sdhci {
 	bootph-pre-ram;
 	bootph-some-ram;
 	u-boot,spl-fifo-mode;
 };
 
+&sdmmc {
+	bootph-pre-ram;
+	bootph-some-ram;
+	u-boot,spl-fifo-mode;
+};
+
 &sdmmc_bus4 {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &sdmmc_clk {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &sdmmc_cmd {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &sdmmc_det {
+	bootph-pre-ram;
+};
+
+&sfc {
+	bootph-pre-ram;
+	bootph-some-ram;
+	u-boot,spl-sfc-no-dma;
+};
+
+&sys_grf {
 	bootph-all;
 };
 
 &uart2 {
-	bootph-pre-ram;
+	bootph-all;
 	clock-frequency = <24000000>;
 };
 
@@ -223,8 +237,8 @@
 	bootph-all;
 };
 
-&ioc {
-	bootph-pre-ram;
+&xin24m {
+	bootph-all;
 };
 
 #ifdef CONFIG_ROCKCHIP_SPI_IMAGE
