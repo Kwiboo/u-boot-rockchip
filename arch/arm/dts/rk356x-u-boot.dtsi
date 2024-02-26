@@ -66,7 +66,7 @@
 };
 
 &pcfg_pull_up_drv_level_2 {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &pcfg_pull_up {
@@ -74,27 +74,27 @@
 };
 
 &emmc_bus8 {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &emmc_clk {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &emmc_cmd {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &emmc_datastrobe {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &emmc_rstnout {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &fspi_pins {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &i2c0_xfer {
@@ -102,23 +102,23 @@
 };
 
 &sdmmc0_bus4 {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &sdmmc0_clk {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &sdmmc0_cmd {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &sdmmc0_det {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &sdmmc0_pwren {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &uart2m0_xfer {
@@ -127,15 +127,23 @@
 
 &sdhci {
 	bootph-pre-ram;
+	bootph-some-ram;
 	max-frequency = <200000000>;
 };
 
 &sdmmc0 {
 	bootph-pre-ram;
+	bootph-some-ram;
+};
+
+&sfc {
+	bootph-pre-ram;
+	bootph-some-ram;
+	u-boot,spl-sfc-no-dma;
 };
 
 &uart2 {
-	bootph-pre-ram;
+	bootph-all;
 	clock-frequency = <24000000>;
 };
 
