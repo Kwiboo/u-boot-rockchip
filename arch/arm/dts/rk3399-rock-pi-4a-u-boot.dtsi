@@ -4,3 +4,15 @@
  */
 
 #include "rk3399-rock-pi-4-u-boot.dtsi"
+
+/ {
+	chosen {
+		u-boot,spl-boot-order = "same-as-spl", &spi_flash, &sdhci, &sdmmc;
+	};
+};
+
+&spi1 {
+	spi_flash: flash@0 {
+		bootph-all;
+	};
+};
