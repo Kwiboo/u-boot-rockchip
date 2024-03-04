@@ -44,7 +44,7 @@
 		compatible = "rockchip,rk3399-dmc";
 		devfreq-events = <&dfi>;
 		interrupts = <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH 0>;
-		clocks = <&cru SCLK_DDRCLK>;
+		clocks = <&cru SCLK_DDRC>;
 		clock-names = "dmc_clk";
 		reg = <0x0 0xffa80000 0x0 0x0800
 		       0x0 0xffa80800 0x0 0x1800
