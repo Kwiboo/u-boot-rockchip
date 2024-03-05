@@ -87,26 +87,27 @@
 	bootph-all;
 };
 
+&haikou_pin_hog {
+	bootph-all;
+};
+
 &norflash {
+	bootph-pre-ram;
+	bootph-some-ram;
+};
+
+&uart0 {
 	bootph-all;
 };
 
-&pcfg_pull_none {
+&uart0_cts {
 	bootph-all;
 };
 
-&pcfg_pull_up {
+&uart0_rts {
 	bootph-all;
 };
 
-&sdmmc_bus4 {
-	bootph-all;
-};
-
-&sdmmc_clk {
-	bootph-all;
-};
-
-&sdmmc_cmd {
+&uart0_xfer {
 	bootph-all;
 };
