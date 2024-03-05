@@ -29,6 +29,10 @@
 	rockchip,panel = <&edp_panel>;
 };
 
+&pcfg_pull_none_8ma {
+	bootph-all;
+};
+
 &pp1800_audio {
 	regulator-min-microvolt = <1800000>;
 	regulator-max-microvolt = <1800000>;

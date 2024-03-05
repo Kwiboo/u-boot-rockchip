@@ -12,14 +12,6 @@
 	};
 };
 
-&i2c0 {
-	bootph-all;
-};
-
-&rk808 {
-	bootph-all;
-};
-
 &tcphy1 {
 	status = "okay";
 };
@@ -38,7 +30,6 @@
 };
 
 &sdmmc {
-	bootph-all;
 	bus-width = <4>;
 	cap-mmc-highspeed;
 	cap-sd-highspeed;
