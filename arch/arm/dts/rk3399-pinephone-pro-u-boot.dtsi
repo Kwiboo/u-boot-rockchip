@@ -13,3 +13,15 @@
 &sdmmc {
 	max-frequency = <20000000>;
 };
+
+&spi1 {
+	status = "okay";
+
+	flash@0 {
+		bootph-pre-ram;
+		bootph-some-ram;
+		compatible = "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <10000000>;
+	};
+};
