@@ -100,15 +100,15 @@ static int pinctrl_select_state_full(struct udevice *dev, const char *statename)
 	return 0;
 }
 
-static bool ofnode_pre_reloc_recursive(ofnode parent)
+static bool ofnode_pre_reloc_recursive(ofnode node)
 {
 	ofnode child;
 
-	if (ofnode_pre_reloc(parent))
+	if (ofnode_pre_reloc(node))
 		return true;
 
 	if (CONFIG_IS_ENABLED(PINCONF_RECURSIVE)) {
-		ofnode_for_each_subnode(child, parent)
+		ofnode_for_each_subnode(child, node)
 			if (ofnode_pre_reloc_recursive(child))
 				return true;
 	}

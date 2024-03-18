@@ -1474,18 +1474,18 @@ bool ofnode_pre_reloc(ofnode node)
 	 */
 	return true;
 #else
-	if (ofnode_read_bool(node, "bootph-all"))
-		return true;
-	if (ofnode_read_bool(node, "bootph-some-ram"))
+	if (ofnode_read_bool(node, "bootph-all") ||
+	    ofnode_read_bool(node, "bootph-some-ram"))
 		return true;
 
 	/*
 	 * In regular builds individual spl and tpl handling both
 	 * count as handled pre-relocation for later second init.
 	 */
-	if (ofnode_read_bool(node, "bootph-pre-ram") ||
-	    ofnode_read_bool(node, "bootph-pre-sram"))
-		return gd->flags & GD_FLG_RELOC;
+	if ((gd->flags & GD_FLG_RELOC) &&
+	    (ofnode_read_bool(node, "bootph-pre-ram") ||
+	     ofnode_read_bool(node, "bootph-pre-sram")))
+		return true;
 
 	if (IS_ENABLED(CONFIG_OF_TAG_MIGRATE)) {
 		/* detect and handle old tags */

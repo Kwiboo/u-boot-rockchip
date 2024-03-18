@@ -239,8 +239,8 @@ int lists_bind_fdt(struct udevice *parent, ofnode node, struct udevice **devp,
 			continue;
 
 		if (pre_reloc_only) {
-			if (!ofnode_pre_reloc(node) &&
-			    !(entry->flags & DM_FLAG_PRE_RELOC)) {
+			if (!(entry->flags & DM_FLAG_PRE_RELOC) &&
+			    !ofnode_pre_reloc(node)) {
 				log_debug("Skipping device pre-relocation\n");
 				return 0;
 			}
