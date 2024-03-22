@@ -11,6 +11,14 @@
 #define CFG_CPUID_OFFSET	0x7
 #endif
 
+#ifndef CFG_SYS_NS16550_CLK
+#ifdef CONFIG_DEBUG_UART_CLOCK
+#define CFG_SYS_NS16550_CLK	CONFIG_DEBUG_UART_CLOCK
+#else
+#define CFG_SYS_NS16550_CLK	24000000
+#endif
+#endif
+
 #ifndef CONFIG_SPL_BUILD
 
 #define BOOT_TARGETS	"mmc1 mmc0 nvme scsi usb pxe dhcp spi"
