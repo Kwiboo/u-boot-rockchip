@@ -72,12 +72,12 @@ struct dram_info {
 	struct rk3399_grf_regs *grf;
 	struct rk3399_pmu_regs *pmu;
 	struct rk3399_pmucru *pmucru;
+	struct rk3399_pmugrf_regs *pmugrf;
 	struct rk3399_pmusgrf_regs *pmusgrf;
 	struct rk3399_ddr_cic_regs *cic;
 	const struct sdram_rk3399_ops *ops;
 #endif
 	struct ram_info info;
-	struct rk3399_pmugrf_regs *pmugrf;
 };
 
 struct sdram_rk3399_ops {
@@ -3090,13 +3090,13 @@ static int rk3399_dmc_init(struct udevice *dev)
 #endif
 
 	priv->ops = &rk3399_ops;
-	priv->cic = syscon_get_first_range(ROCKCHIP_SYSCON_CIC);
-	priv->grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
-	priv->pmu = syscon_get_first_range(ROCKCHIP_SYSCON_PMU);
-	priv->pmugrf = syscon_get_first_range(ROCKCHIP_SYSCON_PMUGRF);
-	priv->pmusgrf = syscon_get_first_range(ROCKCHIP_SYSCON_PMUSGRF);
-	priv->pmucru = rockchip_get_pmucru();
-	priv->cru = rockchip_get_cru();
+	priv->cic = (void *)RK3399_DDR_CIC_BASE;
+	priv->grf = (void *)RK3399_GRF_BASE;
+	priv->pmu = (void *)RK3399_PMU_BASE;
+	priv->pmugrf = (void *)RK3399_PMUGRF_BASE;
+	priv->pmusgrf = (void *)RK3399_PMUSGRF_BASE;
+	priv->pmucru = (void *)RK3399_PMUCRU_BASE;
+	priv->cru = (void *)RK3399_CRU_BASE;
 	priv->chan[0].pctl = regmap_get_range(plat->map, 0);
 	priv->chan[0].pi = regmap_get_range(plat->map, 1);
 	priv->chan[0].publ = regmap_get_range(plat->map, 2);
@@ -3140,22 +3140,29 @@ static int rk3399_dmc_init(struct udevice *dev)
 }
 #endif
 
+int rockchip_ram_get_info(struct ram_info *ram)
+{
+	struct rk3399_pmugrf_regs * const pmugrf = (void *)RK3399_PMUGRF_BASE;
+
+	ram->base = CFG_SYS_SDRAM_BASE;
+	ram->size = rockchip_sdram_size((phys_addr_t)&pmugrf->os_reg2);
+
+	return 0;
+}
+
 static int rk3399_dmc_probe(struct udevice *dev)
 {
 #if defined(CONFIG_TPL_BUILD) || \
 	(!defined(CONFIG_TPL) && defined(CONFIG_SPL_BUILD))
 	if (rk3399_dmc_init(dev))
 		return 0;
+
+	return 0;
 #else
 	struct dram_info *priv = dev_get_priv(dev);
 
-	priv->pmugrf = syscon_get_first_range(ROCKCHIP_SYSCON_PMUGRF);
-	debug("%s: pmugrf = %p\n", __func__, priv->pmugrf);
-	priv->info.base = CFG_SYS_SDRAM_BASE;
-	priv->info.size =
-		rockchip_sdram_size((phys_addr_t)&priv->pmugrf->os_reg2);
+	return rockchip_ram_get_info(&priv->info);
 #endif
-	return 0;
 }
 
 static int rk3399_dmc_get_info(struct udevice *dev, struct ram_info *info)

@@ -3,15 +3,14 @@
  * Copyright (C) 2017 Rockchip Electronics Co., Ltd.
  */
 
-#include <common.h>
 #include <dm.h>
+#include <dm/uclass-internal.h>
 #include <init.h>
 #include <log.h>
 #include <ram.h>
+#include <asm/arch-rockchip/sdram.h>
 #include <asm/global_data.h>
 #include <asm/io.h>
-#include <asm/arch-rockchip/sdram.h>
-#include <dm/uclass-internal.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -200,18 +199,27 @@ size_t rockchip_sdram_size(phys_addr_t reg)
 	return (size_t)size_mb << 20;
 }
 
+__weak int rockchip_ram_get_info(struct ram_info *ram)
+{
+	return -ENOSYS;
+}
+
 int dram_init(void)
 {
 	struct ram_info ram;
+	int ret = -ENOSYS;
 	struct udevice *dev;
-	int ret;
 
-	ret = uclass_get_device(UCLASS_RAM, 0, &dev);
+	if (!IS_ENABLED(CONFIG_TPL_BUILD))
+		ret = rockchip_ram_get_info(&ram);
 	if (ret) {
-		debug("DRAM init failed: %d\n", ret);
-		return ret;
+		ret = uclass_get_device(UCLASS_RAM, 0, &dev);
+		if (ret) {
+			debug("DRAM init failed: %d\n", ret);
+			return ret;
+		}
+		ret = ram_get_info(dev, &ram);
 	}
-	ret = ram_get_info(dev, &ram);
 	if (ret) {
 		debug("Cannot get DRAM size: %d\n", ret);
 		return ret;
