@@ -15,6 +15,8 @@ struct rk3399_pmuclk_priv {
 	struct rk3399_pmucru *pmucru;
 };
 
+#define RK3399_PMUCRU_BASE	0xff750000
+
 struct rk3399_pmucru {
 	u32 ppll_con[6];
 	u32 reserved[0x1a];
@@ -30,6 +32,8 @@ struct rk3399_pmucru {
 	u32 pmucru_gatedis_con[2];
 };
 check_member(rk3399_pmucru, pmucru_gatedis_con[1], 0x134);
+
+#define RK3399_CRU_BASE		0xff760000
 
 struct rockchip_cru {
 	u32 apll_l_con[6];
@@ -64,6 +68,7 @@ struct rockchip_cru {
 	u32 sdio1_con[2];
 };
 check_member(rockchip_cru, sdio1_con[1], 0x594);
+
 #define KHz		1000
 #define OSC_HZ		(24*MHz)
 #define LPLL_HZ		(600*MHz)
