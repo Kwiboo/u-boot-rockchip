@@ -2,17 +2,17 @@
 /*
  *Copyright (c) 2018 Rockchip Electronics Co., Ltd
  */
-#include <common.h>
+
+#include <debug_uart.h>
 #include <init.h>
 #include <malloc.h>
-#include <asm/arch/grf_rk3308.h>
 #include <asm/arch-rockchip/bootrom.h>
 #include <asm/arch-rockchip/hardware.h>
+#include <asm/arch-rockchip/grf_rk3308.h>
+#include <asm/armv8/mmu.h>
 #include <asm/gpio.h>
-#include <debug_uart.h>
 #include <linux/bitops.h>
 
-#include <asm/armv8/mmu.h>
 static struct mm_region rk3308_mem_map[] = {
 	{
 		.virt = 0x0UL,
@@ -34,9 +34,6 @@ static struct mm_region rk3308_mem_map[] = {
 };
 
 struct mm_region *mem_map = rk3308_mem_map;
-
-#define GRF_BASE	0xff000000
-#define SGRF_BASE	0xff2b0000
 
 enum {
 	GPIO1C7_SHIFT		= 8,
@@ -147,7 +144,7 @@ const char * const boot_devices[BROM_LAST_BOOTSOURCE + 1] = {
 
 int rk_board_init(void)
 {
-	static struct rk3308_grf * const grf = (void *)GRF_BASE;
+	static struct rk3308_grf * const grf = (void *)RK3308_GRF_BASE;
 	u32 val;
 	int ret;
 
@@ -172,9 +169,9 @@ int rk_board_init(void)
 }
 
 #ifdef CONFIG_DEBUG_UART_BOARD_INIT
-__weak void board_debug_uart_init(void)
+void board_debug_uart_init(void)
 {
-	static struct rk3308_grf * const grf = (void *)GRF_BASE;
+	static struct rk3308_grf * const grf = (void *)RK3308_GRF_BASE;
 
 	/* Enable early UART2 channel m1 on the rk3308 */
 	rk_clrsetreg(&grf->soc_con5, UART2_IO_SEL_MASK,
@@ -189,8 +186,8 @@ __weak void board_debug_uart_init(void)
 #if defined(CONFIG_SPL_BUILD)
 int arch_cpu_init(void)
 {
-	static struct rk3308_sgrf * const sgrf = (void *)SGRF_BASE;
-	static struct rk3308_grf * const grf = (void *)GRF_BASE;
+	static struct rk3308_sgrf * const sgrf = (void *)RK3308_SGRF_BASE;
+	static struct rk3308_grf * const grf = (void *)RK3308_GRF_BASE;
 
 	/* Set CRYPTO SDMMC EMMC NAND SFC USB master bus to be secure access */
 	rk_clrreg(&sgrf->con_secure0, 0x2b83);

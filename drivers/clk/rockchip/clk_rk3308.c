@@ -12,7 +12,7 @@
 #include <malloc.h>
 #include <syscon.h>
 #include <asm/global_data.h>
-#include <asm/arch/cru_rk3308.h>
+#include <asm/arch-rockchip/cru_rk3308.h>
 #include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/hardware.h>
 #include <dm/device-internal.h>
@@ -1182,7 +1182,7 @@ static int rk3308_clk_of_to_plat(struct udevice *dev)
 {
 	struct rk3308_clk_priv *priv = dev_get_priv(dev);
 
-	priv->cru = dev_read_addr_ptr(dev);
+	priv->cru = (void *)RK3308_CRU_BASE;
 
 	return 0;
 }

@@ -5,6 +5,8 @@
 #ifndef _ASM_ARCH_GRF_rk3308_H
 #define _ASM_ARCH_GRF_rk3308_H
 
+#define RK3308_GRF_BASE		0xff000000
+
 struct rk3308_grf {
 	unsigned int gpio0a_iomux;
 	unsigned int reserved0;
@@ -176,6 +178,8 @@ struct rk3308_grf {
 	unsigned int chip_id;
 };
 check_member(rk3308_grf, gpio0a_p, 0xa0);
+
+#define RK3308_SGRF_BASE	0xff2b0000
 
 struct rk3308_sgrf {
 	unsigned int soc_con0;
