@@ -96,7 +96,7 @@ enum {
 
 void board_debug_uart_init(void)
 {
-	__maybe_unused static struct rk3588_bus_ioc * const bus_ioc = (void *)BUS_IOC_BASE;
+	static struct rk3588_bus_ioc * const bus_ioc = (void *)BUS_IOC_BASE;
 	static struct rk3588_pmu2_ioc * const pmu2_ioc = (void *)PMU2_IOC_BASE;
 
 	/* Refer to BUS_IOC */
@@ -133,7 +133,7 @@ int arch_cpu_init(void)
 {
 #ifdef CONFIG_SPL_BUILD
 #ifdef CONFIG_ROCKCHIP_DISABLE_FORCE_JTAG
-	static struct rk3588_sysgrf * const sys_grf = (void *)SYS_GRF_BASE;
+	static struct rk3588_sysgrf * const sys_grf = (void *)RK3588_SYS_GRF_BASE;
 #endif
 	int secure_reg;
 

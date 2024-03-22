@@ -1965,10 +1965,6 @@ static int rk3588_clk_probe(struct udevice *dev)
 	}
 #endif
 
-	priv->grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
-	if (IS_ERR(priv->grf))
-		return PTR_ERR(priv->grf);
-
 	rk3588_clk_init(priv);
 
 	/* Process 'assigned-{clocks/clock-parents/clock-rates}' properties */
@@ -1985,7 +1981,7 @@ static int rk3588_clk_ofdata_to_platdata(struct udevice *dev)
 {
 	struct rk3588_clk_priv *priv = dev_get_priv(dev);
 
-	priv->cru = dev_read_addr_ptr(dev);
+	priv->cru = (void *)RK3588_CRU_BASE;
 
 	return 0;
 }
