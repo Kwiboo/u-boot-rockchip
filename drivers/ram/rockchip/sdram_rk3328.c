@@ -29,9 +29,9 @@ struct dram_info {
 	struct rk3328_cru *cru;
 	struct msch_regs *msch;
 	struct rk3328_ddr_grf_regs *ddr_grf;
+	struct rk3328_grf_regs *grf;
 #endif
 	struct ram_info info;
-	struct rk3328_grf_regs *grf;
 };
 
 #ifdef CONFIG_TPL_BUILD
@@ -570,21 +570,28 @@ static int rk3328_dmc_of_to_plat(struct udevice *dev)
 
 #endif
 
+int rockchip_ram_get_info(struct ram_info *ram)
+{
+	struct rk3328_grf_regs * const grf = (void *)RK3328_GRF_BASE;
+
+	ram->base = CFG_SYS_SDRAM_BASE;
+	ram->size = rockchip_sdram_size((phys_addr_t)&grf->os_reg[2]);
+
+	return 0;
+}
+
 static int rk3328_dmc_probe(struct udevice *dev)
 {
 #ifdef CONFIG_TPL_BUILD
 	if (rk3328_dmc_init(dev))
 		return 0;
+
+	return 0;
 #else
 	struct dram_info *priv = dev_get_priv(dev);
 
-	priv->grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
-	debug("%s: grf=%p\n", __func__, priv->grf);
-	priv->info.base = CFG_SYS_SDRAM_BASE;
-	priv->info.size = rockchip_sdram_size(
-				(phys_addr_t)&priv->grf->os_reg[2]);
+	return rockchip_ram_get_info(&priv->info);
 #endif
-	return 0;
 }
 
 static int rk3328_dmc_get_info(struct udevice *dev, struct ram_info *info)

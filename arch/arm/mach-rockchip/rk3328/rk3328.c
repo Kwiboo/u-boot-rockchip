@@ -3,16 +3,14 @@
  * Copyright (c) 2016 Rockchip Electronics Co., Ltd
  */
 
-#include <common.h>
 #include <init.h>
 #include <asm/arch-rockchip/bootrom.h>
-#include <asm/arch-rockchip/hardware.h>
+#include <asm/arch-rockchip/cru_rk3328.h>
 #include <asm/arch-rockchip/grf_rk3328.h>
+#include <asm/arch-rockchip/hardware.h>
 #include <asm/arch-rockchip/uart.h>
 #include <asm/armv8/mmu.h>
 
-#define CRU_BASE		0xFF440000
-#define GRF_BASE		0xFF100000
 #define UART2_BASE		0xFF130000
 #define FW_DDR_CON_REG		0xFF7C0040
 #define EFUSE_NS_BASE		0xFF260000
@@ -95,7 +93,7 @@ int arch_cpu_init(void)
 
 void board_debug_uart_init(void)
 {
-	struct rk3328_grf_regs * const grf = (void *)GRF_BASE;
+	struct rk3328_grf_regs * const grf = (void *)RK3328_GRF_BASE;
 	struct rk_uart * const uart = (void *)UART2_BASE;
 	enum{
 		GPIO2A0_SEL_SHIFT       = 0,
@@ -114,7 +112,7 @@ void board_debug_uart_init(void)
 	};
 
 	/* uart_sel_clk default select 24MHz */
-	writel((3 << (8 + 16)) | (2 << 8), CRU_BASE + 0x148);
+	writel((3 << (8 + 16)) | (2 << 8), RK3328_CRU_BASE + 0x148);
 
 	/* init uart baud rate 1500000 */
 	writel(0x83, &uart->lcr);
