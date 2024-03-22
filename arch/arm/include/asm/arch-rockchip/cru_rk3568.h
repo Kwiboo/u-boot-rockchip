@@ -44,7 +44,6 @@ struct rk3568_pmuclk_priv {
 
 struct rk3568_clk_priv {
 	struct rk3568_cru *cru;
-	struct rk3568_grf *grf;
 	ulong ppll_hz;
 	ulong hpll_hz;
 	ulong gpll_hz;
@@ -67,6 +66,8 @@ struct rk3568_pll {
 	unsigned int reserved0[3];
 };
 
+#define RK3568_PMUCRU_BASE	0xfdd00000
+
 struct rk3568_pmucru {
 	struct rk3568_pll pll[2];/* Address Offset: 0x0000 */
 	unsigned int reserved0[16];/* Address Offset: 0x0040 */
@@ -81,6 +82,8 @@ struct rk3568_pmucru {
 
 check_member(rk3568_pmucru, mode_con00, 0x80);
 check_member(rk3568_pmucru, pmu_softrst_con[0], 0x200);
+
+#define RK3568_CRU_BASE		0xfdd20000
 
 struct rk3568_cru {
 	struct rk3568_pll pll[6];

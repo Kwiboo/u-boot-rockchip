@@ -11,8 +11,6 @@
 #include <asm/arch-rockchip/hardware.h>
 #include <dt-bindings/clock/rk3568-cru.h>
 
-#define PMUGRF_BASE			0xfdc20000
-#define GRF_BASE			0xfdc60000
 #define GRF_GPIO1B_DS_2			0x218
 #define GRF_GPIO1B_DS_3			0x21c
 #define GRF_GPIO1C_DS_0			0x220
@@ -90,8 +88,8 @@ struct mm_region *mem_map = rk3568_mem_map;
 
 void board_debug_uart_init(void)
 {
-	static struct rk3568_pmugrf * const pmugrf = (void *)PMUGRF_BASE;
-	static struct rk3568_grf * const grf = (void *)GRF_BASE;
+	static struct rk3568_pmugrf * const pmugrf = (void *)RK3568_PMUGRF_BASE;
+	static struct rk3568_grf * const grf = (void *)RK3568_GRF_BASE;
 
 	/* UART2 M0 */
 	rk_clrsetreg(&grf->iofunc_sel3, UART2_IO_SEL_MASK,
@@ -125,12 +123,12 @@ int arch_cpu_init(void)
 	rk_clrreg(SGRF_BASE + SGRF_SOC_CON4, (EMMC_HPROT_SECURE_CTRL << 11
 		| SDMMC0_HPROT_SECURE_CTRL << 4));
 	/* set the emmc driver strength to level 2 */
-	writel(0x3f3f0707, GRF_BASE + GRF_GPIO1B_DS_2);
-	writel(0x3f3f0707, GRF_BASE + GRF_GPIO1B_DS_3);
-	writel(0x3f3f0707, GRF_BASE + GRF_GPIO1C_DS_0);
-	writel(0x3f3f0707, GRF_BASE + GRF_GPIO1C_DS_1);
-	writel(0x3f3f0707, GRF_BASE + GRF_GPIO1C_DS_2);
-	writel(0x3f3f0707, GRF_BASE + GRF_GPIO1C_DS_3);
+	writel(0x3f3f0707, RK3568_GRF_BASE + GRF_GPIO1B_DS_2);
+	writel(0x3f3f0707, RK3568_GRF_BASE + GRF_GPIO1B_DS_3);
+	writel(0x3f3f0707, RK3568_GRF_BASE + GRF_GPIO1C_DS_0);
+	writel(0x3f3f0707, RK3568_GRF_BASE + GRF_GPIO1C_DS_1);
+	writel(0x3f3f0707, RK3568_GRF_BASE + GRF_GPIO1C_DS_2);
+	writel(0x3f3f0707, RK3568_GRF_BASE + GRF_GPIO1C_DS_3);
 #endif
 	return 0;
 }
