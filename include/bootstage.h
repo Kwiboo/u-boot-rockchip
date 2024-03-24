@@ -214,6 +214,9 @@ enum bootstage_id {
 	BOOTSTAGE_ID_ACCUM_FSP_S,
 	BOOTSTAGE_ID_ACCUM_MMAP_SPI,
 
+	BOOTSTAGE_ID_ACCUM_TMP1,
+	BOOTSTAGE_ID_ACCUM_TMP2,
+
 	/* a few spare for the user, from here */
 	BOOTSTAGE_ID_USER,
 	BOOTSTAGE_ID_ALLOC,

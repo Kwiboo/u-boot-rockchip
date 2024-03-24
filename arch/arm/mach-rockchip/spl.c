@@ -3,6 +3,7 @@
  * (C) Copyright 2019 Rockchip Electronics Co., Ltd
  */
 
+#include <bootstage.h>
 #include <cpu_func.h>
 #include <debug_uart.h>
 #include <dm.h>
@@ -11,6 +12,7 @@
 #include <init.h>
 #include <log.h>
 #include <ram.h>
+#include <time.h>
 #include <spl.h>
 #include <asm/arch-rockchip/bootrom.h>
 #include <asm/global_data.h>
@@ -116,13 +118,19 @@ __weak int arch_cpu_init(void)
 	return 0;
 }
 
+static ulong start_time;
+
 void board_init_f(ulong dummy)
 {
 	int ret;
 
+	start_time = get_timer(0);
+
 	board_early_init_f();
 
 	ret = spl_early_init();
+	ulong time = get_timer(start_time);
+	printf("spl_early_init: time=%lu ms\n", time);
 	if (ret) {
 		printf("spl_early_init() failed: %d\n", ret);
 		hang();
@@ -152,12 +160,18 @@ void board_init_f(ulong dummy)
 	}
 #endif
 	preloader_console_init();
+
+	time = get_timer(start_time);
+	printf("%s: time=%lu ms\n", __func__, time);
 }
 
 void spl_board_prepare_for_boot(void)
 {
 	if (!IS_ENABLED(CONFIG_ARM64) || CONFIG_IS_ENABLED(SYS_DCACHE_OFF))
 		return;
+
+	ulong time = get_timer(start_time);
+	printf("SPL: time=%lu ms\n", time);
 
 	cleanup_before_linux();
 }

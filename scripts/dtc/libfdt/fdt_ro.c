@@ -5,6 +5,8 @@
  */
 #include "libfdt_env.h"
 
+#include <stdio.h>
+
 #include <fdt.h>
 #include <libfdt.h>
 
@@ -642,6 +644,8 @@ int fdt_node_depth(const void *fdt, int nodeoffset)
 
 int fdt_parent_offset(const void *fdt, int nodeoffset)
 {
+	printf("fdt_parent_offset(nodeoffset=%d)\n", nodeoffset);
+
 	int nodedepth = fdt_node_depth(fdt, nodeoffset);
 
 	if (nodedepth < 0)

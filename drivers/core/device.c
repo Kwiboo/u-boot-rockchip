@@ -8,6 +8,7 @@
  * Pavel Herrmann <morpheus.ibis@gmail.com>
  */
 
+#include <bootstage.h>
 #include <common.h>
 #include <cpu_func.h>
 #include <event.h>
@@ -65,6 +66,9 @@ static int device_bind_common(struct udevice *parent, const struct driver *drv,
 	dev = calloc(1, sizeof(struct udevice));
 	if (!dev)
 		return -ENOMEM;
+
+	bootstage_start(BOOTSTAGE_ID_ACCUM_TMP1, "bind");
+	ulong time = get_timer(0);
 
 	INIT_LIST_HEAD(&dev->sibling_node);
 	INIT_LIST_HEAD(&dev->child_head);
@@ -188,6 +192,11 @@ static int device_bind_common(struct udevice *parent, const struct driver *drv,
 
 	dev_or_flags(dev, DM_FLAG_BOUND);
 
+	time = get_timer(time);
+	bootstage_accum(BOOTSTAGE_ID_ACCUM_TMP1);
+	if (time > 0)
+		printf("bind(%s): %lu ms\n", dev->name, time);
+
 	return 0;
 
 fail_uclass_post_bind:
@@ -233,6 +242,11 @@ fail_alloc1:
 	devres_release_all(dev);
 
 	free(dev);
+
+	//time = get_timer(time);
+	bootstage_accum(BOOTSTAGE_ID_ACCUM_TMP1);
+	//if (time > 0)
+	//	printf("bind(%s): ret=%d %lu ms\n", dev->name, ret, time);
 
 	return ret;
 }
@@ -496,6 +510,8 @@ int device_probe(struct udevice *dev)
 	drv = dev->driver;
 	assert(drv);
 
+	ulong time = get_timer(0);
+
 	ret = device_of_to_plat(dev);
 	if (ret)
 		goto fail;
@@ -515,6 +531,8 @@ int device_probe(struct udevice *dev)
 		if (dev_get_flags(dev) & DM_FLAG_ACTIVATED)
 			return 0;
 	}
+
+	bootstage_start(BOOTSTAGE_ID_ACCUM_TMP2, "probe");
 
 	dev_or_flags(dev, DM_FLAG_ACTIVATED);
 
@@ -601,6 +619,11 @@ int device_probe(struct udevice *dev)
 	if (ret)
 		goto fail_event;
 
+	time = get_timer(time);
+	bootstage_accum(BOOTSTAGE_ID_ACCUM_TMP2);
+	if (time > 0)
+		printf("probe(%s): %lu ms\n", dev->name, time);
+
 	return 0;
 fail_event:
 fail_uclass:
@@ -612,6 +635,11 @@ fail:
 	dev_bic_flags(dev, DM_FLAG_ACTIVATED);
 
 	device_free(dev);
+
+	//time = get_timer(time);
+	bootstage_accum(BOOTSTAGE_ID_ACCUM_TMP2);
+	//if (time > 0)
+	//	printf("probe(%s): ret=%d %lu ms\n", dev->name, ret, time);
 
 	return ret;
 }
