@@ -247,19 +247,14 @@ static uint32_t print_time_record(struct bootstage_record *rec, uint32_t prev)
 		printf("%11s", "");
 		print_grouped_ull(rec->time_us, BOOTSTAGE_DIGITS);
 	} else {
+		if (prev > rec->time_us)
+			prev = 0;
 		print_grouped_ull(rec->time_us, BOOTSTAGE_DIGITS);
 		print_grouped_ull(rec->time_us - prev, BOOTSTAGE_DIGITS);
 	}
 	printf("  %s\n", get_record_name(buf, sizeof(buf), rec));
 
 	return rec->time_us;
-}
-
-static int h_compare_record(const void *r1, const void *r2)
-{
-	const struct bootstage_record *rec1 = r1, *rec2 = r2;
-
-	return rec1->time_us > rec2->time_us ? 1 : -1;
 }
 
 #ifdef CONFIG_OF_LIBFDT
@@ -338,10 +333,7 @@ void bootstage_report(void)
 	       data->rec_count);
 	printf("%11s%11s  %s\n", "Mark", "Elapsed", "Stage");
 
-	prev = print_time_record(rec, 0);
-
-	/* Sort records by increasing time */
-	qsort(data->record, data->rec_count, sizeof(*rec), h_compare_record);
+	prev = print_time_record(rec, -1U);
 
 	for (i = 1, rec++; i < data->rec_count; i++, rec++) {
 		if (rec->id && !rec->start_us)
@@ -543,7 +535,8 @@ int bootstage_init(bool first)
 	memset(data, '\0', size);
 	if (first) {
 		data->next_id = BOOTSTAGE_ID_USER;
-		bootstage_add_record(BOOTSTAGE_ID_AWAKE, "reset", 0, 0);
+		bootstage_add_record(BOOTSTAGE_ID_AWAKE, "reset", 0,
+				     timer_get_boot_us());
 	}
 
 	return 0;
