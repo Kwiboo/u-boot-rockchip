@@ -823,6 +823,9 @@ static int initf_bootstage(void)
 
 static int initf_dm(void)
 {
+	if (IS_ENABLED(CONFIG_ARCH_ROCKCHIP))
+		return 0;
+
 #if defined(CONFIG_DM) && CONFIG_IS_ENABLED(SYS_MALLOC_F)
 	int ret;
 
@@ -894,7 +897,9 @@ static const init_fnc_t init_sequence_f[] = {
 #endif
 	env_init,		/* initialize environment */
 	init_baud_rate,		/* initialze baudrate settings */
+#if IS_ENABLED(CONFIG_SERIAL_PRESENT) && !IS_ENABLED(CONFIG_SPL_SERIAL_PRESENT)
 	serial_init,		/* serial communications setup */
+#endif
 	console_init_f,		/* stage 1 init of console */
 	display_options,	/* say that we are here */
 	display_text_info,	/* show debugging info if required */
