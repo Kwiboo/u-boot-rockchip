@@ -9,14 +9,12 @@
 };
 
 &fspim0_pins {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &sfc {
-	bootph-pre-ram;
-	u-boot,spl-sfc-no-dma;
-
 	flash@0 {
 		bootph-pre-ram;
+		bootph-some-ram;
 	};
 };
