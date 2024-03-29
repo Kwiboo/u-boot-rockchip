@@ -3,7 +3,7 @@
 #include "rk3588s-u-boot.dtsi"
 
 &fspim2_pins {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &sdhci {
@@ -12,14 +12,13 @@
 };
 
 &sfc {
-	bootph-pre-ram;
-	u-boot,spl-sfc-no-dma;
 	pinctrl-names = "default";
 	pinctrl-0 = <&fspim2_pins>;
 	status = "okay";
 
 	flash@0 {
 		bootph-pre-ram;
+		bootph-some-ram;
 		compatible = "jedec,spi-nor";
 		reg = <0>;
 		spi-max-frequency = <24000000>;

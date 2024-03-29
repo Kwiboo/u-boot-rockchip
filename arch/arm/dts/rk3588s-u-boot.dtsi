@@ -121,31 +121,35 @@
 };
 
 &cru {
-	bootph-pre-ram;
+	bootph-all;
 };
 
 &emmc_bus8 {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &emmc_clk {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &emmc_cmd {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &emmc_data_strobe {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &emmc_rstnout {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &ioc {
-	bootph-pre-ram;
+	bootph-all;
+};
+
+&pcfg_pull_down {
+	bootph-all;
 };
 
 &pcfg_pull_none {
@@ -157,6 +161,10 @@
 };
 
 &pcfg_pull_up_drv_level_2 {
+	bootph-pre-ram;
+};
+
+&php_grf {
 	bootph-all;
 };
 
@@ -189,19 +197,23 @@
 };
 
 &sdmmc_bus4 {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &sdmmc_clk {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &sdmmc_cmd {
-	bootph-all;
+	bootph-pre-ram;
 };
 
 &sdmmc_det {
-	bootph-all;
+	bootph-pre-ram;
+};
+
+&sfc {
+	u-boot,spl-sfc-no-dma;
 };
 
 &sys_grf {
@@ -209,7 +221,7 @@
 };
 
 &uart2 {
-	bootph-pre-ram;
+	bootph-all;
 	clock-frequency = <24000000>;
 };
 
