@@ -32,18 +32,30 @@
 	vin-supply = <&vcc_vbus_typec0>;
 };
 
+&gpio4 {
+	bootph-pre-ram;
+};
+
 &spi1 {
-	spi_flash: flash@0 {
-		bootph-all;
+	flash@0 {
+		bootph-pre-ram;
+		bootph-some-ram;
 	};
 };
 
-&vdd_log {
-	regulator-min-microvolt = <430000>;
-	regulator-init-microvolt = <950000>;
+&vcc3v0_sd {
+	bootph-pre-ram;
+};
+
+&vcc3v0_sd_en {
+	bootph-pre-ram;
 };
 
 &vcc5v0_host {
+	regulator-always-on;
+};
+
+&vcc_sdio {
 	regulator-always-on;
 };
 
@@ -51,6 +63,7 @@
 	regulator-always-on;
 };
 
-&vcc_sdio {
-	regulator-always-on;
+&vdd_log {
+	regulator-min-microvolt = <430000>;
+	regulator-init-microvolt = <950000>;
 };
