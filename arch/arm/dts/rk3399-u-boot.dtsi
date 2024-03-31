@@ -94,10 +94,19 @@
 };
 
 &emmc_phy {
-	bootph-all;
+	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &grf {
+	bootph-all;
+};
+
+&pcfg_pull_none {
+	bootph-all;
+};
+
+&pcfg_pull_up {
 	bootph-all;
 };
 
@@ -109,47 +118,81 @@
 	bootph-all;
 };
 
-&pmugrf {
-	bootph-all;
-};
-
-&pmu {
-	bootph-all;
-};
-
 &pmucru {
 	bootph-all;
 };
 
-&sdhci {
-	max-frequency = <200000000>;
+&pmugrf {
 	bootph-all;
-	u-boot,spl-fifo-mode;
 };
 
-&sdmmc {
-	bootph-all;
+&sdhci {
+	bootph-pre-ram;
+	bootph-some-ram;
+	max-frequency = <200000000>;
 
 	/* mmc to sram can't do dma, prevent aborts transferring TF-A parts */
 	u-boot,spl-fifo-mode;
 };
 
-&spi1 {
-	bootph-all;
+&sdmmc {
+	bootph-pre-ram;
+	bootph-some-ram;
+
+	/* mmc to sram can't do dma, prevent aborts transferring TF-A parts */
+	u-boot,spl-fifo-mode;
 };
 
-&uart0 {
-	bootph-all;
+&sdmmc_bus4 {
+	bootph-pre-ram;
+};
+
+&sdmmc_cd {
+	bootph-pre-ram;
+};
+
+&sdmmc_clk {
+	bootph-pre-ram;
+};
+
+&sdmmc_cmd {
+	bootph-pre-ram;
+};
+
+&spi1 {
+	bootph-pre-ram;
+	bootph-some-ram;
+};
+
+&spi1_clk {
+	bootph-pre-ram;
+};
+
+&spi1_cs0 {
+	bootph-pre-ram;
+};
+
+&spi1_rx {
+	bootph-pre-ram;
+};
+
+&spi1_tx {
+	bootph-pre-ram;
 };
 
 &uart2 {
 	bootph-all;
+	clock-frequency = <24000000>;
+};
+
+&uart2c_xfer {
+	bootph-all;
 };
 
 &vopb {
-	bootph-all;
+	bootph-some-ram;
 };
 
 &vopl {
-	bootph-all;
+	bootph-some-ram;
 };
