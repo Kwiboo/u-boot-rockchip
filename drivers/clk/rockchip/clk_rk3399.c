@@ -972,6 +972,7 @@ static ulong rk3399_clk_get_rate(struct clk *clk)
 	case ACLK_GIC_PRE:
 	case PCLK_DDR:
 	case ACLK_VDU:
+	case SCLK_PCIEPHY_REF:
 		break;
 	case PCLK_ALIVE:
 	case PCLK_WDT:
@@ -1063,6 +1064,7 @@ static ulong rk3399_clk_set_rate(struct clk *clk, ulong rate)
 	case ACLK_GIC_PRE:
 	case PCLK_DDR:
 	case ACLK_VDU:
+	case SCLK_PCIEPHY_REF:
 		return 0;
 	default:
 		log_debug("Unknown clock %lu\n", clk->id);
@@ -1114,6 +1116,8 @@ static int __maybe_unused rk3399_clk_set_parent(struct clk *clk,
 	switch (clk->id) {
 	case SCLK_RMII_SRC:
 		return rk3399_gmac_set_parent(clk, parent);
+	case SCLK_PCIEPHY_REF:
+		return 0;
 	}
 
 	debug("%s: unsupported clk %ld\n", __func__, clk->id);
