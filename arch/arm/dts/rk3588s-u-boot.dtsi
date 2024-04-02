@@ -15,8 +15,8 @@
 	};
 
 	dmc {
-		bootph-all;
 		compatible = "rockchip,rk3588-dmc";
+		bootph-all;
 	};
 
 	usb_host0_xhci: usb@fc000000 {

@@ -17,8 +17,8 @@
 	};
 
 	dmc: dmc {
-		bootph-all;
 		compatible = "rockchip,rk3568-dmc";
+		bootph-all;
 	};
 
 	rng: rng@fe388000 {

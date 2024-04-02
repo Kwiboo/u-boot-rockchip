@@ -17,15 +17,15 @@
 	};
 
 	cic: syscon@ff620000 {
-		bootph-all;
 		compatible = "rockchip,rk3399-cic", "syscon";
 		reg = <0x0 0xff620000 0x0 0x100>;
+		bootph-all;
 	};
 
 	pmusgrf: syscon@ff330000 {
-		bootph-all;
 		compatible = "rockchip,rk3399-pmusgrf", "syscon";
 		reg = <0x0 0xff330000 0x0 0xe3d4>;
+		bootph-all;
 	};
 };
 
@@ -59,7 +59,6 @@
 };
 
 &dmc {
-	bootph-all;
 	reg = <0x0 0xffa80000 0x0 0x0800
 	       0x0 0xffa80800 0x0 0x1800
 	       0x0 0xffa82000 0x0 0x2000
@@ -68,6 +67,7 @@
 	       0x0 0xffa88800 0x0 0x1800
 	       0x0 0xffa8a000 0x0 0x2000
 	       0x0 0xffa8c000 0x0 0x1000>;
+	bootph-all;
 	status = "okay";
 };
 

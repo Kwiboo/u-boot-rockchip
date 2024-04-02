@@ -16,9 +16,9 @@
 	};
 
 	dmc: dmc@ff010000 {
-		bootph-all;
 		compatible = "rockchip,rk3308-dmc";
 		reg = <0x0 0xff010000 0x0 0x10000>;
+		bootph-all;
 	};
 
 	otp: nvmem@ff210000 {
