@@ -123,18 +123,22 @@
 
 &sdmmc_bus4 {
 	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &sdmmc_cd {
 	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &sdmmc_clk {
 	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &sdmmc_cmd {
 	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &spi1 {
@@ -148,14 +152,17 @@
 
 &spi1_cs0 {
 	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &spi1_rx {
 	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &spi1_tx {
 	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &uart2 {
