@@ -25,15 +25,18 @@
 };
 
 &uart0_cts {
-	bootph-all;
+	bootph-pre-sram;
+	bootph-pre-ram;
 };
 
 &uart0_rts {
-	bootph-all;
+	bootph-pre-sram;
+	bootph-pre-ram;
 };
 
 &uart0_xfer {
-	bootph-all;
+	bootph-pre-sram;
+	bootph-pre-ram;
 };
 
 &vcc5v0_otg {
