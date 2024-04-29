@@ -17,5 +17,6 @@
 };
 
 &uart9m0_xfer {
-	bootph-all;
+	bootph-pre-sram;
+	bootph-pre-ram;
 };
