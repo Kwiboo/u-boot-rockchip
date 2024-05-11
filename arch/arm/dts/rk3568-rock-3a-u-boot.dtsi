@@ -6,18 +6,6 @@
 
 #include "rk356x-u-boot.dtsi"
 
-&pcie3x2 {
-	pinctrl-0 = <&pcie3x2_reset_h>;
-};
-
-&pinctrl {
-	pcie {
-		pcie3x2_reset_h: pcie3x2-reset-h {
-			rockchip,pins = <2 RK_PD6 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-};
-
 &sdhci {
 	cap-mmc-highspeed;
 	mmc-hs200-1_8v;
