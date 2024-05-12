@@ -24,6 +24,5 @@
 };
 
 &gpio6 {
-	status = "disabled";
+	gpio-ranges = <&pinctrl 0 160 16>;
 };
-
