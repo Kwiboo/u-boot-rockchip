@@ -4,6 +4,8 @@
  * Copyright (c) 2022 Edgeble AI Technologies Pvt. Ltd.
  */
 
+#include <dm.h>
+#include <misc.h>
 #include <spl.h>
 #include <asm/armv8/mmu.h>
 #include <asm/arch-rockchip/bootrom.h>
@@ -31,6 +33,13 @@
 #define BUS_IOC_GPIO3A_IOMUX_SEL_L	0x60
 
 #define SYS_GRF_FORCE_JTAG		BIT(14)
+
+#define CPU_CODE_OFFSET			0x2
+#define CPU_VERSION_OFFSET		0x1c
+#define IP_STATE_OFFSET			0x1d
+#define BAD_CPU_CLUSTER0		GENMASK(3, 0)
+#define BAD_CPU_CLUSTER1		GENMASK(5, 4)
+#define BAD_CPU_CLUSTER2		GENMASK(7, 6)
 
 /**
  * Boot-device identifiers used by the BROM on RK3588 when device is booted
@@ -178,3 +187,201 @@ int arch_cpu_init(void)
 	return 0;
 }
 #endif
+
+#ifdef CONFIG_OF_SYSTEM_SETUP
+static void fdt_path_del_node(void *fdt, const char *path)
+{
+	int node;
+
+	node = fdt_path_offset(fdt, path);
+	if (node >= 0)
+		fdt_del_node(fdt, node);
+}
+
+static void fdt_path_set_name(void *fdt, const char *path, const char *name)
+{
+	int node;
+
+	node = fdt_path_offset(fdt, path);
+	if (node >= 0)
+		fdt_set_name(fdt, node, name);
+}
+
+static bool in_u32_array(u32 match, u32 *array, int len)
+{
+	int i;
+
+	for (i = 0; i < len; ++i) {
+		if (array[i] == match)
+			return true;
+	}
+
+	return false;
+}
+
+static void fdt_fixup_phandle_prop(void *fdt, int node, const char *name,u32 *array, int array_len)
+{
+	int len, new_len, i;
+	const u32 *values;
+	u32 new_values[8];
+
+	values = fdt_getprop(fdt, node, name, &len);
+	if (!values || len > sizeof(new_values))
+		return;
+
+	for (i = 0, new_len = 0; i < (len / sizeof(u32)); ++i) {
+		u32 phandle = fdt32_to_cpu(values[i]);
+		if (in_u32_array(phandle, array, array_len))
+			continue;
+
+		new_values[new_len++] = cpu_to_fdt32(phandle);
+	}
+
+	if (new_len != (len / sizeof(u32)))
+		fdt_setprop(fdt, node, name, new_values, new_len * sizeof(u32));
+}
+
+int ft_system_setup(void *blob, struct bd_info *bd)
+{
+	const char *cpu_node_names[] = {
+		"cpu@0", "cpu@100", "cpu@200", "cpu@300",
+		"cpu@400", "cpu@500", "cpu@600", "cpu@700",
+	};
+	struct udevice *dev;
+	u8 cpu_code[2], ip_state[3];
+	u32 cpu_phandle[8], cpu_phandles = 0;
+	int parent, node, i, ret;
+
+	ret = uclass_get_device_by_driver(UCLASS_MISC,
+					  DM_DRIVER_GET(rockchip_otp), &dev);
+	if (ret)
+		return ret;
+
+	ret = misc_read(dev, CPU_CODE_OFFSET, &cpu_code, sizeof(cpu_code));
+	if (ret < 0)
+		return ret;
+
+	debug("cpu-code: %02x%02x\n", cpu_code[0], cpu_code[1]);
+
+	if (!(cpu_code[0] == 0x35 && cpu_code[1] == 0x82))
+		return 0;
+
+	ret = misc_read(dev, IP_STATE_OFFSET, &ip_state, sizeof(ip_state));
+	if (ret < 0)
+		return ret;
+
+	debug("ip-state: %02x %02x %02x\n", ip_state[0], ip_state[1], ip_state[2]);
+
+	if (ip_state[0] & BAD_CPU_CLUSTER1) {
+		ip_state[0] |= BAD_CPU_CLUSTER1;
+		fdt_path_del_node(blob, "/cpus/cpu-map/cluster1");
+	}
+
+	if (ip_state[0] & BAD_CPU_CLUSTER2) {
+		ip_state[0] |= BAD_CPU_CLUSTER2;
+		fdt_path_del_node(blob, "/cpus/cpu-map/cluster2");
+	} else if (ip_state[0] & BAD_CPU_CLUSTER1) {
+		fdt_path_set_name(blob, "/cpus/cpu-map/cluster2", "cluster1");
+	}
+
+	parent = fdt_path_offset(blob, "/cpus");
+	if (parent < 0)
+		return 0;
+
+	for (i = 0; i < 8; i++) {
+		if (!(ip_state[0] & BIT(i)))
+			continue;
+
+		node = fdt_subnode_offset(blob, parent, cpu_node_names[i]);
+		if (node >= 0) {
+			cpu_phandle[cpu_phandles++] = fdt_get_phandle(blob, node);
+			fdt_del_node(blob, node);
+		}
+	}
+
+	if (!cpu_phandles)
+		return 0;
+
+	parent = fdt_path_offset(blob, "/interrupt-controller@fe600000/ppi-partitions");
+	if (parent >= 0) {
+		fdt_for_each_subnode(node, blob, parent) {
+			fdt_fixup_phandle_prop(blob, node, "affinity", cpu_phandle, cpu_phandles);
+		}
+	}
+
+	return 0;
+}
+#endif
+
+int rockchip_early_misc_init_r(void)
+{
+	struct udevice *dev;
+	u8 cpu_code[2], ip_state[3], package, specification;
+	int ret, i;
+
+	ret = uclass_get_device_by_driver(UCLASS_MISC,
+					  DM_DRIVER_GET(rockchip_otp), &dev);
+	if (ret) {
+		debug("%s: could not find otp device, ret=%d\n", __func__, ret);
+		return 0;
+	}
+
+	ret = misc_read(dev, CPU_CODE_OFFSET, &cpu_code, 2);
+	if (ret < 0) {
+		debug("%s: could not read cpu-code, ret=%d\n", __func__, ret);
+		return 0;
+	}
+
+	debug("cpu-code: %02x%02x\n", cpu_code[0], cpu_code[1]);
+
+	ret = misc_read(dev, CPU_VERSION_OFFSET, &cpu_code, 2);
+	if (ret < 0) {
+		debug("%s: could not read cpu-version, ret=%d\n", __func__, ret);
+		return 0;
+	}
+	debug("cpu-version: %02x %02x\n", cpu_code[0], cpu_code[1]);
+
+	ret = misc_read(dev, 0x05, &cpu_code, 2);
+	if (ret < 0) {
+		debug("%s: could not read cpu-version, ret=%d\n", __func__, ret);
+		return 0;
+	}
+	debug("data: %02x %02x\n", cpu_code[0], cpu_code[1]);
+
+	package = ((cpu_code[0] & GENMASK(1, 0)) << 3) | ((cpu_code[1] & GENMASK(7, 5)) >> 5);
+	specification = cpu_code[1] & GENMASK(4, 0);
+
+	debug("package: %02x\n", package);
+	debug("specification: %02x\n", specification);
+
+	ret = misc_read(dev, IP_STATE_OFFSET, &ip_state, sizeof(ip_state));
+	if (ret < 0) {
+		debug("%s: could not read ip state, ret=%d\n", __func__, ret);
+		return ret;
+	}
+
+	debug("ip-state: %02x %02x %02x\n", ip_state[0], ip_state[1], ip_state[2]);
+
+	/* cpu: ip_state[0]: bit0~7 */
+	for (i = 0; i < 8; ++i) {
+		if (ip_state[0] & BIT(i))
+			debug("bad-state: cpu core %d\n", i);
+	}
+	/* gpu: ip_state[1]: bit1~4 */
+	for (i = 0; i < 4; ++i) {
+		if (ip_state[1] & BIT(i + 1))
+			debug("bad-state: gpu core %d\n", i);
+	}
+	/* rkvdec: ip_state[1]: bit6,7 */
+	for (i = 0; i < 2; ++i) {
+		if (ip_state[1] & BIT(i + 6))
+			debug("bad-state: rkvdec core %d\n", i);
+	}
+	/* rkvenc: ip_state[2]: bit0,2 */
+	for (i = 0; i < 2; ++i) {
+		if (ip_state[2] & BIT(i * 2))
+			debug("bad-state: rkvenc core %d\n", i);
+	}
+
+	return 0;
+}
