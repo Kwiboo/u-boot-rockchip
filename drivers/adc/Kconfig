@@ -11,6 +11,9 @@ config ADC
 	  - support supply's phandle with auto-enable
 	  - supply polarity setting in fdt
 
+config SPL_ADC
+	bool "Enable ADC drivers using Driver Model in SPL"
+
 config ADC_EXYNOS
 	bool "Enable Exynos 54xx ADC driver"
 	depends on ADC
