@@ -626,6 +626,27 @@ source "arch/arm/mach-rockchip/rk3588/Kconfig"
 source "arch/arm/mach-rockchip/rv1108/Kconfig"
 source "arch/arm/mach-rockchip/rv1126/Kconfig"
 
+config SYS_BOARD
+	string "Board name"
+	help
+	  Allows to specify the board name.
+	  Based on this option board/<CONFIG_SYS_VENDOR>/<CONFIG_SYS_BOARD>
+	  will be used as the custom board directory.
+
+config SYS_VENDOR
+	string "Board vendor name"
+	help
+	  Allows to specify the board vendor name.
+	  Based on this option board/<CONFIG_SYS_VENDOR>/<CONFIG_SYS_BOARD>
+	  will be used as the custom board directory.
+
+config SYS_CONFIG_NAME
+	string "Board configuration name"
+	help
+	  This option contains information about board configuration name.
+	  Based on this option include/configs/<CONFIG_SYS_CONFIG_NAME>.h header
+	  will be used for board configuration.
+
 if ROCKCHIP_COMMON_STACK_ADDR && SPL_SHARES_INIT_SP_ADDR
 
 config CUSTOM_SYS_INIT_SP_ADDR
