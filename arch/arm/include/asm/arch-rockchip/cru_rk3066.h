@@ -30,13 +30,15 @@
 #define PERI_HCLK_HZ	148500000
 #define PERI_PCLK_HZ	74250000
 
-/* Private data for the clock driver - used by rockchip_get_cru() */
+/* Private data for the clock driver */
 struct rk3066_clk_priv {
 	struct rk3066_grf *grf;
 	struct rk3066_cru *cru;
 	ulong rate;
 	bool has_bwadj;
 };
+
+#define RK3066_CRU_BASE		((struct rk3066_cru *)0x20000000)
 
 struct rk3066_cru {
 	struct rk3066_pll {

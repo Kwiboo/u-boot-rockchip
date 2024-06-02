@@ -7,8 +7,6 @@
 #include <asm/arch-rockchip/grf_rk3066.h>
 #include <asm/arch-rockchip/hardware.h>
 
-#define GRF_BASE	0x20008000
-
 const char * const boot_devices[BROM_LAST_BOOTSOURCE + 1] = {
 	[BROM_BOOTSOURCE_EMMC] = "/mmc@1021c000",
 	[BROM_BOOTSOURCE_SD] = "/mmc@10214000",
@@ -16,7 +14,7 @@ const char * const boot_devices[BROM_LAST_BOOTSOURCE + 1] = {
 
 void board_debug_uart_init(void)
 {
-	struct rk3066_grf * const grf = (void *)GRF_BASE;
+	static struct rk3066_grf * const grf = RK3066_GRF_BASE;
 
 	/* Enable early UART on the RK3066 */
 	rk_clrsetreg(&grf->gpio1b_iomux,
@@ -31,7 +29,7 @@ void spl_board_init(void)
 		return;
 
 	if (IS_ENABLED(CONFIG_SPL_DM_MMC)) {
-		struct rk3066_grf * const grf = (void *)GRF_BASE;
+		static struct rk3066_grf * const grf = RK3066_GRF_BASE;
 
 		rk_clrsetreg(&grf->gpio3b_iomux,
 			     GPIO3B0_MASK | GPIO3B1_MASK | GPIO3B2_MASK |

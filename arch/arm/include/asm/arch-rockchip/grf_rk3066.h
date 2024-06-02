@@ -18,6 +18,8 @@ struct rk3066_grf_gpio_lh {
 	u32 h;
 };
 
+#define RK3066_GRF_BASE		((struct rk3066_grf * const)0x20008000)
+
 struct rk3066_grf {
 	struct rk3066_grf_gpio_lh gpio_dir[7];
 	struct rk3066_grf_gpio_lh gpio_do[7];
@@ -207,4 +209,5 @@ enum {
 
 	REG(ATO_AE, 0, 0),
 };
+
 #endif
