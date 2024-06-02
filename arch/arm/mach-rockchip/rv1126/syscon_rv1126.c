@@ -30,8 +30,8 @@ static int rv1126_syscon_bind_of_plat(struct udevice *dev)
 	return 0;
 }
 
-U_BOOT_DRIVER(rockchip_rv1126_pmu) = {
-	.name = "rockchip_rv1126_pmu",
+U_BOOT_DRIVER(rockchip_rv1126_grf) = {
+	.name = "rockchip_rv1126_grf",
 	.id = UCLASS_SYSCON,
 	.of_match = rv1126_syscon_ids,
 	.bind = rv1126_syscon_bind_of_plat,

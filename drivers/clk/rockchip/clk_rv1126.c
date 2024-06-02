@@ -9,7 +9,6 @@
 #include <clk-uclass.h>
 #include <dm.h>
 #include <errno.h>
-#include <syscon.h>
 #include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/cru_rv1126.h>
 #include <asm/arch-rockchip/grf_rv1126.h>
@@ -490,7 +489,7 @@ static int rv1126_pmuclk_of_to_plat(struct udevice *dev)
 {
 	struct rv1126_pmuclk_priv *priv = dev_get_priv(dev);
 
-	priv->pmucru = dev_read_addr_ptr(dev);
+	priv->pmucru = RV1126_PMUCRU_BASE;
 
 	return 0;
 }
@@ -1816,9 +1815,7 @@ static int rv1126_clk_probe(struct udevice *dev)
 	struct rv1126_clk_priv *priv = dev_get_priv(dev);
 	int ret;
 
-	priv->grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
-	if (IS_ERR(priv->grf))
-		return PTR_ERR(priv->grf);
+	priv->grf = RV1126_GRF_BASE;
 
 	rv1126_clk_init(priv);
 
@@ -1836,7 +1833,7 @@ static int rv1126_clk_of_to_plat(struct udevice *dev)
 {
 	struct rv1126_clk_priv *priv = dev_get_priv(dev);
 
-	priv->cru = dev_read_addr_ptr(dev);
+	priv->cru = RV1126_CRU_BASE;
 
 	return 0;
 }
