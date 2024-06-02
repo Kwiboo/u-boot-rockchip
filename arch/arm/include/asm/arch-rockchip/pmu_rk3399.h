@@ -7,6 +7,8 @@
 #ifndef __SOC_ROCKCHIP_RK3399_PMU_H__
 #define __SOC_ROCKCHIP_RK3399_PMU_H__
 
+#define RK3399_PMU_BASE		((struct rk3399_pmu_regs *)0xff310000)
+
 struct rk3399_pmu_regs {
 	u32 pmu_wakeup_cfg[5];
 	u32 pmu_pwrdn_con;
