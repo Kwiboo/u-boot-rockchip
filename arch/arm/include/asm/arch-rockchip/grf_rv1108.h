@@ -5,6 +5,8 @@
 #ifndef _ASM_ARCH_GRF_RV1108_H
 #define _ASM_ARCH_GRF_RV1108_H
 
+#define RV1108_GRF_BASE		((struct rv1108_grf *)0x10300000)
+
 struct rv1108_grf {
 	u32 reserved[4];
 	u32 gpio1a_iomux;
@@ -108,4 +110,5 @@ struct rv1108_grf {
 };
 
 check_member(rv1108_grf, chip_id, 0x0c00);
+
 #endif

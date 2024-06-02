@@ -24,6 +24,8 @@ struct rv1108_clk_priv {
 	ulong rate;
 };
 
+#define RV1108_CRU_BASE		((struct rv1108_cru *)0x20200000)
+
 struct rv1108_cru {
 	struct rv1108_pll {
 		unsigned int con0;
@@ -257,4 +259,5 @@ enum {
 	DDRUPCTL_NSRSTN_DIS		= 0,
 	DDRUPCTL_NSRSTN_REQ_MASK	= 1 << DDRUPCTL_NSRSTN_REQ_SHIFT,
 };
+
 #endif
