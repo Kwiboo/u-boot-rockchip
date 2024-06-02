@@ -41,7 +41,7 @@ struct rk3308_clk_info {
 	char *name;
 };
 
-/* Private data for the clock driver - used by rockchip_get_cru() */
+/* Private data for the clock driver */
 struct rk3308_clk_priv {
 	struct rk3308_cru *cru;
 	ulong armclk_hz;
