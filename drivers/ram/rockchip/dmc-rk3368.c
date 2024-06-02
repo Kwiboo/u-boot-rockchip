@@ -913,7 +913,6 @@ static int rk3368_dmc_probe(struct udevice *dev)
 	struct rk3368_sdram_params *plat = dev_get_plat(dev);
 	struct rk3368_ddr_pctl *pctl;
 	struct rk3368_ddrphy *ddrphy;
-	struct rk3368_cru *cru;
 	struct rk3368_grf *grf;
 	struct rk3368_msch *msch;
 	int ret;
@@ -927,14 +926,13 @@ static int rk3368_dmc_probe(struct udevice *dev)
 		return ret;
 #endif
 
-	priv->pmugrf = syscon_get_first_range(ROCKCHIP_SYSCON_PMUGRF);
-	debug("%s: pmugrf=%p\n", __func__, priv->pmugrf);
+	priv->pmugrf = RK3368_PMUGRF_BASE;
 
 #ifdef CONFIG_TPL_BUILD
 	pctl = (struct rk3368_ddr_pctl *)plat->of_plat.reg[0];
 	ddrphy = (struct rk3368_ddrphy *)plat->of_plat.reg[2];
 	msch = syscon_get_first_range(ROCKCHIP_SYSCON_MSCH);
-	grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
+	grf = RK3368_GRF_BASE;
 
 	priv->pctl = pctl;
 	priv->phy = ddrphy;
@@ -949,10 +947,7 @@ static int rk3368_dmc_probe(struct udevice *dev)
 	if (ret)
 		return ret;
 
-	cru = rockchip_get_cru();
-	priv->cru = cru;
-	if (IS_ERR(priv->cru))
-		return PTR_ERR(priv->cru);
+	priv->cru = RK3368_CRU_BASE;
 
 	ret = setup_sdram(dev);
 	if (ret)

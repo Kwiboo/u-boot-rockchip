@@ -5,7 +5,6 @@
  */
 
 #include <init.h>
-#include <syscon.h>
 #include <asm/armv8/mmu.h>
 #include <asm/arch-rockchip/bootrom.h>
 #include <asm/arch-rockchip/clock.h>
@@ -61,8 +60,8 @@ const char * const boot_devices[BROM_LAST_BOOTSOURCE + 1] = {
 #ifdef CONFIG_ARCH_EARLY_INIT_R
 static int mcu_init(void)
 {
-	struct rk3368_grf *grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
-	struct rk3368_cru *cru = rockchip_get_cru();
+	static struct rk3368_grf * const grf = RK3368_GRF_BASE;
+	static struct rk3368_cru * const cru = RK3368_CRU_BASE;
 
 	rk_clrsetreg(&grf->soc_con14, MCU_SRAM_BASE_BIT31_BIT28_MASK,
 		     MCU_SRAM_BASE_BIT31_BIT28 << MCU_SRAM_BASE_BIT31_BIT28_SHIFT);
@@ -101,18 +100,17 @@ int arch_early_init_r(void)
  * here and rely on the ATF installing the final (secure) policy
  * later.
  */
+#define RK3368_SGRF_BASE	0xff740000
 static inline uintptr_t sgrf_soc_con_addr(unsigned int no)
 {
-	const uintptr_t SGRF_BASE =
-		(uintptr_t)syscon_get_first_range(ROCKCHIP_SYSCON_SGRF);
+	const uintptr_t SGRF_BASE = (uintptr_t)RK3368_SGRF_BASE;
 
 	return SGRF_BASE + sizeof(u32) * no;
 }
 
 static inline uintptr_t sgrf_busdmac_addr(unsigned int no)
 {
-	const uintptr_t SGRF_BASE =
-		(uintptr_t)syscon_get_first_range(ROCKCHIP_SYSCON_SGRF);
+	const uintptr_t SGRF_BASE = (uintptr_t)RK3368_SGRF_BASE;
 	const uintptr_t SGRF_BUSDMAC_OFFSET = 0x100;
 	const uintptr_t SGRF_BUSDMAC_BASE = SGRF_BASE + SGRF_BUSDMAC_OFFSET;
 
@@ -121,8 +119,7 @@ static inline uintptr_t sgrf_busdmac_addr(unsigned int no)
 
 static void sgrf_init(void)
 {
-	struct rk3368_cru * const cru =
-		(struct rk3368_cru * const)rockchip_get_cru();
+	static struct rk3368_cru * const cru = RK3368_CRU_BASE;
 	const u16 SGRF_SOC_CON_SEC = GENMASK(15, 0);
 	const u16 SGRF_BUSDMAC_CON0_SEC = BIT(2);
 	const u16 SGRF_BUSDMAC_CON1_SEC = GENMASK(15, 12);
