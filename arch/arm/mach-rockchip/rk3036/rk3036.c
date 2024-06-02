@@ -14,8 +14,7 @@ DECLARE_GLOBAL_DATA_PTR;
 #ifdef CONFIG_DEBUG_UART_BOARD_INIT
 void board_debug_uart_init(void)
 {
-#define GRF_BASE	0x20008000
-	struct rk3036_grf * const grf = (void *)GRF_BASE;
+	static struct rk3036_grf * const grf = RK3036_GRF_BASE;
 	enum {
 		GPIO1C3_SHIFT		= 6,
 		GPIO1C3_MASK		= 3 << GPIO1C3_SHIFT,

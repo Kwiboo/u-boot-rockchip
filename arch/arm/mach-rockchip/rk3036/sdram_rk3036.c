@@ -16,8 +16,6 @@
  * we can not fit the code to access the device tree in SPL
  * (due to 4K SRAM size limits), so these are hard-coded
  */
-#define CRU_BASE	0x20000000
-#define GRF_BASE	0x20008000
 #define DDR_PHY_BASE	0x2000a000
 #define DDR_PCTL_BASE	0x20004000
 #define CPU_AXI_BUS_BASE	0x10128000
@@ -719,7 +717,7 @@ static void sdram_all_config(struct rk3036_sdram_priv *priv)
 size_t sdram_size(void)
 {
 	u32 size, os_reg, cs0_row, cs1_row, col, bank, rank;
-	struct rk3036_grf *grf = (void *)GRF_BASE;
+	static struct rk3036_grf * const grf = RK3036_GRF_BASE;
 
 	os_reg = readl(&grf->os_reg[1]);
 
@@ -742,8 +740,8 @@ void sdram_init(void)
 {
 	struct rk3036_sdram_priv sdram_priv;
 
-	sdram_priv.cru = (void *)CRU_BASE;
-	sdram_priv.grf = (void *)GRF_BASE;
+	sdram_priv.cru = RK3036_CRU_BASE;
+	sdram_priv.grf = RK3036_GRF_BASE;
 	sdram_priv.phy = (void *)DDR_PHY_BASE;
 	sdram_priv.pctl = (void *)DDR_PCTL_BASE;
 	sdram_priv.axi_bus = (void *)CPU_AXI_BUS_BASE;
