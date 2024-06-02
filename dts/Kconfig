@@ -385,7 +385,6 @@ config SPL_MULTI_DTB_FIT_USER_DEF_ADDR
 
 config OF_TAG_MIGRATE
 	bool "Ease migration from old device trees with u-boot,dm- tags"
-	default y
 	help
 	  U-Boot moved over to use new tags to mark device tree nodes which need
 	  to be processed in SPL, before relocation, etc. Enable this option to
