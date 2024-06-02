@@ -17,8 +17,6 @@
 #include <linux/err.h>
 #include <linux/printk.h>
 
-#define GRF_BASE	0x20008000
-
 const char * const boot_devices[BROM_LAST_BOOTSOURCE + 1] = {
 	[BROM_BOOTSOURCE_EMMC] = "/mmc@1021c000",
 	[BROM_BOOTSOURCE_SD] = "/mmc@10214000",
@@ -28,7 +26,7 @@ const char * const boot_devices[BROM_LAST_BOOTSOURCE + 1] = {
 void board_debug_uart_init(void)
 {
 	/* Enable early UART on the RK3188 */
-	struct rk3188_grf * const grf = (void *)GRF_BASE;
+	static struct rk3188_grf * const grf = RK3188_GRF_BASE;
 	enum {
 		GPIO1B1_SHIFT		= 2,
 		GPIO1B1_MASK		= 3,
@@ -54,13 +52,8 @@ void board_debug_uart_init(void)
 #ifdef CONFIG_SPL_BUILD
 int arch_cpu_init(void)
 {
-	struct rk3188_grf *grf;
+	static struct rk3188_grf * const grf = RK3188_GRF_BASE;
 
-	grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
-	if (IS_ERR(grf)) {
-		pr_err("grf syscon returned %ld\n", PTR_ERR(grf));
-		return 0;
-	}
 #ifdef CONFIG_ROCKCHIP_USB_UART
 	rk_clrsetreg(&grf->uoc0_con[0],
 		     SIDDQ_MASK | UOC_DISABLE_MASK | COMMON_ON_N_MASK,
@@ -90,13 +83,7 @@ __weak int rk3188_board_late_init(void)
 
 int rk_board_late_init(void)
 {
-	struct rk3188_grf *grf;
-
-	grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
-	if (IS_ERR(grf)) {
-		pr_err("grf syscon returned %ld\n", PTR_ERR(grf));
-		return 0;
-	}
+	static struct rk3188_grf * const grf = RK3188_GRF_BASE;
 
 	/* enable noc remap to mimic legacy loaders */
 	rk_clrsetreg(&grf->soc_con0,

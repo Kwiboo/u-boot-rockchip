@@ -6,6 +6,8 @@
 #ifndef _ASM_ARCH_PMU_RK3188_H
 #define _ASM_ARCH_PMU_RK3188_H
 
+#define RK3188_PMU_BASE		((struct rk3188_pmu *)0x20004000)
+
 struct rk3188_pmu {
 	u32 wakeup_cfg[2];
 	u32 pwrdn_con;
