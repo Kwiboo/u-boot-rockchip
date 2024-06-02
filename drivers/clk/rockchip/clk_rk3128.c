@@ -8,7 +8,6 @@
 #include <errno.h>
 #include <log.h>
 #include <malloc.h>
-#include <syscon.h>
 #include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/cru_rk3128.h>
 #include <asm/arch-rockchip/hardware.h>
@@ -549,7 +548,7 @@ static int rk3128_clk_of_to_plat(struct udevice *dev)
 {
 	struct rk3128_clk_priv *priv = dev_get_priv(dev);
 
-	priv->cru = dev_read_addr_ptr(dev);
+	priv->cru = RK3128_CRU_BASE;
 
 	return 0;
 }

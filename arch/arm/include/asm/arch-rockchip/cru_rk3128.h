@@ -32,6 +32,8 @@ struct rk3128_clk_priv {
 	struct rk3128_cru *cru;
 };
 
+#define RK3128_CRU_BASE		((struct rk3128_cru *)0x20000000)
+
 struct rk3128_cru {
 	struct rk3128_pll {
 		unsigned int con0;
