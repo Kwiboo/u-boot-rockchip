@@ -9,7 +9,6 @@
 #include <errno.h>
 #include <log.h>
 #include <malloc.h>
-#include <syscon.h>
 #include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/cru_rk3328.h>
 #include <asm/arch-rockchip/hardware.h>
@@ -409,10 +408,8 @@ static ulong rk3328_i2c_set_clk(struct rk3328_cru *cru, ulong clk_id, uint hz)
 
 static ulong rk3328_gmac2io_set_clk(struct rk3328_cru *cru, ulong rate)
 {
-	struct rk3328_grf_regs *grf;
+	static struct rk3328_grf_regs * const grf = RK3328_GRF_BASE;
 	ulong ret;
-
-	grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
 
 	/*
 	 * The RGMII CLK can be derived either from an external "clkin"
@@ -794,11 +791,9 @@ static ulong rk3328_clk_set_rate(struct clk *clk, ulong rate)
 
 static int rk3328_gmac2io_set_parent(struct clk *clk, struct clk *parent)
 {
-	struct rk3328_grf_regs *grf;
+	static struct rk3328_grf_regs * const grf = RK3328_GRF_BASE;
 	const char *clock_output_name;
 	int ret;
-
-	grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
 
 	/*
 	 * If the requested parent is in the same clock-controller and the id
@@ -831,11 +826,9 @@ static int rk3328_gmac2io_set_parent(struct clk *clk, struct clk *parent)
 
 static int rk3328_gmac2io_ext_set_parent(struct clk *clk, struct clk *parent)
 {
-	struct rk3328_grf_regs *grf;
+	static struct rk3328_grf_regs * const grf = RK3328_GRF_BASE;
 	const char *clock_output_name;
 	int ret;
-
-	grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
 
 	/*
 	 * If the requested parent is in the same clock-controller and the id
@@ -906,7 +899,7 @@ static int rk3328_clk_of_to_plat(struct udevice *dev)
 {
 	struct rk3328_clk_priv *priv = dev_get_priv(dev);
 
-	priv->cru = dev_read_addr_ptr(dev);
+	priv->cru = RK3328_CRU_BASE;
 
 	return 0;
 }

@@ -11,7 +11,6 @@
 #include <log.h>
 #include <ram.h>
 #include <regmap.h>
-#include <syscon.h>
 #include <asm/io.h>
 #include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/cru_rk3328.h>
@@ -578,8 +577,7 @@ static int rk3328_dmc_probe(struct udevice *dev)
 #else
 	struct dram_info *priv = dev_get_priv(dev);
 
-	priv->grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
-	debug("%s: grf=%p\n", __func__, priv->grf);
+	priv->grf = RK3328_GRF_BASE;
 	priv->info.base = CFG_SYS_SDRAM_BASE;
 	priv->info.size = rockchip_sdram_size(
 				(phys_addr_t)&priv->grf->os_reg[2]);
