@@ -6,25 +6,22 @@
 #include <config.h>
 #include <dm.h>
 #include <ram.h>
-#include <syscon.h>
-#include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/grf_rk3588.h>
 #include <asm/arch-rockchip/sdram.h>
 
 struct dram_info {
 	struct ram_info info;
-	struct rk3588_pmu1grf *pmugrf;
 };
 
 static int rk3588_dmc_probe(struct udevice *dev)
 {
+	static struct rk3588_pmu1grf * const pmugrf = RK3588_PMU1GRF_BASE;
 	struct dram_info *priv = dev_get_priv(dev);
 
-	priv->pmugrf = syscon_get_first_range(ROCKCHIP_SYSCON_PMUGRF);
 	priv->info.base = CFG_SYS_SDRAM_BASE;
 	priv->info.size =
-		rockchip_sdram_size((phys_addr_t)&priv->pmugrf->os_reg[2]) +
-		rockchip_sdram_size((phys_addr_t)&priv->pmugrf->os_reg[4]);
+		rockchip_sdram_size((phys_addr_t)&pmugrf->os_reg[2]) +
+		rockchip_sdram_size((phys_addr_t)&pmugrf->os_reg[4]);
 
 	return 0;
 }
