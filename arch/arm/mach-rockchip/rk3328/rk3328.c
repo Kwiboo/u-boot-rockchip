@@ -11,7 +11,6 @@
 #include <asm/armv8/mmu.h>
 
 #define CRU_BASE		0xFF440000
-#define GRF_BASE		0xFF100000
 #define UART2_BASE		0xFF130000
 #define FW_DDR_CON_REG		0xFF7C0040
 #define EFUSE_NS_BASE		0xFF260000
@@ -94,8 +93,8 @@ int arch_cpu_init(void)
 
 void board_debug_uart_init(void)
 {
-	struct rk3328_grf_regs * const grf = (void *)GRF_BASE;
-	struct rk_uart * const uart = (void *)UART2_BASE;
+	static struct rk3328_grf_regs * const grf = RK3328_GRF_BASE;
+	static struct rk_uart * const uart = (void *)UART2_BASE;
 	enum{
 		GPIO2A0_SEL_SHIFT       = 0,
 		GPIO2A0_SEL_MASK        = 3 << GPIO2A0_SEL_SHIFT,

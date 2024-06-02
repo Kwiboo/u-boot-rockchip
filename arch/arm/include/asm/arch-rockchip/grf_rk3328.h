@@ -6,6 +6,8 @@
 #ifndef __SOC_ROCKCHIP_RK3328_GRF_H__
 #define __SOC_ROCKCHIP_RK3328_GRF_H__
 
+#define RK3328_GRF_BASE		((struct rk3328_grf_regs *)0xff100000)
+
 struct rk3328_grf_regs {
 	u32 gpio0a_iomux;
 	u32 gpio0b_iomux;
@@ -115,6 +117,8 @@ struct rk3328_grf_regs {
 	u32 macphy_status;
 };
 check_member(rk3328_grf_regs, macphy_status, 0xb10);
+
+#define RK3328_SGRF_BASE	((struct rk3328_sgrf_regs *)0xff0e0000)
 
 struct rk3328_sgrf_regs {
 	u32 soc_con[6];

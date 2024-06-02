@@ -11,6 +11,8 @@ struct rk3328_clk_priv {
 	ulong rate;
 };
 
+#define RK3328_CRU_BASE		((struct rk3328_cru *)0xff440000)
+
 struct rk3328_cru {
 	u32 apll_con[5];
 	u32 reserved1[3];
@@ -42,6 +44,7 @@ struct rk3328_cru {
 	u32 sdmmc_ext_con[2];
 };
 check_member(rk3328_cru, sdmmc_ext_con[1], 0x39c);
+
 #define MHz		1000000
 #define KHz		1000
 #define OSC_HZ		(24 * MHz)
