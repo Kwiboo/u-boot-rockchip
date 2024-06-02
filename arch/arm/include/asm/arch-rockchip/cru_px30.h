@@ -48,6 +48,8 @@ struct px30_pll {
 	unsigned int reserved0[3];
 };
 
+#define PX30_CRU_BASE		((struct px30_cru *)0xff2b0000)
+
 struct px30_cru {
 	struct px30_pll pll[4];
 	unsigned int reserved1[8];
@@ -83,6 +85,8 @@ struct px30_cru {
 };
 
 check_member(px30_cru, autocs_con[7], 0x41c);
+
+#define PX30_PMUCRU_BASE	((struct px30_pmucru *)0xff2bc000)
 
 struct px30_pmucru {
 	struct px30_pll pll;
