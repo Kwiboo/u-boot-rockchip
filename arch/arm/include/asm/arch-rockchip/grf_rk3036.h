@@ -5,6 +5,8 @@
 #ifndef _ASM_ARCH_GRF_RK3036_H
 #define _ASM_ARCH_GRF_RK3036_H
 
+#define RK3036_GRF_BASE		((struct rk3036_grf *)0x20008000)
+
 struct rk3036_grf {
 	unsigned int reserved[0x2a];
 	unsigned int gpio0a_iomux;
