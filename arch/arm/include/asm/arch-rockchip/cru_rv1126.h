@@ -57,7 +57,7 @@ struct rv1126_clk_info {
 	bool is_cru;
 };
 
-/* Private data for the clock driver - used by rockchip_get_cru() */
+/* Private data for the clock driver */
 struct rv1126_pmuclk_priv {
 	struct rv1126_pmucru *pmucru;
 	ulong gpll_hz;
@@ -87,6 +87,8 @@ struct rv1126_pll {
 	unsigned int reserved0[1];
 };
 
+#define RV1126_PMUCRU_BASE	((struct rv1126_pmucru *)0xff480000)
+
 struct rv1126_pmucru {
 	unsigned int pmu_mode;
 	unsigned int reserved1[3];
@@ -103,6 +105,8 @@ struct rv1126_pmucru {
 };
 
 check_member(rv1126_pmucru, pmu_autocs_con[1], 0x244);
+
+#define RV1126_CRU_BASE		((struct rv1126_cru *)0xff490000)
 
 struct rv1126_cru {
 	struct rv1126_pll pll[4];
@@ -456,4 +460,5 @@ enum {
 	GMAC_SRC_SEL_M0		= 0,
 	GMAC_SRC_SEL_M1,
 };
+
 #endif

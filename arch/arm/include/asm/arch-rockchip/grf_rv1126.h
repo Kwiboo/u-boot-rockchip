@@ -6,6 +6,8 @@
 #ifndef _ASM_ARCH_GRF_RV1126_H
 #define _ASM_ARCH_GRF_RV1126_H
 
+#define RV1126_GRF_BASE		((struct rv1126_grf *)0xfe000000)
+
 struct rv1126_grf {
 	unsigned int soc_con0;
 	unsigned int soc_con1;
@@ -199,6 +201,8 @@ struct rv1126_grf {
 };
 
 check_member(rv1126_grf, usb_id_con, 0x1031c);
+
+#define RV1126_PMUGRF_BASE		((struct rv1126_pmugrf *)0xfe020000)
 
 struct rv1126_pmugrf {
 	unsigned int gpio0a_iomux_l;

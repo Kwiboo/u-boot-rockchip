@@ -8,7 +8,6 @@
 #include <debug_uart.h>
 #include <dm.h>
 #include <ram.h>
-#include <syscon.h>
 #include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/hardware.h>
 #include <asm/arch-rockchip/cru_rv1126.h>
@@ -51,12 +50,9 @@ struct dram_info {
 #if defined(CONFIG_TPL_BUILD) || \
 	(!defined(CONFIG_TPL) && defined(CONFIG_XPL_BUILD))
 
-#define GRF_BASE_ADDR			0xfe000000
-#define PMU_GRF_BASE_ADDR		0xfe020000
 #define DDR_GRF_BASE_ADDR		0xfe030000
 #define BUS_SGRF_BASE_ADDR		0xfe0a0000
 #define SERVER_MSCH_BASE_ADDR		0xfe800000
-#define CRU_BASE_ADDR			0xff490000
 #define DDR_PHY_BASE_ADDR		0xff4a0000
 #define UPCTL2_BASE_ADDR		0xffa50000
 
@@ -3428,11 +3424,11 @@ static int rv1126_dmc_init(struct udevice *dev)
 
 	dram_info.phy = (void *)DDR_PHY_BASE_ADDR;
 	dram_info.pctl = (void *)UPCTL2_BASE_ADDR;
-	dram_info.grf = (void *)GRF_BASE_ADDR;
-	dram_info.cru = (void *)CRU_BASE_ADDR;
+	dram_info.grf = RV1126_GRF_BASE;
+	dram_info.cru = RV1126_CRU_BASE;
 	dram_info.msch = (void *)SERVER_MSCH_BASE_ADDR;
 	dram_info.ddrgrf = (void *)DDR_GRF_BASE_ADDR;
-	dram_info.pmugrf = (void *)PMU_GRF_BASE_ADDR;
+	dram_info.pmugrf = RV1126_PMUGRF_BASE;
 
 #ifdef CONFIG_ROCKCHIP_DRAM_EXTENDED_TEMP_SUPPORT
 	printascii("extended temp support\n");
@@ -3513,8 +3509,7 @@ static int rv1126_dmc_probe(struct udevice *dev)
 #else
 	struct dram_info *priv = dev_get_priv(dev);
 
-	priv->pmugrf = syscon_get_first_range(ROCKCHIP_SYSCON_PMUGRF);
-	debug("%s: grf=%p\n", __func__, priv->pmugrf);
+	priv->pmugrf = RV1126_PMUGRF_BASE;
 	priv->info.base = CFG_SYS_SDRAM_BASE;
 	priv->info.size =
 		rockchip_sdram_size((phys_addr_t)&priv->pmugrf->os_reg[2]);

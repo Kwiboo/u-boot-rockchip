@@ -10,7 +10,6 @@
 
 #define FIREWALL_APB_BASE	0xffa60000
 #define FW_DDR_CON_REG		0x80
-#define GRF_BASE		0xFE000000
 
 const char * const boot_devices[BROM_LAST_BOOTSOURCE + 1] = {
 	[BROM_BOOTSOURCE_EMMC] = "/mmc@ffc50000",
@@ -43,7 +42,7 @@ enum {
 
 void board_debug_uart_init(void)
 {
-	static struct rv1126_grf * const grf = (void *)GRF_BASE;
+	static struct rv1126_grf * const grf = RV1126_GRF_BASE;
 
 	/* Enable early UART2 channel m1 on the rv1126 */
 	rk_clrsetreg(&grf->iofunc_con2, UART2_IO_SEL_MASK,
