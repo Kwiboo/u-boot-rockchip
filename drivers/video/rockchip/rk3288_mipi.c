@@ -17,12 +17,10 @@
 #include <linux/err.h>
 #include <linux/kernel.h>
 #include <asm/arch-rockchip/clock.h>
-#include <asm/arch-rockchip/cru.h>
+#include <asm/arch-rockchip/cru_rk3288.h>
 #include <asm/arch-rockchip/grf_rk3288.h>
 #include <asm/arch-rockchip/hardware.h>
 #include <asm/arch-rockchip/rockchip_mipi_dsi.h>
-
-#define MHz 1000000
 
 /* Select mipi dsi source, big or little vop */
 static int rk_mipi_dsi_source_select(struct udevice *dev)

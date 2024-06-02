@@ -8,12 +8,13 @@
 #ifndef _ASM_ARCH_CRU_RK3288_H
 #define _ASM_ARCH_CRU_RK3288_H
 
-#define OSC_HZ		(24 * 1000 * 1000)
+#define MHz		1000000
+#define OSC_HZ		(24 * MHz)
 
-#define APLL_HZ		(1800 * 1000000)
-#define GPLL_HZ		(594 * 1000000)
-#define CPLL_HZ		(384 * 1000000)
-#define NPLL_HZ		(384 * 1000000)
+#define APLL_HZ		(1800 * MHz)
+#define GPLL_HZ		(594 * MHz)
+#define CPLL_HZ		(384 * MHz)
+#define NPLL_HZ		(384 * MHz)
 
 /* The SRAM is clocked off aclk_bus, so we want to max it out for boot speed */
 #define PD_BUS_ACLK_HZ	297000000
@@ -30,6 +31,8 @@ struct rk3288_clk_priv {
 	struct rockchip_cru *cru;
 	ulong rate;
 };
+
+#define RK3288_CRU_BASE		((struct rockchip_cru *)0xff760000)
 
 struct rockchip_cru {
 	struct rk3288_pll {
@@ -226,5 +229,7 @@ enum {
 	CLKF_SHIFT		= 0,
 	CLKF_MASK		= 0x1fff << CLKF_SHIFT,
 };
+
+void rk3288_clk_configure_cpu(struct rockchip_cru *cru, struct rk3288_grf *grf);
 
 #endif

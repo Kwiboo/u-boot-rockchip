@@ -18,7 +18,6 @@ struct udevice;
 enum {
 	ROCKCHIP_SYSCON_NOC,
 	ROCKCHIP_SYSCON_GRF,
-	ROCKCHIP_SYSCON_SGRF,
 	ROCKCHIP_SYSCON_PMU,
 	ROCKCHIP_SYSCON_PMUGRF,
 	ROCKCHIP_SYSCON_MSCH,
@@ -170,11 +169,6 @@ static inline u32 clk_get_divisor(ulong input_rate, uint output_rate)
  * Return: pointer to registers, or -ve error on error
  */
 void *rockchip_get_cru(void);
-
-struct rockchip_cru;
-struct rk3288_grf;
-
-void rk3288_clk_configure_cpu(struct rockchip_cru *cru, struct rk3288_grf *grf);
 
 int rockchip_get_clk(struct udevice **devp);
 

@@ -12,6 +12,8 @@ struct rk3288_grf_gpio_lh {
 	u32 h;
 };
 
+#define RK3288_GRF_BASE		((struct rk3288_grf *)0xff770000)
+
 struct rk3288_grf {
 	u32 reserved[3];
 	u32 gpio1d_iomux;
@@ -95,6 +97,8 @@ struct rk3288_grf {
 	u32 soc_con15;
 	u32 soc_con16;
 };
+
+#define RK3288_SGRF_BASE	((struct rk3288_sgrf *)0xff740000)
 
 struct rk3288_sgrf {
 	u32 soc_con0;
