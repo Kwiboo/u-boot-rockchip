@@ -35,7 +35,7 @@ struct rk3568_clk_info {
 	bool is_cru;
 };
 
-/* Private data for the clock driver - used by rockchip_get_cru() */
+/* Private data for the clock driver */
 struct rk3568_pmuclk_priv {
 	struct rk3568_pmucru *pmucru;
 	ulong ppll_hz;

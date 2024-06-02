@@ -486,7 +486,7 @@ static int rk3568_pmuclk_ofdata_to_platdata(struct udevice *dev)
 {
 	struct rk3568_pmuclk_priv *priv = dev_get_priv(dev);
 
-	priv->pmucru = dev_read_addr_ptr(dev);
+	priv->pmucru = RK3568_PMUCRU_BASE;
 
 	return 0;
 }
@@ -2924,7 +2924,7 @@ static int rk3568_clk_ofdata_to_platdata(struct udevice *dev)
 {
 	struct rk3568_clk_priv *priv = dev_get_priv(dev);
 
-	priv->cru = dev_read_addr_ptr(dev);
+	priv->cru = RK3568_CRU_BASE;
 
 	return 0;
 }
