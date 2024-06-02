@@ -12,7 +12,6 @@
 #include <log.h>
 #include <malloc.h>
 #include <mapmem.h>
-#include <syscon.h>
 #include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/cru_rk3066.h>
 #include <asm/arch-rockchip/grf_rk3066.h>
@@ -637,7 +636,7 @@ static int rk3066_clk_of_to_plat(struct udevice *dev)
 	if (CONFIG_IS_ENABLED(OF_REAL)) {
 		struct rk3066_clk_priv *priv = dev_get_priv(dev);
 
-		priv->cru = dev_read_addr_ptr(dev);
+		priv->cru = RK3066_CRU_BASE;
 	}
 
 	return 0;
@@ -647,9 +646,7 @@ static int rk3066_clk_probe(struct udevice *dev)
 {
 	struct rk3066_clk_priv *priv = dev_get_priv(dev);
 
-	priv->grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
-	if (IS_ERR(priv->grf))
-		return PTR_ERR(priv->grf);
+	priv->grf = RK3066_GRF_BASE;
 
 #if CONFIG_IS_ENABLED(OF_PLATDATA)
 	struct rk3066_clk_plat *plat = dev_get_plat(dev);
