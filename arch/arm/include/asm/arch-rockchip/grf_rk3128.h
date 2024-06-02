@@ -5,6 +5,8 @@
 #ifndef _ASM_ARCH_GRF_RK3128_H
 #define _ASM_ARCH_GRF_RK3128_H
 
+#define RK3128_GRF_BASE		((struct rk3128_grf *)0x20008000)
+
 struct rk3128_grf {
 	unsigned int reserved[0x2a];
 	unsigned int gpio0a_iomux;
@@ -545,4 +547,5 @@ enum {
 	GPIO2C4_I2C2_SDA	= 3,
 	GPIO2C4_GMAC_RXD2,
 };
+
 #endif

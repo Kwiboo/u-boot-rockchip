@@ -7,25 +7,21 @@
 #include <dm.h>
 #include <log.h>
 #include <ram.h>
-#include <syscon.h>
 #include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/grf_rk3128.h>
 #include <asm/arch-rockchip/sdram.h>
 
 struct dram_info {
 	struct ram_info info;
-	struct rk3128_grf *grf;
 };
 
 static int rk3128_dmc_probe(struct udevice *dev)
 {
+	static struct rk3128_grf * const grf = RK3128_GRF_BASE;
 	struct dram_info *priv = dev_get_priv(dev);
 
-	priv->grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
-	debug("%s: grf=%p\n", __func__, priv->grf);
 	priv->info.base = CFG_SYS_SDRAM_BASE;
-	priv->info.size = rockchip_sdram_size(
-				(phys_addr_t)&priv->grf->os_reg[1]);
+	priv->info.size = rockchip_sdram_size((phys_addr_t)&grf->os_reg[1]);
 
 	return 0;
 }
