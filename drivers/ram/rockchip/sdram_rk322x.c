@@ -786,7 +786,7 @@ static int rk322x_dmc_probe(struct udevice *dev)
 #endif
 	struct dram_info *priv = dev_get_priv(dev);
 
-	priv->grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
+	priv->grf = RK322X_GRF_BASE;
 #ifdef CONFIG_TPL_BUILD
 #if CONFIG_IS_ENABLED(OF_PLATDATA)
 	ret = conv_of_plat(dev);
@@ -805,9 +805,7 @@ static int rk322x_dmc_probe(struct udevice *dev)
 	if (ret)
 		return ret;
 
-	priv->cru = rockchip_get_cru();
-	if (IS_ERR(priv->cru))
-		return PTR_ERR(priv->cru);
+	priv->cru = RK322X_CRU_BASE;
 	ret = sdram_init(priv, plat);
 	if (ret)
 		return ret;

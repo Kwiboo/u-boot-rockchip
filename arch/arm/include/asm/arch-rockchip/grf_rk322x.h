@@ -5,6 +5,8 @@
 #ifndef _ASM_ARCH_GRF_RK322X_H
 #define _ASM_ARCH_GRF_RK322X_H
 
+#define RK322X_GRF_BASE		((struct rk322x_grf *)0x11000000)
+
 struct rk322x_grf {
 	unsigned int gpio0a_iomux;
 	unsigned int gpio0b_iomux;
@@ -80,6 +82,8 @@ struct rk322x_grf {
 };
 check_member(rk322x_grf, ddrc_stat, 0x604);
 
+#define RK322X_SGRF_BASE	((struct rk322x_sgrf *)0x10150000)
+
 struct rk322x_sgrf {
 	unsigned int soc_con[11];
 	unsigned int busdmac_con[4];
@@ -90,4 +94,5 @@ enum {
 	MACPHY_CFG_ENABLE_SHIFT = 0,
 	MACPHY_CFG_ENABLE_MASK  = 1 << MACPHY_CFG_ENABLE_SHIFT,
 };
+
 #endif

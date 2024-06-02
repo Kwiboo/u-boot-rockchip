@@ -28,6 +28,8 @@ struct rk322x_clk_priv {
 	ulong rate;
 };
 
+#define RK322X_CRU_BASE		((struct rk322x_cru *)0x110e0000)
+
 struct rk322x_cru {
 	struct rk322x_pll {
 		unsigned int con0;
@@ -206,4 +208,5 @@ enum {
 	DDRPHY_PSRST_SHIFT	= 9,
 	DDRPHY_SRST_SHIFT	= 8,
 };
+
 #endif
