@@ -31,7 +31,7 @@ char *get_reset_cause(void)
 	if (IS_ERR(cru))
 		return cause;
 
-	switch (cru->glb_rst_st) {
+	switch (cru->glb_rst_st & GLB_RST_MASK) {
 	case GLB_POR_RST:
 		cause = "POR";
 		break;
