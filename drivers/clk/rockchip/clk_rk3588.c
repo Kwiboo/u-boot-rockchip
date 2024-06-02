@@ -1995,7 +1995,7 @@ static int rk3588_clk_ofdata_to_platdata(struct udevice *dev)
 {
 	struct rk3588_clk_priv *priv = dev_get_priv(dev);
 
-	priv->cru = dev_read_addr_ptr(dev);
+	priv->cru = RK3588_CRU_BASE;
 
 	return 0;
 }
