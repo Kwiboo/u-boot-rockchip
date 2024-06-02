@@ -9,7 +9,6 @@
 #include <init.h>
 #include <log.h>
 #include <ram.h>
-#include <syscon.h>
 #include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/cru_px30.h>
 #include <asm/arch-rockchip/grf_px30.h>
@@ -720,8 +719,7 @@ static int px30_dmc_probe(struct udevice *dev)
 {
 	struct dram_info *priv = dev_get_priv(dev);
 
-	priv->pmugrf = syscon_get_first_range(ROCKCHIP_SYSCON_PMUGRF);
-	debug("%s: grf=%p\n", __func__, priv->pmugrf);
+	priv->pmugrf = PX30_PMUGRF_BASE;
 	priv->info.base = CFG_SYS_SDRAM_BASE;
 	priv->info.size =
 		rockchip_sdram_size((phys_addr_t)&priv->pmugrf->os_reg[2]);

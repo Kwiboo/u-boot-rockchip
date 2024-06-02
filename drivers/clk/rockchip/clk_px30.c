@@ -9,7 +9,6 @@
 #include <errno.h>
 #include <log.h>
 #include <malloc.h>
-#include <syscon.h>
 #include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/cru_px30.h>
 #include <asm/arch-rockchip/hardware.h>
@@ -1477,7 +1476,7 @@ static int px30_clk_of_to_plat(struct udevice *dev)
 {
 	struct px30_clk_priv *priv = dev_get_priv(dev);
 
-	priv->cru = dev_read_addr_ptr(dev);
+	priv->cru = PX30_CRU_BASE;
 
 	return 0;
 }
@@ -1759,7 +1758,7 @@ static int px30_pmuclk_of_to_plat(struct udevice *dev)
 {
 	struct px30_pmuclk_priv *priv = dev_get_priv(dev);
 
-	priv->pmucru = dev_read_addr_ptr(dev);
+	priv->pmucru = PX30_PMUCRU_BASE;
 
 	return 0;
 }
