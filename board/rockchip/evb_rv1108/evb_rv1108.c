@@ -5,7 +5,6 @@
  */
 
 #include <init.h>
-#include <syscon.h>
 #include <asm/global_data.h>
 #include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/grf_rv1108.h>
@@ -15,7 +14,7 @@ DECLARE_GLOBAL_DATA_PTR;
 
 int board_early_init_f(void)
 {
-	struct rv1108_grf *grf;
+	static struct rv1108_grf * const grf = RV1108_GRF_BASE;
 	enum {
 		GPIO3C3_SHIFT           = 6,
 		GPIO3C3_MASK            = 3 << GPIO3C3_SHIFT,
@@ -33,8 +32,6 @@ int board_early_init_f(void)
 		GPIO2D1_GPIO            = 0,
 		GPIO2D1_UART2_SIN_M0,
 	};
-
-	grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
 
 	/*evb board use UART2 m0 for debug*/
 	rk_clrsetreg(&grf->gpio2d_iomux,

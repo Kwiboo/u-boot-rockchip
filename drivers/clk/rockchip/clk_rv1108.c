@@ -10,7 +10,6 @@
 #include <errno.h>
 #include <log.h>
 #include <malloc.h>
-#include <syscon.h>
 #include <asm/global_data.h>
 #include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/cru_rv1108.h>
@@ -666,7 +665,7 @@ static int rv1108_clk_of_to_plat(struct udevice *dev)
 {
 	struct rv1108_clk_priv *priv = dev_get_priv(dev);
 
-	priv->cru = dev_read_addr_ptr(dev);
+	priv->cru = RV1108_CRU_BASE;
 
 	return 0;
 }
