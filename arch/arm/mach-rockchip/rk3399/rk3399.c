@@ -7,7 +7,6 @@
 #include <init.h>
 #include <log.h>
 #include <spl.h>
-#include <syscon.h>
 #include <asm/armv8/mmu.h>
 #include <asm/arch-rockchip/bootrom.h>
 #include <asm/arch-rockchip/clock.h>
@@ -79,10 +78,9 @@ void rockchip_stimer_init(void)
 
 int arch_cpu_init(void)
 {
-
 #ifdef CONFIG_XPL_BUILD
-	struct rk3399_pmusgrf_regs *sgrf;
-	struct rk3399_grf_regs *grf;
+	static struct rk3399_pmusgrf_regs * const sgrf = RK3399_PMUSGRF_BASE;
+	static struct rk3399_grf_regs * const grf = RK3399_GRF_BASE;
 
 	/*
 	 * Disable DDR and SRAM security regions.
@@ -93,12 +91,10 @@ int arch_cpu_init(void)
 	 * driver, which tries to DMA from/to the stack (likely)
 	 * located in this range.
 	 */
-	sgrf = syscon_get_first_range(ROCKCHIP_SYSCON_PMUSGRF);
 	rk_clrsetreg(&sgrf->ddr_rgn_con[16], 0x1ff, 0);
 	rk_clrreg(&sgrf->slv_secure_con4, 0x2000);
 
 	/*  eMMC clock generator: disable the clock multipilier */
-	grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
 	rk_clrreg(&grf->emmccore_con[11], 0x0ff);
 #endif
 
@@ -147,7 +143,7 @@ void board_debug_uart_init(void)
 #if defined(CONFIG_TPL_BUILD)
 static void rk3399_force_power_on_reset(void)
 {
-	const struct rockchip_cru *cru = rockchip_get_cru();
+	static struct rockchip_cru * const cru = RK3399_CRU_BASE;
 	ofnode node;
 	struct gpio_desc sysreset_gpio;
 

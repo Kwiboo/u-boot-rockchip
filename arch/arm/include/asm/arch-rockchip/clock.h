@@ -21,8 +21,6 @@ enum {
 	ROCKCHIP_SYSCON_SGRF,
 	ROCKCHIP_SYSCON_PMU,
 	ROCKCHIP_SYSCON_PMUGRF,
-	ROCKCHIP_SYSCON_PMUSGRF,
-	ROCKCHIP_SYSCON_CIC,
 	ROCKCHIP_SYSCON_MSCH,
 };
 
@@ -164,13 +162,6 @@ static inline u32 clk_get_divisor(ulong input_rate, uint output_rate)
  * Return: pointer to registers, or -ve error on error
  */
 void *rockchip_get_cru(void);
-
-/**
- * rockchip_get_pmucru() - get a pointer to the clock/reset unit registers
- *
- * Return: pointer to registers, or -ve error on error
- */
-void *rockchip_get_pmucru(void);
 
 int rockchip_get_clk(struct udevice **devp);
 

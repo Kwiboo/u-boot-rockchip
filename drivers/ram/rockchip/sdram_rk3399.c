@@ -14,7 +14,6 @@
 #include <ram.h>
 #include <regmap.h>
 #include <spl.h>
-#include <syscon.h>
 #include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/cru_rk3399.h>
 #include <asm/arch-rockchip/grf_rk3399.h>
@@ -3099,12 +3098,12 @@ static int rk3399_dmc_init(struct udevice *dev)
 #endif
 
 	priv->ops = &rk3399_ops;
-	priv->cic = syscon_get_first_range(ROCKCHIP_SYSCON_CIC);
-	priv->grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
-	priv->pmu = syscon_get_first_range(ROCKCHIP_SYSCON_PMU);
-	priv->pmusgrf = syscon_get_first_range(ROCKCHIP_SYSCON_PMUSGRF);
-	priv->pmucru = rockchip_get_pmucru();
-	priv->cru = rockchip_get_cru();
+	priv->cic = RK3399_DDR_CIC_BASE;
+	priv->grf = RK3399_GRF_BASE;
+	priv->pmu = RK3399_PMU_BASE;
+	priv->pmusgrf = RK3399_PMUSGRF_BASE;
+	priv->pmucru = RK3399_PMUCRU_BASE;
+	priv->cru = RK3399_CRU_BASE;
 	priv->chan[0].pctl = regmap_get_range(plat->map, 0);
 	priv->chan[0].pi = regmap_get_range(plat->map, 1);
 	priv->chan[0].publ = regmap_get_range(plat->map, 2);
@@ -3151,7 +3150,7 @@ static int rk3399_dmc_probe(struct udevice *dev)
 {
 	struct dram_info *priv = dev_get_priv(dev);
 
-	priv->pmugrf = syscon_get_first_range(ROCKCHIP_SYSCON_PMUGRF);
+	priv->pmugrf = RK3399_PMUGRF_BASE;
 	debug("%s: pmugrf = %p\n", __func__, priv->pmugrf);
 	if (phase_sdram_init() && rk3399_dmc_init(dev))
 		return 0;
