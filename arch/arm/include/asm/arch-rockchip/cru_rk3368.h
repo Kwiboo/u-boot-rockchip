@@ -21,6 +21,8 @@ enum rk3368_pll_id {
 	PLL_COUNT,
 };
 
+#define RK3368_CRU_BASE		((struct rk3368_cru *)0xff760000)
+
 struct rk3368_cru {
 	struct rk3368_pll {
 		unsigned int con0;
@@ -137,6 +139,6 @@ enum {
 	TSADC_GLB_SRST_CTRL_MASK	= BIT(0),
 	TSADC_TRIGGER_SND_GLB_SRST	= 0,
 	TSADC_TRIGGER_FST_GLB_SRST	= 1,
-
 };
+
 #endif

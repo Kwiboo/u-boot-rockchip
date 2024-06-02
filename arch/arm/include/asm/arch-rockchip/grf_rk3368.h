@@ -10,6 +10,8 @@
 #include <linux/bitops.h>
 #endif
 
+#define RK3368_GRF_BASE		((struct rk3368_grf *)0xff770000)
+
 struct rk3368_grf {
 	u32 gpio1a_iomux;
 	u32 gpio1b_iomux;
@@ -82,6 +84,8 @@ struct rk3368_grf {
 };
 check_member(rk3368_grf, soc_con17, 0x444);
 check_member(rk3368_grf, ddrc0_con0, 0x600);
+
+#define RK3368_PMUGRF_BASE	((struct rk3368_pmu_grf *)0xff738000)
 
 struct rk3368_pmu_grf {
 	u32 gpio0a_iomux;

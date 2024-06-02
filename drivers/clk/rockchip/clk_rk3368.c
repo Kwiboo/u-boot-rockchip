@@ -12,7 +12,6 @@
 #include <log.h>
 #include <malloc.h>
 #include <mapmem.h>
-#include <syscon.h>
 #include <bitfield.h>
 #include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/cru_rk3368.h>
@@ -598,7 +597,7 @@ static int rk3368_clk_of_to_plat(struct udevice *dev)
 	if (CONFIG_IS_ENABLED(OF_REAL)) {
 		struct rk3368_clk_priv *priv = dev_get_priv(dev);
 
-		priv->cru = dev_read_addr_ptr(dev);
+		priv->cru = RK3368_CRU_BASE;
 	}
 
 	return 0;
