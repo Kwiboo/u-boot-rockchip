@@ -15,8 +15,7 @@ const char * const boot_devices[BROM_LAST_BOOTSOURCE + 1] = {
 #ifdef CONFIG_DEBUG_UART_BOARD_INIT
 void board_debug_uart_init(void)
 {
-#define GRF_BASE	0x11000000
-	static struct rk322x_grf * const grf = (void *)GRF_BASE;
+	static struct rk322x_grf * const grf = RK322X_GRF_BASE;
 	enum {
 		GPIO1B2_SHIFT		= 4,
 		GPIO1B2_MASK		= 3 << GPIO1B2_SHIFT,
@@ -52,14 +51,12 @@ void board_debug_uart_init(void)
 int arch_cpu_init(void)
 {
 #ifdef CONFIG_XPL_BUILD
-#define SGRF_BASE	0x10150000
-	static struct rk322x_sgrf * const sgrf = (void *)SGRF_BASE;
+	static struct rk322x_sgrf * const sgrf = RK322X_SGRF_BASE;
 
 	/* Disable the ddr secure region setting to make it non-secure */
 	rk_clrreg(&sgrf->soc_con[0], 0x4000);
 #else
-#define GRF_BASE	0x11000000
-	static struct rk322x_grf * const grf = (void *)GRF_BASE;
+	static struct rk322x_grf * const grf = RK322X_GRF_BASE;
 	/*
 	 * The integrated macphy is enabled by default, disable it
 	 * for saving power consuming.
