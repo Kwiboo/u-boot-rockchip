@@ -57,7 +57,7 @@ struct rv1126_clk_info {
 	bool is_cru;
 };
 
-/* Private data for the clock driver - used by rockchip_get_cru() */
+/* Private data for the clock driver */
 struct rv1126_pmuclk_priv {
 	struct rv1126_pmucru *pmucru;
 	ulong gpll_hz;

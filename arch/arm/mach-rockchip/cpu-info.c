@@ -11,6 +11,15 @@
 #include <asm/arch-rockchip/hardware.h>
 #include <linux/err.h>
 
+#if defined(CONFIG_ROCKCHIP_RK3288)
+# include <asm/arch-rockchip/cru_rk3288.h>
+#elif defined(CONFIG_ROCKCHIP_RK3399)
+# include <asm/arch-rockchip/cru_rk3399.h>
+#elif defined(CONFIG_ROCKCHIP_RK3568)
+# include <asm/arch-rockchip/cru_rk3568.h>
+# define rockchip_cru rk3568_cru
+#endif
+
 char *get_reset_cause(void)
 {
 	struct rockchip_cru *cru = rockchip_get_cru();
@@ -19,7 +28,7 @@ char *get_reset_cause(void)
 	if (IS_ERR(cru))
 		return cause;
 
-	switch (cru->glb_rst_st) {
+	switch (cru->glb_rst_st & GLB_RST_MASK) {
 	case GLB_POR_RST:
 		cause = "POR";
 		break;

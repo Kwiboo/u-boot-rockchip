@@ -35,7 +35,7 @@ struct rk3568_clk_info {
 	bool is_cru;
 };
 
-/* Private data for the clock driver - used by rockchip_get_cru() */
+/* Private data for the clock driver */
 struct rk3568_pmuclk_priv {
 	struct rk3568_pmucru *pmucru;
 	ulong ppll_hz;
@@ -108,8 +108,6 @@ struct rk3568_cru {
 	unsigned int sdmmc2_con[2];/* Address Offset: 0x0590 */
 	unsigned int emmc_con[2];/* Address Offset: 0x0598 */
 };
-
-#define rockchip_cru rk3568_cru
 
 check_member(rk3568_cru, mode_con00, 0xc0);
 check_member(rk3568_cru, softrst_con[0], 0x400);
