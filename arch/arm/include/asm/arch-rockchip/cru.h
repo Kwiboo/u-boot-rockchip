@@ -30,8 +30,6 @@ enum {
 	SND_GLB_WDT_RST_ST	= BIT(5),
 };
 
-#define MHz		1000000
-
 char *get_reset_cause(void);
 
 #endif /* _ROCKCHIP_CLOCK_H */
