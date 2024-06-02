@@ -11,7 +11,6 @@
 #include <log.h>
 #include <malloc.h>
 #include <mapmem.h>
-#include <syscon.h>
 #include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/cru_rk3188.h>
 #include <asm/arch-rockchip/grf_rk3188.h>
@@ -541,7 +540,7 @@ static int rk3188_clk_of_to_plat(struct udevice *dev)
 	if (CONFIG_IS_ENABLED(OF_REAL)) {
 		struct rk3188_clk_priv *priv = dev_get_priv(dev);
 
-		priv->cru = dev_read_addr_ptr(dev);
+		priv->cru = RK3188_CRU_BASE;
 	}
 
 	return 0;
@@ -552,9 +551,7 @@ static int rk3188_clk_probe(struct udevice *dev)
 	struct rk3188_clk_priv *priv = dev_get_priv(dev);
 	enum rk3188_clk_type type = dev_get_driver_data(dev);
 
-	priv->grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
-	if (IS_ERR(priv->grf))
-		return PTR_ERR(priv->grf);
+	priv->grf = RK3188_GRF_BASE;
 	priv->has_bwadj = (type == RK3188A_CRU) ? 1 : 0;
 
 #ifdef CONFIG_XPL_BUILD

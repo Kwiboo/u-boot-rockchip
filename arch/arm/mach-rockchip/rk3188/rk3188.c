@@ -7,7 +7,6 @@
 #include <init.h>
 #include <led.h>
 #include <log.h>
-#include <syscon.h>
 #include <asm/global_data.h>
 #include <asm/arch-rockchip/bootrom.h>
 #include <asm/arch-rockchip/clock.h>
@@ -52,13 +51,8 @@ void board_debug_uart_init(void)
 #ifdef CONFIG_XPL_BUILD
 int arch_cpu_init(void)
 {
-	struct rk3188_grf *grf;
+	static struct rk3188_grf * const grf = RK3188_GRF_BASE;
 
-	grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
-	if (IS_ERR(grf)) {
-		pr_err("grf syscon returned %ld\n", PTR_ERR(grf));
-		return 0;
-	}
 #ifdef CONFIG_ROCKCHIP_USB_UART
 	rk_clrsetreg(&grf->uoc0_con[0],
 		     SIDDQ_MASK | UOC_DISABLE_MASK | COMMON_ON_N_MASK,
@@ -88,13 +82,7 @@ __weak int rk3188_board_late_init(void)
 
 int rk_board_late_init(void)
 {
-	struct rk3188_grf *grf;
-
-	grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
-	if (IS_ERR(grf)) {
-		pr_err("grf syscon returned %ld\n", PTR_ERR(grf));
-		return 0;
-	}
+	static struct rk3188_grf * const grf = RK3188_GRF_BASE;
 
 	/* enable noc remap to mimic legacy loaders */
 	rk_clrsetreg(&grf->soc_con0,

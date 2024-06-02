@@ -886,7 +886,7 @@ static int rk3188_dmc_probe(struct udevice *dev)
 #endif
 	struct dram_info *priv = dev_get_priv(dev);
 
-	priv->pmu = syscon_get_first_range(ROCKCHIP_SYSCON_PMU);
+	priv->pmu = RK3188_PMU_BASE;
 
 #ifdef CONFIG_XPL_BUILD
 #if CONFIG_IS_ENABLED(OF_PLATDATA)
@@ -899,7 +899,7 @@ static int rk3188_dmc_probe(struct udevice *dev)
 		return PTR_ERR(map);
 	priv->chan[0].msch = regmap_get_range(map, 0);
 
-	priv->grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
+	priv->grf = RK3188_GRF_BASE;
 
 	priv->chan[0].pctl = regmap_get_range(plat->map, 0);
 	priv->chan[0].publ = regmap_get_range(plat->map, 1);
@@ -912,9 +912,7 @@ static int rk3188_dmc_probe(struct udevice *dev)
 	if (ret)
 		return ret;
 
-	priv->cru = rockchip_get_cru();
-	if (IS_ERR(priv->cru))
-		return PTR_ERR(priv->cru);
+	priv->cru = RK3188_CRU_BASE;
 	ret = setup_sdram(dev);
 	if (ret)
 		return ret;
