@@ -193,10 +193,30 @@ static struct rockchip_pin_bank *rockchip_pin_to_bank(struct udevice *dev,
 	return NULL;
 }
 
+static int rockchip_pin_to_mux(struct udevice *dev, unsigned int pin)
+{
+	struct rockchip_pin_bank *bank;
+
+	bank = rockchip_pin_to_bank(dev, pin);
+	if (!bank)
+		return -EINVAL;
+
+	return rockchip_get_mux(bank, pin - bank->pin_base);
+}
+
 static int rockchip_pinctrl_get_gpio_mux(struct udevice *dev, int banknum,
 					 int index)
-{	struct rockchip_pinctrl_priv *priv = dev_get_priv(dev);
+{
+	struct rockchip_pinctrl_priv *priv = dev_get_priv(dev);
 	struct rockchip_pin_ctrl *ctrl = priv->ctrl;
+	int ret;
+
+	if (banknum == -1)
+		return rockchip_pin_to_mux(dev, index);
+
+	ret = rockchip_verify_config(dev, banknum, index);
+	if (ret)
+		return ret;
 
 	return rockchip_get_mux(&ctrl->pin_banks[banknum], index);
 }
