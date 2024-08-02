@@ -34,7 +34,7 @@ enum {
 struct rockchip_gpio_priv {
 	void __iomem *regs;
 	struct udevice *pinctrl;
-	int bank;
+	int pfc_offset;
 	char name[2];
 	u32 version;
 };
@@ -108,7 +108,8 @@ static int rockchip_gpio_get_function(struct udevice *dev, unsigned offset)
 	int ret;
 
 	if (CONFIG_IS_ENABLED(PINCTRL)) {
-		ret = pinctrl_get_gpio_mux(priv->pinctrl, priv->bank, offset);
+		ret = pinctrl_get_gpio_mux(priv->pinctrl, -1,
+					   priv->pfc_offset + offset);
 		if (ret < 0)
 			return ret;
 		else if (ret != RK_FUNC_GPIO)
@@ -177,7 +178,7 @@ static int rockchip_gpio_probe(struct udevice *dev)
 	struct rockchip_gpio_priv *priv = dev_get_priv(dev);
 	struct ofnode_phandle_args args;
 	char *end;
-	int ret;
+	int bank, ret;
 
 	priv->regs = dev_read_addr_ptr(dev);
 
@@ -190,7 +191,8 @@ static int rockchip_gpio_probe(struct udevice *dev)
 					     0, &args);
 	if (!ret) {
 		uc_priv->gpio_count = args.args[2];
-		priv->bank = args.args[1] / ROCKCHIP_GPIOS_PER_BANK;
+		bank = DIV_ROUND_UP(args.args[1], ROCKCHIP_GPIOS_PER_BANK);
+		priv->pfc_offset = args.args[1];
 
 		if (CONFIG_IS_ENABLED(PINCTRL)) {
 			ret = uclass_get_device_by_ofnode(UCLASS_PINCTRL,
@@ -201,11 +203,12 @@ static int rockchip_gpio_probe(struct udevice *dev)
 		}
 	} else if (ret == -ENOENT || !CONFIG_IS_ENABLED(PINCTRL)) {
 		uc_priv->gpio_count = ROCKCHIP_GPIOS_PER_BANK;
-		ret = dev_read_alias_seq(dev, &priv->bank);
+		ret = dev_read_alias_seq(dev, &bank);
 		if (ret) {
 			end = strrchr(dev->name, '@');
-			priv->bank = trailing_strtoln(dev->name, end);
+			bank = trailing_strtoln(dev->name, end);
 		}
+		priv->pfc_offset = bank * ROCKCHIP_GPIOS_PER_BANK;
 
 		if (CONFIG_IS_ENABLED(PINCTRL)) {
 			ret = uclass_first_device_err(UCLASS_PINCTRL,
@@ -217,7 +220,7 @@ static int rockchip_gpio_probe(struct udevice *dev)
 		return ret;
 	}
 
-	priv->name[0] = 'A' + priv->bank;
+	priv->name[0] = 'A' + bank;
 	uc_priv->bank_name = priv->name;
 
 	priv->version = readl(priv->regs + VER_ID_V2);
