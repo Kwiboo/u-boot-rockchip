@@ -95,8 +95,41 @@
 	clock-names = "clk_edp", "clk_edp_24m", "pclk_edp";
 };
 
+&gpio0 {
+	gpio-ranges = <&pinctrl 0 0 24>;
+};
+
+&gpio1 {
+	gpio-ranges = <&pinctrl 0 24 32>;
+};
+
+&gpio2 {
+	gpio-ranges = <&pinctrl 0 56 32>;
+};
+
+&gpio3 {
+	gpio-ranges = <&pinctrl 0 88 32>;
+};
+
+&gpio4 {
+	gpio-ranges = <&pinctrl 0 120 32>;
+};
+
+&gpio5 {
+	gpio-ranges = <&pinctrl 0 152 32>;
+};
+
+&gpio6 {
+	gpio-ranges = <&pinctrl 0 184 32>;
+};
+
 &gpio7 {
 	bootph-all;
+	gpio-ranges = <&pinctrl 0 216 32>;
+};
+
+&gpio8 {
+	gpio-ranges = <&pinctrl 0 248 16>;
 };
 
 &grf {
