@@ -358,6 +358,18 @@ static int rockchip_set_mux(struct rockchip_pin_bank *bank, int pin, int mux)
 	return 0;
 }
 
+static int rockchip_pinctrl_gpio_request_enable(struct udevice *dev,
+						unsigned int selector)
+{
+	struct rockchip_pin_bank *bank;
+
+	bank = rockchip_pin_to_bank(dev, selector);
+	if (!bank)
+		return -EINVAL;
+
+	return rockchip_set_mux(bank, selector - bank->pin_base, RK_FUNC_GPIO);
+}
+
 static int rockchip_perpin_drv_list[DRV_TYPE_MAX][8] = {
 	{ 2, 4, 8, 12, -1, -1, -1, -1 },
 	{ 3, 6, 9, 12, -1, -1, -1, -1 },
@@ -608,6 +620,7 @@ const struct pinctrl_ops rockchip_pinctrl_ops = {
 	.set_state			= rockchip_pinctrl_set_state,
 	.get_gpio_mux			= rockchip_pinctrl_get_gpio_mux,
 	.get_pin_muxing			= rockchip_pinctrl_get_pin_muxing,
+	.gpio_request_enable		= rockchip_pinctrl_gpio_request_enable,
 };
 
 /* retrieve the soc specific data */
