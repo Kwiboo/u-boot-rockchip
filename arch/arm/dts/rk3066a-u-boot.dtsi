@@ -3,6 +3,13 @@
 #include "rockchip-u-boot.dtsi"
 #include "rk3xxx-u-boot.dtsi"
 
+/ {
+	aliases {
+		gpio4 = &gpio4;
+		gpio6 = &gpio6;
+	};
+};
+
 &gpio0 {
 	gpio-ranges = <&pinctrl 0 0 32>;
 };
