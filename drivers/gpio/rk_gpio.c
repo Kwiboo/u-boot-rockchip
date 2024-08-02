@@ -181,12 +181,6 @@ static int rockchip_gpio_probe(struct udevice *dev)
 
 	priv->regs = dev_read_addr_ptr(dev);
 
-	if (CONFIG_IS_ENABLED(PINCTRL)) {
-		ret = uclass_first_device_err(UCLASS_PINCTRL, &priv->pinctrl);
-		if (ret)
-			return ret;
-	}
-
 	/*
 	 * If "gpio-ranges" is present in the devicetree use it to parse
 	 * the GPIO bank ID, otherwise use the legacy method.
@@ -194,16 +188,33 @@ static int rockchip_gpio_probe(struct udevice *dev)
 	ret = ofnode_parse_phandle_with_args(dev_ofnode(dev),
 					     "gpio-ranges", NULL, 3,
 					     0, &args);
-	if (!ret || ret != -ENOENT) {
+	if (!ret) {
 		uc_priv->gpio_count = args.args[2];
 		priv->bank = args.args[1] / ROCKCHIP_GPIOS_PER_BANK;
-	} else {
+
+		if (CONFIG_IS_ENABLED(PINCTRL)) {
+			ret = uclass_get_device_by_ofnode(UCLASS_PINCTRL,
+							  args.node,
+							  &priv->pinctrl);
+			if (ret)
+				return ret;
+		}
+	} else if (ret == -ENOENT || !CONFIG_IS_ENABLED(PINCTRL)) {
 		uc_priv->gpio_count = ROCKCHIP_GPIOS_PER_BANK;
 		ret = dev_read_alias_seq(dev, &priv->bank);
 		if (ret) {
 			end = strrchr(dev->name, '@');
 			priv->bank = trailing_strtoln(dev->name, end);
 		}
+
+		if (CONFIG_IS_ENABLED(PINCTRL)) {
+			ret = uclass_first_device_err(UCLASS_PINCTRL,
+						      &priv->pinctrl);
+			if (ret)
+				return ret;
+		}
+	} else {
+		return ret;
 	}
 
 	priv->name[0] = 'A' + priv->bank;
