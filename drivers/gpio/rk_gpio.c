@@ -126,6 +126,15 @@ static int rockchip_gpio_get_function(struct udevice *dev, unsigned offset)
 	return (data & mask) ? GPIOF_OUTPUT : GPIOF_INPUT;
 }
 
+static int rockchip_gpio_request(struct udevice *dev, unsigned offset,
+				 const char *label)
+{
+	if (CONFIG_IS_ENABLED(PINCTRL) && dev_read_bool(dev, "gpio-ranges"))
+		return pinctrl_gpio_request(dev, offset, label);
+
+	return 0;
+}
+
 /* Simple SPL interface to GPIOs */
 #ifdef CONFIG_SPL_BUILD
 
@@ -229,6 +238,7 @@ static int rockchip_gpio_probe(struct udevice *dev)
 }
 
 static const struct dm_gpio_ops gpio_rockchip_ops = {
+	.request		= rockchip_gpio_request,
 	.direction_input	= rockchip_gpio_direction_input,
 	.direction_output	= rockchip_gpio_direction_output,
 	.get_value		= rockchip_gpio_get_value,
