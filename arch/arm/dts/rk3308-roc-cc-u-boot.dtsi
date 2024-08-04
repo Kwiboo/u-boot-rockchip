@@ -29,7 +29,8 @@
 };
 
 &uart2m0_xfer {
-	bootph-all;
+	bootph-pre-sram;
+	bootph-pre-ram;
 };
 
 &vcc_sd {

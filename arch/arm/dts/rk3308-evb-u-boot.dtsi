@@ -10,5 +10,6 @@
 };
 
 &uart4_xfer {
-	bootph-all;
+	bootph-pre-sram;
+	bootph-pre-ram;
 };
