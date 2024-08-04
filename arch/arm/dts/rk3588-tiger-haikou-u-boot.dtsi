@@ -33,5 +33,6 @@
 };
 
 &uart2m2_xfer {
-	bootph-all;
+	bootph-pre-sram;
+	bootph-pre-ram;
 };
