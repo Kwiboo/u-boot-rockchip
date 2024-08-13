@@ -24,62 +24,58 @@
 	};
 };
 
-&pinctrl {
-	bootph-all;
-};
-
 &uart2 {
 	bootph-all;
 };
 
 &uart2_xfer {
-	bootph-all;
+	bootph-pre-sram;
+	bootph-pre-ram;
 };
 
 &sdmmc {
 	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &gpio7 {
-	bootph-pre-ram;
-};
-
-&vcc_sd {
-	bootph-pre-ram;
+	/delete-property/ bootph-all;
 };
 
 &pcfg_pull_none_drv_8ma {
 	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &pcfg_pull_up_drv_8ma {
 	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &pcfg_pull_none {
-	bootph-pre-ram;
+	bootph-all;
 };
 
 &pcfg_pull_up {
-	bootph-pre-ram;
+	bootph-all;
 };
 
 &sdmmc_bus4 {
 	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &sdmmc_cd {
 	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &sdmmc_clk {
 	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &sdmmc_cmd {
 	bootph-pre-ram;
-};
-
-&sdmmc_pwr {
-	bootph-pre-ram;
+	bootph-some-ram;
 };

@@ -8,27 +8,31 @@
 
 / {
 	chosen {
-		u-boot,spl-boot-order = \
-			"same-as-spl", &sdmmc, &emmc;
+		u-boot,spl-boot-order = "same-as-spl", &sdmmc, &emmc;
 	};
 };
 
 &emmc {
 	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &emmc_clk {
 	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &emmc_cmd {
 	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &emmc_pwr {
 	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &emmc_bus8 {
 	bootph-pre-ram;
+	bootph-some-ram;
 };

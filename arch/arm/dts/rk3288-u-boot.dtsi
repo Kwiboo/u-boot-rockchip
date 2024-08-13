@@ -14,8 +14,7 @@
 	};
 
 	chosen {
-		u-boot,spl-boot-order = \
-			"same-as-spl", &emmc, &sdmmc;
+		u-boot,spl-boot-order = "same-as-spl", &emmc, &sdmmc;
 	};
 
 	dmc: dmc@ff610000 {
@@ -152,11 +151,11 @@
 };
 
 &vopb {
-	bootph-all;
+	bootph-some-ram;
 };
 
 &vopl {
-	bootph-all;
+	bootph-some-ram;
 };
 
 &xin24m {
