@@ -902,6 +902,7 @@ static int __maybe_unused rk3288_gmac_set_parent(struct clk *clk, struct clk *pa
 	const char *clock_output_name;
 	int ret;
 
+#ifdef SCLK_MAC_PLL
 	/*
 	 * If the requested parent is in the same clock-controller and
 	 * the id is SCLK_MAC_PLL ("mac_pll_src"), switch to the internal
@@ -912,6 +913,7 @@ static int __maybe_unused rk3288_gmac_set_parent(struct clk *clk, struct clk *pa
 		rk_clrsetreg(&cru->cru_clksel_con[21], RMII_EXTCLK_MASK, 0);
 		return 0;
 	}
+#endif
 
 	/*
 	 * Otherwise, we need to check the clock-output-names of the
