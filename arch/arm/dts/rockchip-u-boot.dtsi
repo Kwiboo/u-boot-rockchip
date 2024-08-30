@@ -80,6 +80,7 @@
 				};
 
 #ifdef CONFIG_ARM64
+#if !defined(CONFIG_TARGET_ODROID_M1S_RK3566)
 				@atf-SEQ {
 					fit,operation = "split-elf";
 					description = "ARM Trusted Firmware";
@@ -99,6 +100,7 @@
 					};
 #endif
 				};
+#endif
 				@tee-SEQ {
 					fit,operation = "split-elf";
 					description = "TEE";
