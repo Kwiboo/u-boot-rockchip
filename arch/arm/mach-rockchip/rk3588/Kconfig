@@ -137,6 +137,7 @@ config TARGET_NOVA_RK3588
 config TARGET_ODROID_M2_RK3588S
 	bool "Hardkernel ODROID-M2"
 	select BOARD_LATE_INIT
+	help
 	  Hardkernel ODROID-M2 single board computer with a RK3588S2 SoC.
 
 config TARGET_RK3588_NEU6
