@@ -2,17 +2,17 @@
 
 #include "rk356x-u-boot.dtsi"
 
-&sfc {
-	flash@0 {
-		bootph-pre-ram;
-		bootph-some-ram;
-	};
-};
-
 / {
 	leds {
 		led-0 {
 			default-state = "on";
 		};
+	};
+};
+
+&sfc {
+	flash@0 {
+		bootph-pre-ram;
+		bootph-some-ram;
 	};
 };
