@@ -11,6 +11,9 @@
 #include "imagetool.h"
 #include <image.h>
 #include <u-boot/sha256.h>
+#include <openssl/core_names.h>
+#include <openssl/pem.h>
+#include <openssl/evp.h>
 #include <rc4.h>
 #include "mkimage.h"
 #include "rkcommon.h"
@@ -18,6 +21,7 @@
 enum {
 	RK_MAGIC		= 0x0ff0aa55,
 	RK_MAGIC_V2		= 0x534E4B52,
+	RK_MAGIC_V2_SIGN	= 0x53534B52,
 };
 
 enum {
@@ -29,6 +33,12 @@ enum hash_type {
 	HASH_NONE	= 0,
 	HASH_SHA256	= 1,
 	HASH_SHA512	= 2,
+};
+
+enum sign_type {
+	SIGN_NONE	= 0,
+	SIGN_RSA2048	= 0x10,
+	SIGN_RSA4096	= 0x20,
 };
 
 /**
@@ -55,7 +65,7 @@ struct image_entry {
  *
  * This is stored at SD card block 64 (where each block is 512 bytes)
  *
- * @magic:	Magic (must be RK_MAGIC_V2)
+ * @magic:	Magic (must be RK_MAGIC_V2 or RK_MAGIC_V2_SIGN)
  * @size_and_nimage:	[31:16]number of images;[15:0]
  *			offset to hash field of header(unit as 4Byte)
  * @boot_flag:	[3:0]hash type(0:none,1:sha256,2:sha512)
@@ -69,8 +79,12 @@ struct header0_info_v2 {
 	uint32_t boot_flag;
 	uint8_t reserved1[104];
 	struct image_entry images[4];
-	uint8_t reserved2[1064];
-	uint8_t hash[512];
+	uint8_t reserved2[40];
+	uint8_t modulus[512];
+	uint8_t exponent[16];
+	uint8_t np[32];
+	uint8_t reserved3[464];
+	uint8_t signature[512];
 };
 
 /**
@@ -321,12 +335,72 @@ static void rkcommon_set_header0(void *buf, struct image_tool_params *params)
 	rc4_encode(buf, RK_BLK_SIZE, rc4_key);
 }
 
+static EVP_PKEY *get_public_key(struct image_tool_params *params)
+{
+	EVP_PKEY *key = NULL;
+	char path[1024];
+	X509 *cert;
+	FILE *fp;
+
+	if (!params->keydir || !params->keyname)
+		return NULL;
+
+	snprintf(path, sizeof(path), "%s/%s.crt", params->keydir, params->keyname);
+	fp = fopen(path, "r");
+	if (!fp) {
+		fprintf(stderr, "Could not open certificate: '%s': %s\n",
+			path, strerror(errno));
+		return NULL;
+	}
+
+	cert = PEM_read_X509(fp, NULL, NULL, NULL);
+	if (!cert) {
+		fprintf(stderr, "Could not read certificate\n");
+		goto err_cert;
+	}
+
+	key = X509_get_pubkey(cert);
+	if (!key)
+		fprintf(stderr, "Could not get public key\n");
+
+	X509_free(cert);
+err_cert:
+	fclose(fp);
+	return key;
+}
+
+static EVP_PKEY *get_private_key(struct image_tool_params *params)
+{
+	char path[1024];
+	EVP_PKEY *key;
+	FILE *fp;
+
+	if (!params->keydir || !params->keyname)
+		return NULL;
+
+	snprintf(path, sizeof(path), "%s/%s.key", params->keydir, params->keyname);
+	fp = fopen(path, "r");
+	if (!fp) {
+		fprintf(stderr, "Could not open private key: '%s': %s\n",
+			path, strerror(errno));
+		return NULL;
+	}
+
+	key = PEM_read_PrivateKey(fp, NULL, NULL, NULL);
+	if (!key)
+		fprintf(stderr, "Couldn't read private key\n");
+
+	fclose(fp);
+	return key;
+}
+
 static void rkcommon_set_header0_v2(void *buf, struct image_tool_params *params)
 {
 	struct header0_info_v2 *hdr = buf;
 	uint32_t sector_offset, image_sector_count;
 	uint32_t image_size_array[2];
 	uint8_t *image_ptr = NULL;
+	EVP_PKEY *pubkey, *privkey;
 	int i;
 
 	printf("Image Type:   Rockchip %s boot image\n",
@@ -351,7 +425,62 @@ static void rkcommon_set_header0_v2(void *buf, struct image_tool_params *params)
 		sector_offset = sector_offset + image_sector_count;
 	}
 
-	do_sha256_hash(buf, (void *)hdr->hash - buf, hdr->hash);
+	pubkey = get_public_key(params);
+	privkey = get_private_key(params);
+
+	if (pubkey && privkey) {
+		BN_CTX *ctx = BN_CTX_new();
+		BIGNUM *n = NULL, *e = NULL, *np = BN_new();
+
+		hdr->magic = cpu_to_le32(RK_MAGIC_V2_SIGN);
+
+		EVP_PKEY_get_bn_param(pubkey, OSSL_PKEY_PARAM_RSA_N, &n);
+		BN_bn2lebinpad(n, hdr->modulus, BN_num_bytes(n));
+
+		EVP_PKEY_get_bn_param(pubkey, OSSL_PKEY_PARAM_RSA_E, &e);
+		BN_bn2lebinpad(e, hdr->exponent, BN_num_bytes(e));
+
+		BN_one(np);
+		if (BN_num_bits(n) > 2048) {
+			BN_lshift(np, np, 4228);
+			hdr->boot_flag |= cpu_to_le32(SIGN_RSA4096);
+		} else {
+			BN_lshift(np, np, 2180);
+			hdr->boot_flag |= cpu_to_le32(SIGN_RSA2048);
+		}
+		BN_div(np, NULL, np, n, ctx);
+		BN_bn2lebinpad(np, hdr->np, BN_num_bytes(np));
+
+		BN_free(np);
+		BN_free(e);
+		BN_free(n);
+		BN_CTX_free(ctx);
+	}
+
+	do_sha256_hash(buf, (void *)hdr->signature - buf, hdr->signature);
+
+	if (pubkey && privkey) {
+		unsigned char *sig;
+		size_t siglen;
+		EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(privkey, NULL);
+		EVP_PKEY_sign_init(ctx);
+		EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PSS_PADDING);
+		EVP_PKEY_CTX_set_rsa_pss_saltlen(ctx, RSA_PSS_SALTLEN_DIGEST);
+		EVP_PKEY_CTX_set_signature_md(ctx, EVP_sha256());
+		EVP_PKEY_sign(ctx, NULL, &siglen, hdr->signature, 0x20);
+		sig = OPENSSL_malloc(siglen);
+		EVP_PKEY_sign(ctx, sig, &siglen, hdr->signature, 0x20);
+		// signature in little-endian order
+		for (int i = 0; i < siglen; i++)
+			hdr->signature[i] = sig[siglen - 1 - i];
+		OPENSSL_free(sig);
+		EVP_PKEY_CTX_free(ctx);
+	}
+
+	if (pubkey)
+		EVP_PKEY_free(pubkey);
+	if (privkey)
+		EVP_PKEY_free(privkey);
 }
 
 void rkcommon_set_header(void *buf,  struct stat *sbuf,  int ifd,
@@ -440,7 +569,8 @@ static int rkcommon_parse_header_v2(const void *buf, struct header0_info_v2 *hea
 {
 	memcpy((void *)header, buf, sizeof(struct header0_info_v2));
 
-	if (le32_to_cpu(header->magic) != RK_MAGIC_V2)
+	if (le32_to_cpu(header->magic) != RK_MAGIC_V2 &&
+	    le32_to_cpu(header->magic) != RK_MAGIC_V2_SIGN)
 		return -EPROTO;
 
 	return 0;
@@ -454,7 +584,8 @@ int rkcommon_verify_header(unsigned char *buf, int size,
 	int ret;
 
 	/* spl_hdr is abandon on header_v2 */
-	if ((*(uint32_t *)buf) == RK_MAGIC_V2)
+	if ((*(uint32_t *)buf) == RK_MAGIC_V2 ||
+	    (*(uint32_t *)buf) == RK_MAGIC_V2_SIGN)
 		return 0;
 
 	ret = rkcommon_parse_header(buf, &header0, &img_spl_info);
@@ -489,7 +620,8 @@ void rkcommon_print_header(const void *buf, struct image_tool_params *params)
 	uint8_t image_type;
 	int ret, boot_size, init_size;
 
-	if ((*(uint32_t *)buf) == RK_MAGIC_V2) {
+	if ((*(uint32_t *)buf) == RK_MAGIC_V2 ||
+	    (*(uint32_t *)buf) == RK_MAGIC_V2_SIGN) {
 		ret = rkcommon_parse_header_v2(buf, &header0_v2);
 
 		if (ret < 0) {
@@ -501,6 +633,15 @@ void rkcommon_print_header(const void *buf, struct image_tool_params *params)
 		init_size = init_size * RK_BLK_SIZE;
 		boot_size = header0_v2.images[1].size_and_off >> 16;
 		boot_size = boot_size * RK_BLK_SIZE;
+
+		printf("Image Type:   Rockchip %sboot image\n",
+		       (header0_v2.boot_flag & (SIGN_RSA2048|SIGN_RSA4096)) ?
+		       "signed " : "");
+
+		if (header0_v2.boot_flag & SIGN_RSA4096)
+			printf("Sign Image:   RSA4096\n");
+		else if (header0_v2.boot_flag & SIGN_RSA2048)
+			printf("Sign Image:   RSA2048\n");
 	} else {
 		ret = rkcommon_parse_header(buf, &header0, &spl_info);
 
