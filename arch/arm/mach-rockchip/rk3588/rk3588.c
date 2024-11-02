@@ -4,6 +4,8 @@
  * Copyright (c) 2022 Edgeble AI Technologies Pvt. Ltd.
  */
 
+#include <dm.h>
+#include <misc.h>
 #include <spl.h>
 #include <asm/armv8/mmu.h>
 #include <asm/arch-rockchip/bootrom.h>
@@ -178,3 +180,59 @@ int arch_cpu_init(void)
 	return 0;
 }
 #endif
+
+#define RK3588_OTP_CPU_CODE_OFFSET		0x02
+#define RK3588_OTP_SPECIFICATION_OFFSET		0x06
+#define RK3588_OTP_CPU_VERSION_OFFSET		0x1c
+
+int checkboard(void)
+{
+	u8 cpu_code[2], specification, package, cpu_version;
+	struct udevice *dev;
+	char suffix[3];
+	int ret;
+
+	ret = uclass_get_device_by_driver(UCLASS_MISC,
+					  DM_DRIVER_GET(rockchip_otp), &dev);
+	if (ret) {
+		debug("%s: could not find otp device, ret=%d\n", __func__, ret);
+		return 0;
+	}
+
+	/* cpu-code: SoC model, e.g. 0x35 0x82 or 0x35 0x88 */
+	ret = misc_read(dev, RK3588_OTP_CPU_CODE_OFFSET, cpu_code, 2);
+	if (ret < 0) {
+		debug("%s: could not read cpu-code, ret=%d\n", __func__, ret);
+		return 0;
+	}
+
+	/* specification: SoC variant, e.g. 0xA for RK3588J and 0x13 for RK3588S */
+	ret = misc_read(dev, RK3588_OTP_SPECIFICATION_OFFSET, &specification, 1);
+	if (ret < 0) {
+		debug("%s: could not read specification, ret=%d\n", __func__, ret);
+		return 0;
+	}
+	/* package: likely SoC variant revision, 0x2 for RK3588S2 */
+	package = specification >> 5;
+	specification &= 0x1f;
+
+	/* cpu-version: chip version, e.g. second letter of lot number */
+	ret = misc_read(dev, RK3588_OTP_CPU_VERSION_OFFSET, &cpu_version, 1);
+	if (ret < 0) {
+		debug("%s: could not read cpu-version, ret=%d\n", __func__, ret);
+		return 0;
+	}
+	cpu_version >>= 3;
+	cpu_version &= 0x7;
+
+	/* for RK3588J i.e. '@' + 0xA = 'J' */
+	suffix[0] = specification > 1 ? '@' + specification : '\0';
+	/* for RK3588S2 i.e. '0' + 0x2 = '2' */
+	suffix[1] = package > 1 ? '0' + package : '\0';
+	suffix[2] = '\0';
+
+	printf("SoC:   RK%02x%02x%s v%u\n",
+	       cpu_code[0], cpu_code[1], suffix, cpu_version);
+
+	return 0;
+}
