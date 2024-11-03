@@ -132,6 +132,7 @@ config TARGET_ROCK2
 config TARGET_TINKER_RK3288
 	bool "Tinker-RK3288"
         select BOARD_LATE_INIT
+	select ROCKCHIP_COMMON_STACK_ADDR
 	select TPL
 	help
 	  Tinker is a RK3288-based development board with 2 USB ports, HDMI,
