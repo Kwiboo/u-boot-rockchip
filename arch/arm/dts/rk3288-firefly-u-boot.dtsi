@@ -5,14 +5,6 @@
 
 #include "rk3288-u-boot.dtsi"
 
-/ {
-	leds {
-		power {
-			default-state = "on";
-		};
-	};
-};
-
 &dmc {
 	rockchip,pctl-timing = <0x29a 0xc8 0x1f8 0x42 0x4e 0x4 0xea 0xa
 		0x5 0x0 0xa 0x7 0x19 0x24 0xa 0x7
@@ -71,6 +63,10 @@
 &pcfg_pull_up_drv_12ma {
 	bootph-pre-ram;
 	bootph-some-ram;
+};
+
+&power_led {
+	default-state = "on";
 };
 
 &sdmmc {
