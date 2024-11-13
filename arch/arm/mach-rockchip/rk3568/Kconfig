@@ -80,9 +80,6 @@ config SYS_SOC
 config ROCKCHIP_COMMON_STACK_ADDR
 	default y
 
-config TEXT_BASE
-	default 0x00a00000
-
 source "board/rockchip/evb_rk3568/Kconfig"
 source "board/anbernic/rgxx3_rk3566/Kconfig"
 source "board/hardkernel/odroid_m1/Kconfig"

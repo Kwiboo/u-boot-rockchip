@@ -173,6 +173,7 @@ config ROCKCHIP_RK3308
 	imply OF_UPSTREAM
 	imply RNG_ROCKCHIP
 	imply ROCKCHIP_COMMON_BOARD
+	imply ROCKCHIP_MASKROM_IMAGE
 	imply ROCKCHIP_OTP
 	imply SPL_CLK
 	imply SPL_DM_SEQ_ALIAS
@@ -205,6 +206,7 @@ config ROCKCHIP_RK3328
 	imply PRE_CONSOLE_BUFFER
 	imply ROCKCHIP_COMMON_BOARD
 	imply ROCKCHIP_EFUSE
+	imply ROCKCHIP_MASKROM_IMAGE
 	imply ROCKCHIP_SDRAM_COMMON
 	imply SPL_ROCKCHIP_COMMON_BOARD
 	imply SPL_SEPARATE_BSS
@@ -283,6 +285,7 @@ config ROCKCHIP_RK3399
 	imply RNG_ROCKCHIP
 	imply ROCKCHIP_COMMON_BOARD
 	imply ROCKCHIP_EFUSE
+	imply ROCKCHIP_MASKROM_IMAGE
 	imply ROCKCHIP_SDRAM_COMMON
 	imply SPL_DM_SEQ_ALIAS
 	imply SPL_FIT_SIGNATURE
@@ -331,6 +334,7 @@ config ROCKCHIP_RK3568
 	imply PHY_GIGE if DWC_ETH_QOS_ROCKCHIP
 	imply RNG_ROCKCHIP
 	imply ROCKCHIP_COMMON_BOARD
+	imply ROCKCHIP_MASKROM_IMAGE
 	imply ROCKCHIP_OTP
 	imply SPL_ATF_NO_PLATFORM_PARAM if SPL_ATF
 	imply SPL_MMC_HS200_SUPPORT if SPL_MMC && MMC_HS200_SUPPORT
@@ -364,6 +368,7 @@ config ROCKCHIP_RK3588
 	imply PHY_GIGE if DWC_ETH_QOS_ROCKCHIP
 	imply RNG_ROCKCHIP
 	imply ROCKCHIP_COMMON_BOARD
+	imply ROCKCHIP_MASKROM_IMAGE
 	imply ROCKCHIP_OTP
 	imply SCMI_FIRMWARE
 	imply SPL_ATF_NO_PLATFORM_PARAM if SPL_ATF
@@ -594,6 +599,14 @@ config ROCKCHIP_SPI_IMAGE
 	  option to produce a SPI-flash image containing U-Boot. The image
 	  is built by binman. U-Boot sits near the start of the image.
 
+config ROCKCHIP_MASKROM_IMAGE
+	bool "Build a maskrom mode image for Rockchip"
+	depends on TPL || ROCKCHIP_EXTERNAL_TPL
+	select SPL_RAM_DEVICE
+	help
+	  Rockchip SoCs support maskrom mode boot over USB. Enable this
+	  option to produce maskrom mode boot images containing U-Boot.
+
 config LNX_KRNL_IMG_TEXT_OFFSET_BASE
 	default TEXT_BASE
 
@@ -646,7 +659,7 @@ config TPL_SYS_MALLOC_F_LEN
 	default 0x4000 if CUSTOM_SYS_INIT_SP_ADDR = 0x3f00000
 
 config TEXT_BASE
-	default 0x00200000 if ARM64
+	default 0x00800000 if ARM64
 
 config SPL_TEXT_BASE
 	default 0x0 if ARM64
