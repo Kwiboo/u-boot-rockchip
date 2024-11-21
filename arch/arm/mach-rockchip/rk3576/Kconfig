@@ -1,5 +1,12 @@
 if ROCKCHIP_RK3576
 
+config TARGET_ROC_PC_RK3576
+	bool "ROC_PC_RK3576"
+	select BOARD_LATE_INIT
+	help
+	  ROC-RK3576-PC is a single board computer from Firefly
+	  using the Rockchp RK3576.
+
 config ROCKCHIP_BOOT_MODE_REG
 	default 0x26024040
 
@@ -11,5 +18,7 @@ config SYS_SOC
 
 config SYS_CONFIG_NAME
 	default "rk3576_common"
+
+source board/firefly/roc-pc-rk3576/Kconfig
 
 endif
