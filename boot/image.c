@@ -183,6 +183,7 @@ static const table_entry_t uimage_type[] = {
 	{	IH_TYPE_FDT_LEGACY, "fdt_legacy", "legacy Image with Flat Device Tree ", },
 	{	IH_TYPE_RENESAS_SPKG, "spkgimage", "Renesas SPKG Image" },
 	{	IH_TYPE_STARFIVE_SPL, "sfspl", "StarFive SPL Image" },
+	{	IH_TYPE_AMLIMAGE,   "amlimage",   "Amlogic Boot Image" },
 	{	-1,		    "",		  "",			},
 };
 
