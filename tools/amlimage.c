@@ -51,6 +51,7 @@ struct amlimage_variant {
 		  .payload_size = size, } }
 
 static const struct amlimage_variant variants[] = {
+	VARIANT("emmc", 1, 0, 0xb000 + PAYLOAD_OFFSET),
 	VARIANT("gxbb", 1, 0, 0xb000),
 	VARIANT("gxl",  1, 1, 0xb000),
 	VARIANT("gxm",  1, 1, 0xb000),
@@ -176,6 +177,17 @@ static void amlimage_set_header(void *buf, struct stat *sbuf, int ifd,
 	hdr->data_offset = hdr->digest_offset + SHA256_SUM_LEN;
 	hdr->data_size = hdr->total_size - hdr->data_offset;
 
+	/* Adjust offset and size in GXBB eMMC header */
+	if (!strcmp("emmc", params->imagename)) {
+		hdr->total_size -= PAYLOAD_OFFSET;
+		/* Use offset to relocate code relative to eMMC header */
+		hdr->payload_offset = 0x400 - HEADER_OFFSET;
+		hdr->payload_size = hdr->total_size - hdr->payload_offset;
+		/* Use 0x200 offset to exclude MBR from the data range */
+		hdr->data_offset = 0x200 - HEADER_OFFSET;
+		hdr->data_size = hdr->total_size - hdr->data_offset;
+	}
+
 	sha256_starts(&ctx);
 	/* Header and data is used as input for sha256 digest */
 	sha256_update(&ctx, (void *)hdr, hdr->header_size);
@@ -203,6 +215,22 @@ static int amlimage_check_image_type(uint8_t type)
 	return EXIT_FAILURE;
 }
 
+/*
+ * AArch64 binary code to relocate payload when booting from eMMC on GXBB.
+ *
+ * Payload is relocated from offset 0x1200 to 0x1000 in TZRAM, similar to:
+ * memmove(0xd9001000, 0xd9001200, 0xb000)
+ * goto 0xd9001000
+ *
+ * See amlimage-gxbb-relocate.c on how to reproduce the following byte array.
+ */
+static const uint8_t gxbb_relocate[] = {
+	0x02, 0x40, 0x82, 0xd2, 0x02, 0x20, 0xbb, 0xf2, 0x43, 0x2c, 0x40, 0x91,
+	0x44, 0x20, 0x40, 0xd1, 0x42, 0x20, 0x00, 0x91, 0x45, 0x80, 0x5f, 0xf8,
+	0x85, 0x00, 0x3f, 0xf9, 0x5f, 0x00, 0x03, 0xeb, 0x61, 0xff, 0xff, 0x54,
+	0x02, 0x00, 0x82, 0xd2, 0x02, 0x20, 0xbb, 0xf2, 0x40, 0x00, 0x1f, 0xd6,
+};
+
 static int amlimage_vrec_header(struct image_tool_params *params,
 				struct image_type_params *tparams)
 {
@@ -213,6 +241,10 @@ static int amlimage_vrec_header(struct image_tool_params *params,
 	/* Use payload offset as header size, datafile will be appended */
 	tparams->header_size = PAYLOAD_OFFSET;
 
+	/* Only prepend 512 bytes for GXBB eMMC header */
+	if (!strcmp("emmc", variant->name))
+		tparams->header_size = 0x200;
+
 	tparams->hdr = calloc(1, tparams->header_size);
 	if (!tparams->hdr) {
 		fprintf(stderr, "%s: Can't alloc header: %s\n",
@@ -222,6 +254,11 @@ static int amlimage_vrec_header(struct image_tool_params *params,
 
 	/* Start with a copy of the variant header */
 	memcpy(tparams->hdr + HEADER_OFFSET, hdr, hdr->header_size);
+
+	/* Insert relocate code to move payload from 0x1200 to 0x1000 on GXBB */
+	if (!strcmp("gxbb", variant->name))
+		memcpy(tparams->hdr + 0x200,
+		       gxbb_relocate, sizeof(gxbb_relocate));
 
 	/* Pad up to payload size of the variant header */
 	return hdr->payload_size - params->file_size;
