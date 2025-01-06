@@ -30,8 +30,8 @@
 void setup_eth0refclko(void)
 {
 	/* Configure and enable ETH0_REFCLKO_25MHz */
-	static struct rk3588_bus_ioc * const bus_ioc = (void *)BUS_IOC_BASE;
-	static struct rk3588_cru * const cru = (void *)CRU_BASE;
+	static struct rk3588_bus_ioc * const bus_ioc = RK3588_BUS_IOC_BASE;
+	static struct rk3588_cru * const cru = RK3588_CRU_BASE;
 
 	/* 1. Pinmux */
 	rk_clrsetreg(&bus_ioc->gpio2c_iomux_sel_l, GPIO2C3_SEL_MASK, GPIO2C3_ETH0_REFCLKO_25M);

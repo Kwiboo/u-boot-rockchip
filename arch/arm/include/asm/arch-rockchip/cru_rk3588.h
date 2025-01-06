@@ -63,7 +63,7 @@ struct rk3588_pll {
 	unsigned int reserved0[3];
 };
 
-#define CRU_BASE	0xfd7c0000
+#define RK3588_CRU_BASE		((struct rk3588_cru *)0xfd7c0000)
 
 struct rk3588_cru {
 	struct rk3588_pll pll[18];
@@ -470,4 +470,5 @@ enum {
 	SCMI_CCLK_SD_DIV_SHIFT			= 6,
 	SCMI_CCLK_SD_DIV_MASK			= 0x3f << SCMI_CCLK_SD_DIV_SHIFT,
 };
+
 #endif

@@ -99,8 +99,8 @@ enum {
 
 void board_debug_uart_init(void)
 {
-	__maybe_unused static struct rk3588_bus_ioc * const bus_ioc = (void *)BUS_IOC_BASE;
-	static struct rk3588_pmu2_ioc * const pmu2_ioc = (void *)PMU2_IOC_BASE;
+	static struct rk3588_bus_ioc * const bus_ioc = RK3588_BUS_IOC_BASE;
+	static struct rk3588_pmu2_ioc * const pmu2_ioc = RK3588_PMU2_IOC_BASE;
 
 	/* Refer to BUS_IOC */
 	rk_clrsetreg(&pmu2_ioc->gpio0b_iomux_sel_h,
@@ -136,7 +136,7 @@ int arch_cpu_init(void)
 {
 #ifdef CONFIG_XPL_BUILD
 #ifdef CONFIG_ROCKCHIP_DISABLE_FORCE_JTAG
-	static struct rk3588_sysgrf * const sys_grf = (void *)SYS_GRF_BASE;
+	static struct rk3588_sysgrf * const sys_grf = RK3588_SYS_GRF_BASE;
 #endif
 	int secure_reg;
 

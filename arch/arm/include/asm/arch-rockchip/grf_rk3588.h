@@ -6,6 +6,8 @@
 #ifndef __SOC_ROCKCHIP_RK3588_GRF_H__
 #define __SOC_ROCKCHIP_RK3588_GRF_H__
 
+#define RK3588_PMU1GRF_BASE	((struct rk3588_pmu1grf *)0xfd58a000)
+
 struct rk3588_pmu1grf {
 	unsigned int soc_con[12];
 	unsigned int reserved0[(0x0050 - 0x002c) / 4 - 1];
@@ -32,7 +34,7 @@ struct rk3588_pmu1grf {
 
 check_member(rk3588_pmu1grf, sd_detect_cnt, 0x03b0);
 
-#define SYS_GRF_BASE	0xfd58c000
+#define RK3588_SYS_GRF_BASE	((struct rk3588_sysgrf *)0xfd58c000)
 
 struct rk3588_sysgrf {
 	unsigned int wdt_con0;
@@ -56,4 +58,5 @@ struct rk3588_sysgrf {
 };
 
 check_member(rk3588_sysgrf, chip_id, 0x0600);
+
 #endif /*__SOC_ROCKCHIP_RK3588_GRF_H__ */
