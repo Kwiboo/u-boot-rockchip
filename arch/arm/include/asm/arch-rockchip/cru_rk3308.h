@@ -50,6 +50,8 @@ struct rk3308_clk_priv {
 	ulong vpll1_hz;
 };
 
+#define RK3308_CRU_BASE		((struct rk3308_cru *)0xff500000)
+
 struct rk3308_cru {
 	struct rk3308_pll {
 		unsigned int con0;
@@ -89,6 +91,7 @@ struct rk3308_cru {
 	unsigned int sdio_con[2];
 	unsigned int emmc_con[2];
 };
+check_member(rk3308_cru, emmc_con[1], 0x494);
 
 enum {
 	/* PLLCON0*/
@@ -311,7 +314,5 @@ enum {
 	AUDIO_HCLK_DIV_SHIFT	= 0,
 	AUDIO_HCLK_DIV_MASK	= 0x1f << AUDIO_HCLK_DIV_SHIFT,
 };
-
-check_member(rk3308_cru, emmc_con[1], 0x494);
 
 #endif

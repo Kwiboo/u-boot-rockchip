@@ -9,8 +9,6 @@
 #include <linux/bitops.h>
 
 #if defined(CONFIG_DEBUG_UART)
-#define GRF_BASE	0xff000000
-
 enum {
 	GPIO1C7_SHIFT		= 8,
 	GPIO1C7_MASK		= GENMASK(11, 8),
@@ -49,7 +47,7 @@ enum {
 
 void board_debug_uart_init(void)
 {
-	static struct rk3308_grf * const grf = (void *)GRF_BASE;
+	static struct rk3308_grf * const grf = RK3308_GRF_BASE;
 
 	/* Enable early UART2 channel m0 on the rk3308 */
 	rk_clrsetreg(&grf->soc_con5, UART2_IO_SEL_MASK,
