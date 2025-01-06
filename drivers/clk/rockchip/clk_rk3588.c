@@ -9,7 +9,6 @@
 #include <dm.h>
 #include <errno.h>
 #include <scmi_protocols.h>
-#include <syscon.h>
 #include <asm/arch-rockchip/cru_rk3588.h>
 #include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/hardware.h>
@@ -1979,10 +1978,6 @@ static int rk3588_clk_probe(struct udevice *dev)
 		priv->armclk_init_hz = priv->armclk_enter_hz;
 	}
 #endif
-
-	priv->grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
-	if (IS_ERR(priv->grf))
-		return PTR_ERR(priv->grf);
 
 	rk3588_clk_init(priv);
 
