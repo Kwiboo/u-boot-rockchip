@@ -11,7 +11,6 @@
 
 static const struct udevice_id rv1126_syscon_ids[] = {
 	{ .compatible = "rockchip,rv1126-grf", .data = ROCKCHIP_SYSCON_GRF },
-	{ .compatible = "rockchip,rv1126-pmugrf", .data = ROCKCHIP_SYSCON_PMUGRF },
 	{ }
 };
 
@@ -34,13 +33,6 @@ U_BOOT_DRIVER(rockchip_rv1126_grf) = {
 	.name = "rockchip_rv1126_grf",
 	.id = UCLASS_SYSCON,
 	.of_match = rv1126_syscon_ids,
-	.bind = rv1126_syscon_bind_of_plat,
-};
-
-U_BOOT_DRIVER(rockchip_rv1126_pmugrf) = {
-	.name = "rockchip_rv1126_pmugrf",
-	.id = UCLASS_SYSCON,
-	.of_match = rv1126_syscon_ids + 1,
 	.bind = rv1126_syscon_bind_of_plat,
 };
 #endif

@@ -12,7 +12,6 @@
 static const struct udevice_id rk3188_syscon_ids[] = {
 	{ .compatible = "rockchip,rk3188-noc", .data = ROCKCHIP_SYSCON_NOC },
 	{ .compatible = "rockchip,rk3188-grf", .data = ROCKCHIP_SYSCON_GRF },
-	{ .compatible = "rockchip,rk3188-pmu", .data = ROCKCHIP_SYSCON_PMU },
 	{ }
 };
 
@@ -42,13 +41,6 @@ U_BOOT_DRIVER(rockchip_rk3188_grf) = {
 	.name = "rockchip_rk3188_grf",
 	.id = UCLASS_SYSCON,
 	.of_match = rk3188_syscon_ids + 1,
-	.bind = rk3188_syscon_bind_of_plat,
-};
-
-U_BOOT_DRIVER(rockchip_rk3188_pmu) = {
-	.name = "rockchip_rk3188_pmu",
-	.id = UCLASS_SYSCON,
-	.of_match = rk3188_syscon_ids + 2,
 	.bind = rk3188_syscon_bind_of_plat,
 };
 #endif

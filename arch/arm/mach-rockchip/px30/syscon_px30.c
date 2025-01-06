@@ -9,7 +9,6 @@
 #include <asm/arch-rockchip/clock.h>
 
 static const struct udevice_id px30_syscon_ids[] = {
-	{ .compatible = "rockchip,px30-pmugrf", .data = ROCKCHIP_SYSCON_PMUGRF },
 	{ .compatible = "rockchip,px30-grf", .data = ROCKCHIP_SYSCON_GRF },
 	{ }
 };
@@ -31,13 +30,6 @@ static int px30_syscon_bind_of_plat(struct udevice *dev)
 
 	return 0;
 }
-
-U_BOOT_DRIVER(rockchip_px30_pmugrf) = {
-	.name = "rockchip_px30_pmugrf",
-	.id = UCLASS_SYSCON,
-	.of_match = px30_syscon_ids,
-	.bind = px30_syscon_bind_of_plat,
-};
 
 U_BOOT_DRIVER(rockchip_px30_grf) = {
 	.name = "rockchip_px30_grf",
