@@ -6,6 +6,8 @@
 #ifndef __SOC_ROCKCHIP_RK3568_GRF_H__
 #define __SOC_ROCKCHIP_RK3568_GRF_H__
 
+#define RK3568_GRF_BASE		((struct rk3568_grf *)0xfdc60000)
+
 struct rk3568_grf {
 	unsigned int gpio1a_iomux_l;
 	unsigned int gpio1a_iomux_h;
@@ -280,6 +282,8 @@ struct rk3568_grf {
 };
 
 check_member(rk3568_grf, dmac1_con9, 0x0964);
+
+#define RK3568_PMUGRF_BASE	((struct rk3568_pmugrf *)0xfdc20000)
 
 struct rk3568_pmugrf {
 	unsigned int pmu_gpio0a_iomux_l;

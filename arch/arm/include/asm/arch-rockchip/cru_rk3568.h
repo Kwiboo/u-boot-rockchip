@@ -66,6 +66,8 @@ struct rk3568_pll {
 	unsigned int reserved0[3];
 };
 
+#define RK3568_PMUCRU_BASE	((struct rk3568_pmucru *)0xfdd00000)
+
 struct rk3568_pmucru {
 	struct rk3568_pll pll[2];/* Address Offset: 0x0000 */
 	unsigned int reserved0[16];/* Address Offset: 0x0040 */
@@ -80,6 +82,8 @@ struct rk3568_pmucru {
 
 check_member(rk3568_pmucru, mode_con00, 0x80);
 check_member(rk3568_pmucru, pmu_softrst_con[0], 0x200);
+
+#define RK3568_CRU_BASE		((struct rk3568_cru *)0xfdd20000)
 
 struct rk3568_cru {
 	struct rk3568_pll pll[6];
