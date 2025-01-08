@@ -9,7 +9,7 @@
 #include <spl_gpio.h>
 #include <asm/io.h>
 
-#include <asm/arch-rockchip/cru.h>
+#include <asm/arch-rockchip/cru_rk3399.h>
 #include <asm/arch-rockchip/gpio.h>
 #include <asm/arch-rockchip/grf_rk3399.h>
 

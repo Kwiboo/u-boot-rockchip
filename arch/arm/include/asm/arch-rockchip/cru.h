@@ -11,16 +11,6 @@
 #include <linux/bitops.h>
 #endif
 
-#if defined(CONFIG_ROCKCHIP_RK3288)
-# include <asm/arch-rockchip/cru_rk3288.h>
-#elif defined(CONFIG_ROCKCHIP_RK3399)
-# include <asm/arch-rockchip/cru_rk3399.h>
-#elif defined(CONFIG_ROCKCHIP_RK3568)
-#include <asm/arch-rockchip/cru_rk3568.h>
-#elif defined(CONFIG_ROCKCHIP_RK3588)
-#include <asm/arch-rockchip/cru_rk3588.h>
-#endif
-
 /* CRU_GLB_RST_ST */
 enum {
 	GLB_POR_RST,
@@ -31,8 +21,6 @@ enum {
 	FST_GLB_WDT_RST_ST	= BIT(4),
 	SND_GLB_WDT_RST_ST	= BIT(5),
 };
-
-#define MHz		1000000
 
 char *get_reset_cause(void);
 

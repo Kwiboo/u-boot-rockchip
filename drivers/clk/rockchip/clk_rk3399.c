@@ -14,7 +14,7 @@
 #include <syscon.h>
 #include <bitfield.h>
 #include <asm/arch-rockchip/clock.h>
-#include <asm/arch-rockchip/cru.h>
+#include <asm/arch-rockchip/cru_rk3399.h>
 #include <asm/arch-rockchip/hardware.h>
 #include <asm/global_data.h>
 #include <dm/device-internal.h>

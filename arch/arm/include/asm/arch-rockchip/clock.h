@@ -180,11 +180,6 @@ void *rockchip_get_cru(void);
  */
 void *rockchip_get_pmucru(void);
 
-struct rockchip_cru;
-struct rk3288_grf;
-
-void rk3288_clk_configure_cpu(struct rockchip_cru *cru, struct rk3288_grf *grf);
-
 int rockchip_get_clk(struct udevice **devp);
 
 /*

@@ -13,7 +13,7 @@
 #include <asm/arch-rockchip/bootrom.h>
 #include <asm/arch-rockchip/clock.h>
 #include <asm/arch-rockchip/cpu_rk3288.h>
-#include <asm/arch-rockchip/cru.h>
+#include <asm/arch-rockchip/cru_rk3288.h>
 #include <asm/arch-rockchip/hardware.h>
 #include <asm/arch-rockchip/grf_rk3288.h>
 #include <asm/arch-rockchip/pmu_rk3288.h>

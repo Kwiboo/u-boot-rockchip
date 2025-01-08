@@ -64,6 +64,8 @@ struct rockchip_cru {
 	u32 sdio1_con[2];
 };
 check_member(rockchip_cru, sdio1_con[1], 0x594);
+
+#define MHz		1000000
 #define KHz		1000
 #define OSC_HZ		(24*MHz)
 #define LPLL_HZ		(600*MHz)
