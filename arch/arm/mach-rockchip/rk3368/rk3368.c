@@ -168,14 +168,8 @@ int arch_cpu_init(void)
 #ifdef CONFIG_DEBUG_UART_BOARD_INIT
 void board_debug_uart_init(void)
 {
-	/*
-	 * N.B.: This is called before the device-model has been
-	 *       initialised. For this reason, we can not access
-	 *       the GRF address range using the syscon API.
-	 */
 #if defined(CONFIG_DEBUG_UART_BASE) && (CONFIG_DEBUG_UART_BASE == 0xff180000)
-	struct rk3368_grf * const grf =
-		(struct rk3368_grf * const)0xff770000;
+	static struct rk3368_grf * const grf = RK3368_GRF_BASE;
 
 	enum {
 		GPIO2D1_MASK            = GENMASK(3, 2),
@@ -193,8 +187,7 @@ void board_debug_uart_init(void)
 	rk_clrsetreg(&grf->gpio2d_iomux,
 		     GPIO2D1_MASK, GPIO2D1_UART0_SOUT);
 #elif defined(CONFIG_DEBUG_UART_BASE) && (CONFIG_DEBUG_UART_BASE == 0xff1c0000)
-	struct rk3368_pmu_grf * const pmugrf __maybe_unused =
-		(struct rk3368_pmu_grf * const)0xff738000;
+	static struct rk3368_pmu_grf * const pmugrf = RK3368_PMUGRF_BASE;
 
 	enum {
 		/* UART4 */
@@ -212,8 +205,7 @@ void board_debug_uart_init(void)
 		     GPIO0D2_MASK | GPIO0D3_MASK,
 		     GPIO0D2_UART4_SOUT | GPIO0D3_UART4_SIN);
 #elif defined(CONFIG_DEBUG_UART_BASE) && (CONFIG_DEBUG_UART_BASE == 0xff690000)
-	struct rk3368_grf * const grf =
-		(struct rk3368_grf * const)0xff770000;
+	static struct rk3368_grf * const grf = RK3368_GRF_BASE;
 
 	enum {
 		GPIO2A6_SHIFT           = 12,
