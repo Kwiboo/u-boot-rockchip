@@ -30,6 +30,8 @@ struct rk3188_clk_priv {
 	bool has_bwadj;
 };
 
+#define RK3188_CRU_BASE		((struct rk3188_cru *)0x20000000)
+
 struct rk3188_cru {
 	struct rk3188_pll {
 		u32 con0;

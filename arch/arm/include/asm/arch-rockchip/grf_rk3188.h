@@ -11,6 +11,8 @@ struct rk3188_grf_gpio_lh {
 	u32 h;
 };
 
+#define RK3188_GRF_BASE		((struct rk3188_grf *)0x20008000)
+
 struct rk3188_grf {
 	struct rk3188_grf_gpio_lh gpio_dir[4];
 	struct rk3188_grf_gpio_lh gpio_do[4];

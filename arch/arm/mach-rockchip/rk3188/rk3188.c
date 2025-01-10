@@ -17,8 +17,6 @@
 #include <linux/err.h>
 #include <linux/printk.h>
 
-#define GRF_BASE	0x20008000
-
 const char * const boot_devices[BROM_LAST_BOOTSOURCE + 1] = {
 	[BROM_BOOTSOURCE_EMMC] = "/mmc@1021c000",
 	[BROM_BOOTSOURCE_SD] = "/mmc@10214000",
@@ -28,7 +26,7 @@ const char * const boot_devices[BROM_LAST_BOOTSOURCE + 1] = {
 void board_debug_uart_init(void)
 {
 	/* Enable early UART on the RK3188 */
-	struct rk3188_grf * const grf = (void *)GRF_BASE;
+	static struct rk3188_grf * const grf = RK3188_GRF_BASE;
 	enum {
 		GPIO1B1_SHIFT		= 2,
 		GPIO1B1_MASK		= 3,
