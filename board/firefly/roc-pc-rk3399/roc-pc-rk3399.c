@@ -15,7 +15,6 @@
 
 #ifdef CONFIG_XPL_BUILD
 
-#define PMUGRF_BASE	0xff320000
 #define GPIO0_BASE	0xff720000
 
 /**
@@ -29,8 +28,8 @@
  */
 void led_setup(void)
 {
-	struct rockchip_gpio_regs * const gpio0 = (void *)GPIO0_BASE;
-	struct rk3399_pmugrf_regs * const pmugrf = (void *)PMUGRF_BASE;
+	static struct rockchip_gpio_regs * const gpio0 = (void *)GPIO0_BASE;
+	static struct rk3399_pmugrf_regs * const pmugrf = RK3399_PMUGRF_BASE;
 	bool press_pwr_key = false;
 
 	if (IS_ENABLED(CONFIG_SPL_ENV_SUPPORT)) {

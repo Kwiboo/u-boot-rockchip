@@ -20,9 +20,6 @@
 #include <linux/printk.h>
 #include <power/regulator.h>
 
-#define GRF_EMMCCORE_CON11 0xff77f02c
-#define GRF_BASE	0xff770000
-
 const char * const boot_devices[BROM_LAST_BOOTSOURCE + 1] = {
 	[BROM_BOOTSOURCE_EMMC] = "/mmc@fe330000",
 	[BROM_BOOTSOURCE_SPINOR] = "/spi@ff1d0000/flash@0",
@@ -111,10 +108,8 @@ int arch_cpu_init(void)
 #ifdef CONFIG_DEBUG_UART_BOARD_INIT
 void board_debug_uart_init(void)
 {
-#define GRF_BASE	0xff770000
 #define GPIO0_BASE	0xff720000
-#define PMUGRF_BASE	0xff320000
-	struct rk3399_grf_regs * const grf = (void *)GRF_BASE;
+	static struct rk3399_grf_regs * const grf = RK3399_GRF_BASE;
 
 #if defined(CONFIG_DEBUG_UART_BASE) && (CONFIG_DEBUG_UART_BASE == 0xff180000)
 	/* Enable early UART0 on the RK3399 */

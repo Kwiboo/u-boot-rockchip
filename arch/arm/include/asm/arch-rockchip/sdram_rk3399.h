@@ -23,6 +23,8 @@ struct rk3399_ddr_pi_regs {
 	u32 denali_pi[200];
 };
 
+#define RK3399_DDR_CIC_BASE	((struct rk3399_ddr_cic_regs *)0xff620000)
+
 struct rk3399_ddr_cic_regs {
 	u32 cic_ctrl0;
 	u32 cic_ctrl1;

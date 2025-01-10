@@ -6,6 +6,8 @@
 #ifndef __SOC_ROCKCHIP_RK3399_GRF_H__
 #define __SOC_ROCKCHIP_RK3399_GRF_H__
 
+#define RK3399_GRF_BASE		((struct rk3399_grf_regs *)0xff770000)
+
 struct rk3399_grf_regs {
 	u32 reserved[0x800];
 	u32 usb3_perf_con0;
@@ -192,6 +194,8 @@ struct rk3399_grf_regs {
 };
 check_member(rk3399_grf_regs, emmcphy_status, 0xf7a0);
 
+#define RK3399_PMUGRF_BASE	((struct rk3399_pmugrf_regs *)0xff320000)
+
 struct rk3399_pmugrf_regs {
 	union {
 		u32 iomux_pwm_3a;
@@ -268,6 +272,8 @@ struct rk3399_pmugrf_regs {
 	u32 os_reg3;
 };
 check_member(rk3399_pmugrf_regs, os_reg3, 0x30c);
+
+#define RK3399_PMUSGRF_BASE	((struct rk3399_pmusgrf_regs *)0xff330000)
 
 struct rk3399_pmusgrf_regs {
 	u32 ddr_rgn_con[35];
