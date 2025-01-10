@@ -23,8 +23,6 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-#define GRF_BASE	0xff770000
-
 const char * const boot_devices[BROM_LAST_BOOTSOURCE + 1] = {
 	[BROM_BOOTSOURCE_EMMC] = "/mmc@ff0f0000",
 	[BROM_BOOTSOURCE_SPINOR] = "/spi@ff130000/flash@0",
@@ -76,7 +74,7 @@ int arch_cpu_init(void)
 	configure_l2ctlr();
 #else
 	/* We do some SoC one time setting here. */
-	struct rk3288_grf * const grf = (void *)GRF_BASE;
+	static struct rk3288_grf * const grf = RK3288_GRF_BASE;
 
 	/* Use rkpwm by default */
 	rk_setreg(&grf->soc_con2, 1 << 0);
@@ -97,7 +95,7 @@ int arch_cpu_init(void)
 void board_debug_uart_init(void)
 {
 	/* Enable early UART on the RK3288 */
-	struct rk3288_grf * const grf = (void *)GRF_BASE;
+	static struct rk3288_grf * const grf = RK3288_GRF_BASE;
 
 	rk_clrsetreg(&grf->gpio7ch_iomux, GPIO7C7_MASK << GPIO7C7_SHIFT |
 		     GPIO7C6_MASK << GPIO7C6_SHIFT,

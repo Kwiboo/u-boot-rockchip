@@ -32,6 +32,8 @@ struct rk3288_clk_priv {
 	ulong rate;
 };
 
+#define RK3288_CRU_BASE		((struct rockchip_cru *)0xff760000)
+
 struct rockchip_cru {
 	struct rk3288_pll {
 		u32 con0;
