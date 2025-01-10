@@ -113,9 +113,6 @@ u32 addrmap[][8] = {
 		0x06060606, 0x00000606, 0x3f3f}, /* 13 */
 };
 
-#define PMUGRF_BASE_ADDR		0xFF010000
-#define CRU_BASE_ADDR			0xFF2B0000
-#define GRF_BASE_ADDR			0xFF140000
 #define DDRC_BASE_ADDR			0xFF600000
 #define DDR_PHY_BASE_ADDR		0xFF2A0000
 #define SERVER_MSCH0_BASE_ADDR		0xFF530000
@@ -698,11 +695,11 @@ int sdram_init(void)
 
 	dram_info.phy = (void *)DDR_PHY_BASE_ADDR;
 	dram_info.pctl = (void *)DDRC_BASE_ADDR;
-	dram_info.grf = (void *)GRF_BASE_ADDR;
-	dram_info.cru = (void *)CRU_BASE_ADDR;
+	dram_info.grf = PX30_GRF_BASE;
+	dram_info.cru = PX30_CRU_BASE;
 	dram_info.msch = (void *)SERVER_MSCH0_BASE_ADDR;
 	dram_info.ddr_grf = (void *)DDR_GRF_BASE_ADDR;
-	dram_info.pmugrf = (void *)PMUGRF_BASE_ADDR;
+	dram_info.pmugrf = PX30_PMUGRF_BASE;
 
 	sdram_params = get_default_sdram_config();
 	ret = sdram_init_detect(&dram_info, sdram_params);

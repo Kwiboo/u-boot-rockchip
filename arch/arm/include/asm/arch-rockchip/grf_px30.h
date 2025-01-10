@@ -5,6 +5,8 @@
 #ifndef _ASM_ARCH_GRF_px30_H
 #define _ASM_ARCH_GRF_px30_H
 
+#define PX30_GRF_BASE		((struct px30_grf *)0xff140000)
+
 struct px30_grf {
 	unsigned int gpio1al_iomux;
 	unsigned int gpio1ah_iomux;
@@ -108,6 +110,8 @@ struct px30_grf {
 };
 
 check_member(px30_grf, mac_con1, 0x904);
+
+#define PX30_PMUGRF_BASE	((struct px30_pmugrf *)0xff010000)
 
 struct px30_pmugrf {
 	unsigned int gpio0al_iomux;

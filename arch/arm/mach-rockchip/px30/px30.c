@@ -45,10 +45,6 @@ static struct mm_region px30_mem_map[] = {
 struct mm_region *mem_map = px30_mem_map;
 
 #define PMU_PWRDN_CON			0xff000018
-#define PMUGRF_BASE			0xff010000
-#define GRF_BASE			0xff140000
-#define CRU_BASE			0xff2b0000
-#define PMUCRU_BASE			0xff2bc000
 #define VIDEO_PHY_BASE			0xff2e0000
 #define SERVICE_CORE_ADDR		0xff508000
 #define DDR_FW_BASE			0xff534000
@@ -240,8 +236,8 @@ enum {
 
 int arch_cpu_init(void)
 {
-	static struct px30_grf * const grf = (void *)GRF_BASE;
-	static struct px30_cru * const cru = (void *)CRU_BASE;
+	static struct px30_grf * const grf = PX30_GRF_BASE;
+	static struct px30_cru * const cru = PX30_CRU_BASE;
 	u32 __maybe_unused val;
 
 #ifdef CONFIG_XPL_BUILD
@@ -306,7 +302,7 @@ void board_debug_uart_init(void)
 	(((CONFIG_DEBUG_UART_BASE == 0xff168000) && \
 	(CONFIG_DEBUG_UART_CHANNEL != 1)) || \
 	CONFIG_DEBUG_UART_BASE == 0xff030000)
-	static struct px30_pmugrf * const pmugrf = (void *)PMUGRF_BASE;
+	static struct px30_pmugrf * const pmugrf = PX30_PMUGRF_BASE;
 #endif
 #if !defined(CONFIG_DEBUG_UART_BASE) || \
 	(CONFIG_DEBUG_UART_BASE != 0xff158000 && \
@@ -317,11 +313,11 @@ void board_debug_uart_init(void)
 	 (CONFIG_DEBUG_UART_BASE == 0xff158000 || \
 	  CONFIG_DEBUG_UART_BASE == 0xff168000 || \
 	  CONFIG_DEBUG_UART_BASE == 0xff178000))
-	static struct px30_grf * const grf = (void *)GRF_BASE;
-	static struct px30_cru * const cru = (void *)CRU_BASE;
+	static struct px30_grf * const grf = PX30_GRF_BASE;
+	static struct px30_cru * const cru = PX30_CRU_BASE;
 #endif
 #if defined(CONFIG_DEBUG_UART_BASE) && CONFIG_DEBUG_UART_BASE == 0xff030000
-	static struct px30_pmucru * const pmucru = (void *)PMUCRU_BASE;
+	static struct px30_pmucru * const pmucru = PX30_PMUCRU_BASE;
 #endif
 
 #if defined(CONFIG_DEBUG_UART_BASE) && (CONFIG_DEBUG_UART_BASE == 0xff158000)
