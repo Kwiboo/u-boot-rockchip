@@ -40,10 +40,6 @@
 	status = "okay";
 };
 
-&pmugrf {
-	bootph-all;
-};
-
 &sgrf {
 	bootph-all;
 };

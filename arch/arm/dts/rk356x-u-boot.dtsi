@@ -117,10 +117,6 @@
 	bootph-all;
 };
 
-&pmugrf {
-	bootph-all;
-};
-
 &sdhci {
 	bootph-pre-ram;
 	bootph-some-ram;

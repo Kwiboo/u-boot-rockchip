@@ -9,7 +9,6 @@
 
 static const struct udevice_id rk3568_syscon_ids[] = {
 	{ .compatible = "rockchip,rk3568-grf", .data = ROCKCHIP_SYSCON_GRF },
-	{ .compatible = "rockchip,rk3568-pmugrf", .data = ROCKCHIP_SYSCON_PMUGRF },
 	{ }
 };
 

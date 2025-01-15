@@ -98,10 +98,6 @@
 	bootph-all;
 };
 
-&pmu1grf {
-	bootph-all;
-};
-
 &scmi {
 	bootph-pre-ram;
 	bootph-some-ram;
