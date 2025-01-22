@@ -16,11 +16,9 @@ static int rk3576_set_mux(struct rockchip_pin_bank *bank, int pin, int mux)
 	struct rockchip_pinctrl_priv *priv = bank->priv;
 	int iomux_num = (pin / 8);
 	struct regmap *regmap;
-	int reg, ret, mask;
+	int reg, mask;
 	u8 bit;
-	u32 data;
-
-	debug("setting mux of GPIO%d-%d to %d\n", bank->bank_num, pin, mux);
+	u32 data, rmask;
 
 	regmap = priv->regmap_base;
 	reg = bank->iomux[iomux_num].offset;
@@ -30,16 +28,13 @@ static int rk3576_set_mux(struct rockchip_pin_bank *bank, int pin, int mux)
 	mask = 0xf;
 
 	data = (mask << (bit + 16));
+	rmask = data | (data >> 16);
 	data |= (mux & mask) << bit;
 
 	if (bank->bank_num == 0 && pin >= RK_PB4 && pin <= RK_PB7)
 		reg += 0x1FF4; /* GPIO0_IOC_GPIO0B_IOMUX_SEL_H */
 
-	debug("iomux write reg = %x data = %x\n", reg, data);
-
-	ret = regmap_write(regmap, reg, data);
-
-	return ret;
+	return regmap_update_bits(regmap, reg, rmask, data);
 }
 
 #define RK3576_DRV_BITS_PER_PIN		4
@@ -90,8 +85,8 @@ static int rk3576_set_drive(struct rockchip_pin_bank *bank,
 			    int pin_num, int strength)
 {
 	struct regmap *regmap;
-	int reg, ret;
-	u32 data;
+	int reg;
+	u32 data, rmask;
 	u8 bit;
 	int drv = ((strength & BIT(2)) >> 2) | ((strength & BIT(0)) << 2) | (strength & BIT(1));
 
@@ -99,10 +94,10 @@ static int rk3576_set_drive(struct rockchip_pin_bank *bank,
 
 	/* enable the write to the equivalent lower bits */
 	data = ((1 << RK3576_DRV_BITS_PER_PIN) - 1) << (bit + 16);
+	rmask = data | (data >> 16);
 	data |= (drv << bit);
-	ret = regmap_write(regmap, reg, data);
 
-	return ret;
+	return regmap_update_bits(regmap, reg, rmask, data);
 }
 
 #define RK3576_PULL_BITS_PER_PIN	2
@@ -155,10 +150,10 @@ static int rk3576_set_pull(struct rockchip_pin_bank *bank,
 	struct regmap *regmap;
 	int reg, ret;
 	u8 bit, type;
-	u32 data;
+	u32 data, rmask;
 
 	if (pull == PIN_CONFIG_BIAS_PULL_PIN_DEFAULT)
-		return -EOPNOTSUPP;
+		return -ENOTSUPP;
 
 	rk3576_calc_pull_reg_and_bit(bank, pin_num, &regmap, &reg, &bit);
 	type = 1; /* FIXME: was always set to 1 in vendor kernel */
@@ -170,11 +165,10 @@ static int rk3576_set_pull(struct rockchip_pin_bank *bank,
 
 	/* enable the write to the equivalent lower bits */
 	data = ((1 << RK3576_PULL_BITS_PER_PIN) - 1) << (bit + 16);
-
+	rmask = data | (data >> 16);
 	data |= (ret << bit);
-	ret = regmap_write(regmap, reg, data);
 
-	return ret;
+	return regmap_update_bits(regmap, reg, rmask, data);
 }
 
 #define RK3576_SMT_BITS_PER_PIN		1
@@ -188,10 +182,10 @@ static int rk3576_set_pull(struct rockchip_pin_bank *bank,
 #define RK3576_SMT_GPIO4_CL_OFFSET	0xA248
 #define RK3576_SMT_GPIO4_DL_OFFSET	0xB24C
 
-static int rk3576_calc_schmitt_reg_and_bit(struct rockchip_pin_bank *bank,
-					   int pin_num,
-					   struct regmap **regmap,
-					   int *reg, u8 *bit)
+static void rk3576_calc_schmitt_reg_and_bit(struct rockchip_pin_bank *bank,
+					    int pin_num,
+					    struct regmap **regmap,
+					    int *reg, u8 *bit)
 {
 	struct rockchip_pinctrl_priv *priv = bank->priv;
 
@@ -220,26 +214,24 @@ static int rk3576_calc_schmitt_reg_and_bit(struct rockchip_pin_bank *bank,
 	*reg += ((pin_num / RK3576_SMT_PINS_PER_REG) * 4);
 	*bit = pin_num % RK3576_SMT_PINS_PER_REG;
 	*bit *= RK3576_SMT_BITS_PER_PIN;
-
-	return 0;
 }
 
 static int rk3576_set_schmitt(struct rockchip_pin_bank *bank,
 			      int pin_num, int enable)
 {
 	struct regmap *regmap;
-	int reg, ret;
-	u32 data;
+	int reg;
+	u32 data, rmask;
 	u8 bit;
 
 	rk3576_calc_schmitt_reg_and_bit(bank, pin_num, &regmap, &reg, &bit);
 
 	/* enable the write to the equivalent lower bits */
 	data = ((1 << RK3576_SMT_BITS_PER_PIN) - 1) << (bit + 16);
+	rmask = data | (data >> 16);
 	data |= (enable << bit);
-	ret = regmap_write(regmap, reg, data);
 
-	return ret;
+	return regmap_update_bits(regmap, reg, rmask, data);
 }
 
 static struct rockchip_pin_bank rk3576_pin_banks[] = {
