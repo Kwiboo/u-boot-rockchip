@@ -182,9 +182,9 @@ static int rockchip_dram_init_banksize(void)
 		 * BL31 (TF-A) reserves the first 2MB but DDR_MEM tag may not
 		 * have it, so force this space as reserved.
 		 */
-		if (start_addr < SZ_2M + CFG_SYS_SDRAM_BASE) {
-			size -= SZ_2M - (start_addr - CFG_SYS_SDRAM_BASE);
-			start_addr = SZ_2M + CFG_SYS_SDRAM_BASE;
+		if (start_addr < CFG_SYS_SDRAM_BASE + SZ_2M) {
+			size -= CFG_SYS_SDRAM_BASE + SZ_2M - start_addr;
+			start_addr = CFG_SYS_SDRAM_BASE + SZ_2M;
 		}
 
 		/*
@@ -302,8 +302,8 @@ int dram_init_banksize(void)
 	debug("Couldn't use ATAG (%d) to detect DDR layout, falling back...\n",
 	      ret);
 
-	/* Reserve 0x200000 for ATF bl31 */
-	gd->bd->bi_dram[0].start = CFG_SYS_SDRAM_BASE + 0x200000;
+	/* Reserve 2M for ATF bl31 */
+	gd->bd->bi_dram[0].start = CFG_SYS_SDRAM_BASE + SZ_2M;
 	gd->bd->bi_dram[0].size = top - gd->bd->bi_dram[0].start;
 
 	/* Add usable memory beyond the blob of space for peripheral near 4GB */
@@ -332,7 +332,7 @@ int dram_init_banksize(void)
 		gd->bd->bi_dram[0].size = 0x8400000;
 		/* Reserve 32M for OPTEE with TA */
 		gd->bd->bi_dram[1].start = CFG_SYS_SDRAM_BASE
-					+ gd->bd->bi_dram[0].size + 0x2000000;
+					+ gd->bd->bi_dram[0].size + SZ_32M;
 		gd->bd->bi_dram[1].size = top - gd->bd->bi_dram[1].start;
 	}
 #else
