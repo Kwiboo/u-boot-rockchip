@@ -263,59 +263,71 @@ static int rk3568_set_gmac_speed(struct udevice *dev)
 	return 0;
 }
 
-#define RK3576_SDGMAC_GRF_GMAC0_CON		0x020
-#define RK3576_SDGMAC_GRF_GMAC1_CON		0x024
-
-#define RK3576_GMAC_CLK_RMII_MODE		GRF_BIT(3)
-#define RK3576_GMAC_CLK_RGMII_MODE		GRF_CLR_BIT(3)
-
-#define RK3576_GMAC_CLK_RMII_DIV2		GRF_BIT(5)
-#define RK3576_GMAC_CLK_RMII_DIV20		GRF_CLR_BIT(5)
-#define RK3576_GMAC_CLK_RGMII_DIV1		(GRF_CLR_BIT(5) | GRF_CLR_BIT(6))
-#define RK3576_GMAC_CLK_RGMII_DIV5		(GRF_BIT(5) | GRF_BIT(6))
-#define RK3576_GMAC_CLK_RGMII_DIV50		(GRF_CLR_BIT(5) | GRF_BIT(6))
-
-/* FIXME-check: in TRM swapped compared to rk3588 */
-#define RK3576_GMAC_CLK_SELECT_IO		GRF_BIT(7)
-#define RK3576_GMAC_CLK_SELECT_CRU		GRF_CLR_BIT(7)
-
-#define RK3576_GMAC_CLK_GATE			GRF_BIT(0)
-#define RK3576_GMAC_CLK_NOGATE			GRF_CLR_BIT(0)
-
-#define RK3576_IOC_GRF_MISC_CON2		0x6408
-#define RK3576_IOC_GRF_MISC_CON3		0x640c
-#define RK3576_IOC_GRF_MISC_CON4		0x6410
-#define RK3576_IOC_GRF_MISC_CON5		0x6414
+/* VCCIO0_1_3_IOC */
+#define RK3576_VCCIO0_1_3_IOC_CON2		0x6408
+#define RK3576_VCCIO0_1_3_IOC_CON3		0x640c
+#define RK3576_VCCIO0_1_3_IOC_CON4		0x6410
+#define RK3576_VCCIO0_1_3_IOC_CON5		0x6414
 
 #define RK3576_GMAC_RXCLK_DLY_ENABLE		GRF_BIT(15)
 #define RK3576_GMAC_RXCLK_DLY_DISABLE		GRF_CLR_BIT(15)
-#define RK3576_GMAC_CLK_RX_DL_CFG(val)		HIWORD_UPDATE(val, 0x7f, 8)
 #define RK3576_GMAC_TXCLK_DLY_ENABLE		GRF_BIT(7)
 #define RK3576_GMAC_TXCLK_DLY_DISABLE		GRF_CLR_BIT(7)
-#define RK3576_GMAC_CLK_TX_DL_CFG(val)		HIWORD_UPDATE(val, 0x7f, 0)
+
+#define RK3576_GMAC_CLK_RX_DL_CFG(val)		HIWORD_UPDATE(val, 0x7F, 8)
+#define RK3576_GMAC_CLK_TX_DL_CFG(val)		HIWORD_UPDATE(val, 0x7F, 0)
+
+/* SDGMAC_GRF */
+#define RK3576_GRF_GMAC_CON0			0x0020
+#define RK3576_GRF_GMAC_CON1			0x0024
+
+#define RK3576_GMAC_RMII_MODE			GRF_BIT(3)
+#define RK3576_GMAC_RGMII_MODE			GRF_CLR_BIT(3)
+
+#define RK3576_GMAC_CLK_SELECT_IO		GRF_BIT(7)
+#define RK3576_GMAC_CLK_SELECT_CRU		GRF_CLR_BIT(7)
+
+#define RK3576_GMAC_CLK_RMII_DIV2		GRF_BIT(5)
+#define RK3576_GMAC_CLK_RMII_DIV20		GRF_CLR_BIT(5)
+
+#define RK3576_GMAC_CLK_RGMII_DIV1		\
+			(GRF_CLR_BIT(6) | GRF_CLR_BIT(5))
+#define RK3576_GMAC_CLK_RGMII_DIV5		\
+			(GRF_BIT(6) | GRF_BIT(5))
+#define RK3576_GMAC_CLK_RGMII_DIV50		\
+			(GRF_BIT(6) | GRF_CLR_BIT(5))
+
+#define RK3576_GMAC_CLK_RMII_GATE		GRF_BIT(4)
+#define RK3576_GMAC_CLK_RMII_NOGATE		GRF_CLR_BIT(4)
 
 static int rk3576_set_to_rgmii(struct udevice *dev,
 			       int tx_delay, int rx_delay)
 {
 	struct eth_pdata *pdata = dev_get_plat(dev);
 	struct rockchip_platform_data *data = pdata->priv_pdata;
-	u32 delay_con_m0, delay_con_m1, con, val;
+	u32 offset_con;
 
-	con = (data->id == 1) ? RK3576_SDGMAC_GRF_GMAC1_CON :
-				RK3576_SDGMAC_GRF_GMAC0_CON;
-	regmap_write(data->grf, con, RK3576_GMAC_CLK_RGMII_MODE);
+	offset_con = data->id == 1 ? RK3576_GRF_GMAC_CON1 :
+				     RK3576_GRF_GMAC_CON0;
 
-	delay_con_m0 = data->id ? RK3576_IOC_GRF_MISC_CON4 :
-				      RK3576_IOC_GRF_MISC_CON2;
-	delay_con_m1 = data->id ? RK3576_IOC_GRF_MISC_CON5 :
-				      RK3576_IOC_GRF_MISC_CON3;
+	regmap_write(data->grf, offset_con, RK3576_GMAC_RGMII_MODE);
 
-	val = RK3576_GMAC_RXCLK_DLY_ENABLE | RK3576_GMAC_TXCLK_DLY_ENABLE;
-	val |= RK3576_GMAC_CLK_RX_DL_CFG(rx_delay);
-	val |= RK3576_GMAC_CLK_TX_DL_CFG(tx_delay);
+	offset_con = data->id == 1 ? RK3576_VCCIO0_1_3_IOC_CON4 :
+				     RK3576_VCCIO0_1_3_IOC_CON2;
 
-	regmap_write(data->php_grf, delay_con_m0, val);
-	regmap_write(data->php_grf, delay_con_m1, val);
+	/* m0 && m1 delay enabled */
+	regmap_write(data->php_grf, offset_con,
+		     DELAY_ENABLE(RK3576, tx_delay, rx_delay));
+	regmap_write(data->php_grf, offset_con + 0x4,
+		     DELAY_ENABLE(RK3576, tx_delay, rx_delay));
+
+	/* m0 && m1 delay value */
+	regmap_write(data->php_grf, offset_con,
+		     RK3576_GMAC_CLK_TX_DL_CFG(tx_delay) |
+		     RK3576_GMAC_CLK_RX_DL_CFG(rx_delay));
+	regmap_write(data->php_grf, offset_con + 0x4,
+		     RK3576_GMAC_CLK_TX_DL_CFG(tx_delay) |
+		     RK3576_GMAC_CLK_RX_DL_CFG(rx_delay));
 
 	return 0;
 }
@@ -324,11 +336,12 @@ static int rk3576_set_to_rmii(struct udevice *dev)
 {
 	struct eth_pdata *pdata = dev_get_plat(dev);
 	struct rockchip_platform_data *data = pdata->priv_pdata;
-	u32 con;
+	u32 offset_con;
 
-	con = (data->id == 1) ? RK3576_SDGMAC_GRF_GMAC1_CON :
-				RK3576_SDGMAC_GRF_GMAC0_CON;
-	regmap_write(data->grf, con, RK3576_GMAC_CLK_RMII_MODE);
+	offset_con = data->id == 1 ? RK3576_GRF_GMAC_CON1 :
+				     RK3576_GRF_GMAC_CON0;
+
+	regmap_write(data->grf, offset_con, RK3576_GMAC_RMII_MODE);
 
 	return 0;
 }
@@ -338,10 +351,7 @@ static int rk3576_set_gmac_speed(struct udevice *dev)
 	struct eqos_priv *eqos = dev_get_priv(dev);
 	struct eth_pdata *pdata = dev_get_plat(dev);
 	struct rockchip_platform_data *data = pdata->priv_pdata;
-	u32 con, val;
-
-	con = (data->id == 1) ? RK3576_SDGMAC_GRF_GMAC1_CON :
-				RK3576_SDGMAC_GRF_GMAC0_CON;
+	u32 val = 0, offset_con;
 
 	switch (eqos->phy->speed) {
 	case SPEED_10:
@@ -366,7 +376,10 @@ static int rk3576_set_gmac_speed(struct udevice *dev)
 		return -EINVAL;
 	}
 
-	regmap_write(data->grf, con, val);
+	offset_con = data->id == 1 ? RK3576_GRF_GMAC_CON1 :
+				     RK3576_GRF_GMAC_CON0;
+
+	regmap_write(data->grf, offset_con, val);
 
 	return 0;
 }
@@ -375,18 +388,18 @@ static void rk3576_set_clock_selection(struct udevice *dev, bool enable)
 {
 	struct eth_pdata *pdata = dev_get_plat(dev);
 	struct rockchip_platform_data *data = pdata->priv_pdata;
-	u32 con, val;
 
-	con = (data->id == 1) ? RK3576_SDGMAC_GRF_GMAC1_CON :
-				RK3576_SDGMAC_GRF_GMAC0_CON;
+	u32 val = data->clock_input ? RK3576_GMAC_CLK_SELECT_IO :
+				      RK3576_GMAC_CLK_SELECT_CRU;
+	u32 offset_con;
 
-	val = data->clock_input ? RK3576_GMAC_CLK_SELECT_IO :
-				  RK3576_GMAC_CLK_SELECT_CRU;
+	val |= enable ? RK3576_GMAC_CLK_RMII_NOGATE :
+			RK3576_GMAC_CLK_RMII_GATE;
 
-	val |= enable ? RK3576_GMAC_CLK_NOGATE :
-			RK3576_GMAC_CLK_GATE;
+	offset_con = data->id == 1 ? RK3576_GRF_GMAC_CON1 :
+				     RK3576_GRF_GMAC_CON0;
 
-	regmap_write(data->grf, con, val);
+	regmap_write(data->grf, offset_con, val);
 }
 
 #define RK3588_DELAY_ENABLE(id, tx, rx) \
