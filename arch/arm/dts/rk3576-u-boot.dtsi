@@ -14,6 +14,18 @@
 		compatible = "rockchip,rk3576-dmc";
 		bootph-all;
 	};
+
+	soc {
+		rng: rng@2a410000 {
+			compatible = "rockchip,rkrng";
+			reg = <0x0 0x2a410000 0x0 0x200>;
+		};
+
+		otp: otp@2a580000 {
+			compatible = "rockchip,rk3576-otp";
+			reg = <0x0 0x2a580000 0x0 0x400>;
+		};
+	};
 };
 
 &cru {
@@ -35,13 +47,22 @@
 	bootph-some-ram;
 };
 
+&emmc_rstnout {
+	bootph-pre-ram;
+	bootph-some-ram;
+};
+
 &emmc_strb {
 	bootph-pre-ram;
 	bootph-some-ram;
 };
 
-&pcfg_pull_down {
+&ioc_grf {
 	bootph-all;
+};
+
+&otp {
+	bootph-some-ram;
 };
 
 &pcfg_pull_none {
@@ -57,8 +78,9 @@
 	bootph-some-ram;
 };
 
-&php_grf {
-	bootph-all;
+&pcfg_pull_up_drv_level_3 {
+	bootph-pre-ram;
+	bootph-some-ram;
 };
 
 &pinctrl {
@@ -101,6 +123,11 @@
 	bootph-some-ram;
 };
 
+&sdmmc0_pwren {
+	bootph-pre-ram;
+	bootph-some-ram;
+};
+
 &sys_grf {
 	bootph-all;
 };
@@ -111,7 +138,8 @@
 };
 
 &uart0m0_xfer {
-	bootph-all;
+	bootph-pre-sram;
+	bootph-pre-ram;
 };
 
 &xin24m {
