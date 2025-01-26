@@ -6,19 +6,21 @@
 #ifndef __CONFIG_RK3576_COMMON_H
 #define __CONFIG_RK3576_COMMON_H
 
+#define CFG_CPUID_OFFSET	0xa
+
 #include "rockchip-common.h"
 
 #define CFG_IRAM_BASE			0x3ff80000
 
 #define CFG_SYS_SDRAM_BASE		0x40000000
+/* Used by board_get_usable_ram_top(), space below the 4G address boundary */
+#define SDRAM_MAX_SIZE			(SZ_4G - CFG_SYS_SDRAM_BASE)
 
-/*
- * 16G according to the TRM memory map, but things like efi_memory
- * handling (efi_loader) choke on a main block going out side the
- * 4G area.
- */
-//#define SDRAM_MAX_SIZE			(SZ_4G - CFG_SYS_SDRAM_BASE)
-#define SDRAM_MAX_SIZE 0x400000000UL
+#ifndef CONFIG_XPL_BUILD
+
+#ifndef ROCKCHIP_DEVICE_SETTINGS
+#define ROCKCHIP_DEVICE_SETTINGS
+#endif
 
 #define ENV_MEM_LAYOUT_SETTINGS		\
 	"scriptaddr=0x40c00000\0" \
@@ -34,9 +36,10 @@
 
 #define CFG_EXTRA_ENV_SETTINGS		\
 	"fdtfile=" CONFIG_DEFAULT_FDT_FILE "\0"	\
-	"partitions=" PARTS_DEFAULT	\
 	ENV_MEM_LAYOUT_SETTINGS		\
 	ROCKCHIP_DEVICE_SETTINGS	\
 	"boot_targets=" BOOT_TARGETS "\0"
+
+#endif /* CONFIG_XPL_BUILD */
 
 #endif /* __CONFIG_RK3576_COMMON_H */
