@@ -33,15 +33,8 @@ enum rk3576_pll_id {
 	PLL_COUNT,
 };
 
-struct rk3576_clk_info {
-	unsigned long id;
-	char *name;
-	bool is_cru;
-};
-
 struct rk3576_clk_priv {
 	struct rk3576_cru *cru;
-	struct rk3576_grf *grf;
 	ulong ppll_hz;
 	ulong gpll_hz;
 	ulong cpll_hz;
@@ -216,6 +209,18 @@ enum {
 	/* CRU_CLK_SEL31_CON */
 	CLK_GMAC1_125M_DIV_SHIFT	= 0,
 	CLK_GMAC1_125M_DIV_MASK		= 0x1f << CLK_GMAC1_125M_DIV_SHIFT,
+
+	/* CRU_CLK_SEL33_CON */
+	REF_CLK0_OUT_PLL_SEL_SHIFT	= 8,
+	REF_CLK0_OUT_PLL_SEL_MASK	= 7 << REF_CLK0_OUT_PLL_SEL_SHIFT,
+	REF_CLK0_OUT_PLL_SEL_GPLL	= 0,
+	REF_CLK0_OUT_PLL_SEL_CPLL,
+	REF_CLK0_OUT_PLL_SEL_SPLL,
+	REF_CLK0_OUT_PLL_SEL_AUPLL,
+	REF_CLK0_OUT_PLL_SEL_LPLL,
+	REF_CLK0_OUT_PLL_SEL_OSC,
+	REF_CLK0_OUT_PLL_DIV_SHIFT	= 0,
+	REF_CLK0_OUT_PLL_DIV_MASK	= 0xff << REF_CLK0_OUT_PLL_DIV_SHIFT,
 
 	/* CRU_CLK_SEL55_CON */
 	ACLK_BUS_ROOT_SEL_SHIFT		= 9,

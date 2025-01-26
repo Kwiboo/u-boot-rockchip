@@ -2445,10 +2445,6 @@ static int rk3576_clk_probe(struct udevice *dev)
 	writel(0x001c000c, RK3576_CCI_GRF_BASE + 0x54);
 #endif
 
-	priv->grf = syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
-	if (IS_ERR(priv->grf))
-		return PTR_ERR(priv->grf);
-
 	rk3576_clk_init(priv);
 
 	/* Process 'assigned-{clocks/clock-parents/clock-rates}' properties */
@@ -2509,7 +2505,7 @@ U_BOOT_DRIVER(rockchip_rk3576_cru) = {
 	.name		= "rockchip_rk3576_cru",
 	.id		= UCLASS_CLK,
 	.of_match	= rk3576_clk_ids,
-	.priv_auto	 = sizeof(struct rk3576_clk_priv),
+	.priv_auto	= sizeof(struct rk3576_clk_priv),
 	.of_to_plat	= rk3576_clk_ofdata_to_platdata,
 	.ops		= &rk3576_clk_ops,
 	.bind		= rk3576_clk_bind,
