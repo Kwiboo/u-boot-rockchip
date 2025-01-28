@@ -143,7 +143,7 @@ static struct spl_info spl_infos[] = {
 	{ "rv1126", "110B", 0x10000 - 0x1000, false, RK_HEADER_V1 },
 	{ "rk3528", "RK35", 0x10000 - 0x1000, false, RK_HEADER_V2 },
 	{ "rk3568", "RK35", 0x10000 - 0x1000, false, RK_HEADER_V2 },
-	{ "rk3576", "RK35", 0x80000 - 0x1000, false, RK_HEADER_V2 },
+	{ "rk3576", "RK35", 0x80000 - 0x1000, false, RK_HEADER_V2, 8 },
 	{ "rk3588", "RK35", 0x100000 - 0x1000, false, RK_HEADER_V2 },
 };
 
@@ -269,6 +269,22 @@ int rkcommon_check_params(struct image_tool_params *params)
 			"Error: SPL image is too large (size %#x than %#x)\n",
 			spl_params.images[0].size, rkcommon_get_spl_size(params));
 		return EXIT_FAILURE;
+	}
+
+	if (!strcmp(params->imagename, "rk3576")) {
+		size = rkcommon_get_aligned_filesize(params, "rk3576-boost.bin");
+		if (size < 0)
+			return EXIT_SUCCESS;
+
+		for (i = ARRAY_SIZE(spl_params.images) - 1; i > 0; i--) {
+			spl_params.images[i] = spl_params.images[i - 1];
+		}
+
+		spl_params.images[0].file = "rk3576-boost.bin";
+		spl_params.images[0].size = size;
+
+		spl_params.images[0].address = 0x3ffc0000;
+		spl_params.images[1].address = 0x3ff81000;
 	}
 
 	return EXIT_SUCCESS;
