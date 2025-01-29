@@ -333,8 +333,6 @@ static void rkcommon_set_header0_v2(void *buf, struct image_tool_params *params)
 	uint8_t *image_ptr = NULL;
 	int i;
 
-	printf("Image Type:   Rockchip %s boot image\n",
-		rkcommon_get_spl_hdr(params));
 	memset(buf, '\0', RK_INIT_OFFSET * RK_BLK_SIZE);
 	hdr->magic = cpu_to_le32(RK_MAGIC_V2);
 	hdr->boot_flag = cpu_to_le32(HASH_SHA256);
@@ -488,6 +486,29 @@ int rkcommon_verify_header(unsigned char *buf, int size,
 	return -ENOENT;
 }
 
+static void rkcommon_print_header_v2(const struct header0_info_v2 *hdr)
+{
+	uint32_t val;
+	int i;
+
+	printf("Rockchip Boot Image (v2)\n");
+
+	for (i = 0; i < le16_to_cpu(hdr->num_images); i++) {
+		printf("Image %u: %u @ 0x%x\n",
+		       le32_to_cpu(hdr->images[i].counter),
+		       le16_to_cpu(hdr->images[i].size) * RK_BLK_SIZE,
+		       le16_to_cpu(hdr->images[i].offset) * RK_BLK_SIZE);
+
+		val = le32_to_cpu(hdr->images[i].address);
+		if (val != 0xFFFFFFFF)
+			printf("- Load address: 0x%x\n", val);
+
+		val = le32_to_cpu(hdr->images[i].flag);
+		if (val)
+			printf("- Flag: 0x%x\n", val);
+	}
+}
+
 void rkcommon_print_header(const void *buf, struct image_tool_params *params)
 {
 	struct header0_info header0;
@@ -504,8 +525,7 @@ void rkcommon_print_header(const void *buf, struct image_tool_params *params)
 			return;
 		}
 
-		init_size = le16_to_cpu(header0_v2.images[0].size) * RK_BLK_SIZE;
-		boot_size = le16_to_cpu(header0_v2.images[1].size) * RK_BLK_SIZE;
+		rkcommon_print_header_v2(&header0_v2);
 	} else {
 		ret = rkcommon_parse_header(buf, &header0, &spl_info);
 
@@ -523,15 +543,16 @@ void rkcommon_print_header(const void *buf, struct image_tool_params *params)
 		boot_size = le16_to_cpu(header0.init_boot_size) * RK_BLK_SIZE -
 			    init_size;
 
-		printf("Image Type:   Rockchip %s (%s) boot image\n",
-		       spl_info->spl_hdr,
+		printf("Rockchip %s (%s) Boot Image\n", spl_info->spl_hdr,
 		       (image_type == IH_TYPE_RKSD) ? "SD/MMC" : "SPI");
+
+		printf("Init Data: %d @ 0x%x\n", init_size,
+		       le16_to_cpu(header0.init_offset) * RK_BLK_SIZE);
+
+		if (boot_size != RK_MAX_BOOT_SIZE)
+			printf("Boot Data: %d @ 0x%x\n", boot_size, init_size +
+			       le16_to_cpu(header0.init_offset) * RK_BLK_SIZE);
 	}
-
-	printf("Init Data Size: %d bytes\n", init_size);
-
-	if (boot_size != RK_MAX_BOOT_SIZE)
-		printf("Boot Data Size: %d bytes\n", boot_size);
 }
 
 void rkcommon_rc4_encode_spl(void *buf, unsigned int offset, unsigned int size)
