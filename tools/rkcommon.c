@@ -152,12 +152,16 @@ static struct spl_info spl_infos[] = {
  *
  * @file:	image file path
  * @size:	aligned size of image in bytes
+ * @address:	image load address
+ * @flag:	no use
  */
 
 struct spl_params {
 	struct {
 		char *file;
 		uint32_t size;
+		uint32_t address;
+		uint32_t flag;
 	} images[4];
 };
 
@@ -368,7 +372,8 @@ static void rkcommon_set_header0_v2(void *buf, struct image_tool_params *params)
 		image_sector_count = spl_params.images[i].size / RK_BLK_SIZE;
 		hdr->images[i].offset = cpu_to_le16(sector_offset);
 		hdr->images[i].size = cpu_to_le16(image_sector_count);
-		hdr->images[i].address = 0xFFFFFFFF;
+		hdr->images[i].address = spl_params.images[i].address ?: 0xFFFFFFFF;
+		hdr->images[i].flag = spl_params.images[i].flag;
 		hdr->images[i].counter = cpu_to_le32(i + 1);
 		image_ptr = buf + sector_offset * RK_BLK_SIZE;
 		do_sha256_hash(image_ptr, spl_params.images[i].size,
