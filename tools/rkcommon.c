@@ -62,6 +62,8 @@ struct image_entry {
  * @boot_flag:	[3:0] hash type (0:none, 1:sha256, 2:sha512)
  * @images:	images
  * @hash:	hash or signature for header info
+ *
+ * Other fields are not used by U-Boot
  */
 struct header0_info_v2 {
 	uint32_t magic;
@@ -69,7 +71,9 @@ struct header0_info_v2 {
 	uint16_t size;
 	uint16_t num_images;
 	uint32_t boot_flag;
-	uint8_t reserved1[104];
+	uint8_t reserved1[32];
+	uint32_t boot0_param[10];
+	uint32_t boot1_param[8];
 	struct image_entry images[4];
 	uint8_t reserved2[1064];
 	uint8_t hash[512];
@@ -490,6 +494,18 @@ static void rkcommon_print_header_v2(const struct header0_info_v2 *hdr)
 	int i;
 
 	printf("Rockchip Boot Image (v2)\n");
+
+	for (i = 0; i < ARRAY_SIZE(hdr->boot0_param); i++) {
+		val = le32_to_cpu(hdr->boot0_param[i]);
+		if (val)
+			printf("Boot0 %d: 0x%x\n", i, val);
+	}
+
+	for (i = 0; i < ARRAY_SIZE(hdr->boot1_param); i++) {
+		val = le32_to_cpu(hdr->boot1_param[i]);
+		if (val)
+			printf("Boot1 %d: 0x%x\n", i, val);
+	}
 
 	for (i = 0; i < le16_to_cpu(hdr->num_images); i++) {
 		printf("Image %u: %u @ 0x%x\n",
