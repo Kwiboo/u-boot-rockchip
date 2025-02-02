@@ -467,33 +467,34 @@ static int yt8531_startup(struct phy_device *phydev)
 static void ytphy_dt_parse(struct phy_device *phydev)
 {
 	struct ytphy_plat_priv	*priv = phydev->priv;
+	ofnode node = phy_get_ofnode(phydev);
 
-	priv->clk_out_frequency = ofnode_read_u32_default(phydev->node,
+	priv->clk_out_frequency = ofnode_read_u32_default(node,
 							  "motorcomm,clk-out-frequency-hz",
 							  YTPHY_DTS_OUTPUT_CLK_DIS);
-	priv->rx_delay_ps = ofnode_read_u32_default(phydev->node,
+	priv->rx_delay_ps = ofnode_read_u32_default(node,
 						    "rx-internal-delay-ps",
 						    1950);
-	priv->tx_delay_ps = ofnode_read_u32_default(phydev->node,
+	priv->tx_delay_ps = ofnode_read_u32_default(node,
 						    "tx-internal-delay-ps",
 						    1950);
 
-	if (ofnode_read_bool(phydev->node, "motorcomm,auto-sleep-disabled"))
+	if (ofnode_read_bool(node, "motorcomm,auto-sleep-disabled"))
 		priv->flag |= AUTO_SLEEP_DISABLED;
 
-	if (ofnode_read_bool(phydev->node, "motorcomm,keep-pll-enabled"))
+	if (ofnode_read_bool(node, "motorcomm,keep-pll-enabled"))
 		priv->flag |= KEEP_PLL_ENABLED;
 
-	if (ofnode_read_bool(phydev->node, "motorcomm,tx-clk-adj-enabled"))
+	if (ofnode_read_bool(node, "motorcomm,tx-clk-adj-enabled"))
 		priv->flag |= TX_CLK_ADJ_ENABLED;
 
-	if (ofnode_read_bool(phydev->node, "motorcomm,tx-clk-10-inverted"))
+	if (ofnode_read_bool(node, "motorcomm,tx-clk-10-inverted"))
 		priv->flag |= TX_CLK_10_INVERTED;
 
-	if (ofnode_read_bool(phydev->node, "motorcomm,tx-clk-100-inverted"))
+	if (ofnode_read_bool(node, "motorcomm,tx-clk-100-inverted"))
 		priv->flag |= TX_CLK_100_INVERTED;
 
-	if (ofnode_read_bool(phydev->node, "motorcomm,tx-clk-1000-inverted"))
+	if (ofnode_read_bool(node, "motorcomm,tx-clk-1000-inverted"))
 		priv->flag |= TX_CLK_1000_INVERTED;
 }
 
@@ -607,10 +608,11 @@ static int yt8531_get_ds_map(struct phy_device *phydev, u32 cur)
 static int yt8531_set_ds(struct phy_device *phydev)
 {
 	u32 ds_field_low, ds_field_hi, val;
+	ofnode node = phy_get_ofnode(phydev);
 	int ret, ds;
 
 	/* set rgmii rx clk driver strength */
-	if (!ofnode_read_u32(phydev->node, "motorcomm,rx-clk-drv-microamp", &val)) {
+	if (!ofnode_read_u32(node, "motorcomm,rx-clk-drv-microamp", &val)) {
 		ds = yt8531_get_ds_map(phydev, val);
 		if (ds < 0) {
 			pr_warn("No matching current value was found.");
@@ -628,7 +630,7 @@ static int yt8531_set_ds(struct phy_device *phydev)
 		return ret;
 
 	/* set rgmii rx data driver strength */
-	if (!ofnode_read_u32(phydev->node, "motorcomm,rx-data-drv-microamp", &val)) {
+	if (!ofnode_read_u32(node, "motorcomm,rx-data-drv-microamp", &val)) {
 		ds = yt8531_get_ds_map(phydev, val);
 		if (ds < 0) {
 			pr_warn("No matching current value was found.");
