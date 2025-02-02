@@ -473,10 +473,10 @@ static void ytphy_dt_parse(struct phy_device *phydev)
 							  YTPHY_DTS_OUTPUT_CLK_DIS);
 	priv->rx_delay_ps = ofnode_read_u32_default(phydev->node,
 						    "rx-internal-delay-ps",
-						    YT8531_RC1R_RGMII_1_950_NS);
+						    1950);
 	priv->tx_delay_ps = ofnode_read_u32_default(phydev->node,
 						    "tx-internal-delay-ps",
-						    YT8531_RC1R_RGMII_1_950_NS);
+						    1950);
 
 	if (ofnode_read_bool(phydev->node, "motorcomm,auto-sleep-disabled"))
 		priv->flag |= AUTO_SLEEP_DISABLED;
