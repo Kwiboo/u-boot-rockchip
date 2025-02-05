@@ -1,0 +1,46 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Minimal generic DT for RK3506 with eMMC/SD-card and USB OTG enabled
+ */
+
+/dts-v1/;
+#include "rk3506.dtsi"
+
+/ {
+	model = "Generic RK3506";
+	compatible = "rockchip,rk3506";
+
+	aliases {
+		mmc0 = &sdmmc;
+		serial0 = &uart0;
+	};
+
+	chosen {
+		stdout-path = "serial0:1500000n8";
+	};
+};
+
+&sdmmc {
+	cap-mmc-highspeed;
+	cap-sd-highspeed;
+	disable-wp;
+	no-sdio;
+	status = "okay";
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&usb20_otg0 {
+	dr_mode = "peripheral";
+	status = "okay";
+};
+
+&usb2phy {
+	status = "okay";
+};
+
+&usb2phy_otg0 {
+	status = "okay";
+};

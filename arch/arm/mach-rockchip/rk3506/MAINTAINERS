@@ -1,0 +1,5 @@
+GENERIC-RK3506
+M:	Jonas Karlman <jonas@kwiboo.se>
+S:	Maintained
+F:	arch/arm/dts/rk3506-generic*
+F:	configs/generic-rk3506_defconfig
