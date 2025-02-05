@@ -101,6 +101,9 @@ List of mainline supported Rockchip boards:
 
 * rk3506
      - Generic RK3506 (generic-rk3506)
+     - Luckfox Lyra (luckfox-lyra-rk3506)
+     - Luckfox Lyra Ultra (luckfox-lyra-ultra-rk3506b)
+     - Luckfox Lyra Zero W (luckfox-lyra-zero-w-rk3506b)
 
 * rk3528
      - ArmSoM Sige1 (sige1-rk3528)

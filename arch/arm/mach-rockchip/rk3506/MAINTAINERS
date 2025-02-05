@@ -3,3 +3,11 @@ M:	Jonas Karlman <jonas@kwiboo.se>
 S:	Maintained
 F:	arch/arm/dts/rk3506-generic*
 F:	configs/generic-rk3506_defconfig
+
+LUCKFOX-LYRA-RK3506
+M:	Jonas Karlman <jonas@kwiboo.se>
+S:	Maintained
+F:	arch/arm/dts/rk3506-luckfox-lyra*
+F:	arch/arm/dts/rk3506b-luckfox-lyra*
+F:	configs/luckfox-lyra*-rk3506_defconfig
+F:	configs/luckfox-lyra*-rk3506b_defconfig
