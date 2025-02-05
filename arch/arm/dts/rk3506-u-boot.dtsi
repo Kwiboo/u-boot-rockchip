@@ -29,6 +29,17 @@
 	bootph-all;
 };
 
+#ifdef CONFIG_SPL_OPTEE_IMAGE
+&fit_template {
+	images {
+		op-tee {
+			load = <0x1000>;
+			entry = <0x1000>;
+		};
+	};
+};
+#endif
+
 &grf_pmu {
 	bootph-all;
 };
