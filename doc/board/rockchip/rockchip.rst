@@ -99,6 +99,9 @@ List of mainline supported Rockchip boards:
      - Rockchip Evb-RK3399 (evb_rk3399)
      - Theobroma Systems RK3399-Q7 SoM - Puma (puma_rk3399)
 
+* rk3506
+     - Generic RK3506 (generic-rk3506)
+
 * rk3528
      - ArmSoM Sige1 (sige1-rk3528)
      - FriendlyElec NanoPi Zero2 (nanopi-zero2-rk3528)
@@ -281,6 +284,15 @@ To build rk3399 boards:
         export BL31=../trusted-firmware-a/build/rk3399/release/bl31/bl31.elf
         make evb-rk3399_defconfig
         make CROSS_COMPILE=aarch64-linux-gnu-
+
+To build rk3506 boards:
+
+.. code-block:: bash
+
+        export TEE=../rkbin/bin/rk35/rk3506_tee_v2.10.bin
+        export ROCKCHIP_TPL=../rkbin/bin/rk35/rk3506_ddr_750MHz_v1.06.bin
+        make generic-rk3506_defconfig
+        make CROSS_COMPILE=arm-linux-gnueabihf-
 
 To build rk3528 boards:
 
