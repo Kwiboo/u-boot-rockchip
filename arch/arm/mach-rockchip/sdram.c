@@ -320,7 +320,7 @@ int dram_init_banksize(void)
 		gd->bd->bi_dram[0].size = ram_top - gd->bd->bi_dram[0].start;
 	}
 #else
-#ifdef CONFIG_SPL_OPTEE_IMAGE
+#if defined(CONFIG_SPL_OPTEE_IMAGE) && !defined(CFG_SYS_SDRAM_RESERVE)
 	struct tos_parameter_t *tos_parameter;
 
 	tos_parameter = (struct tos_parameter_t *)(CFG_SYS_SDRAM_BASE +
@@ -343,6 +343,9 @@ int dram_init_banksize(void)
 	}
 #else
 	gd->bd->bi_dram[0].start = CFG_SYS_SDRAM_BASE;
+#ifdef CFG_SYS_SDRAM_RESERVE
+	gd->bd->bi_dram[0].start += CFG_SYS_SDRAM_RESERVE;
+#endif
 	gd->bd->bi_dram[0].size = top - gd->bd->bi_dram[0].start;
 #endif
 #endif

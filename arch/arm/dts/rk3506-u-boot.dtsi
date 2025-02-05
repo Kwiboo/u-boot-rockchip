@@ -13,6 +13,12 @@
 	};
 
 	soc {
+		otp: otp@ff4f0000 {
+			compatible = "rockchip,rk3506-otp",
+				     "rockchip,rk3568-otp";
+			reg = <0xff4f0000 0x4000>;
+		};
+
 		rng: rng@ff710000 {
 			compatible = "rockchip,rkrng";
 			reg = <0xff710000 0x200>;
@@ -23,6 +29,17 @@
 &cru {
 	bootph-all;
 };
+
+#ifdef CONFIG_SPL_OPTEE_IMAGE
+&fit_template {
+	images {
+		op-tee {
+			load = <0x1000>;
+			entry = <0x1000>;
+		};
+	};
+};
+#endif
 
 &grf_pmu {
 	bootph-all;
@@ -38,6 +55,10 @@
 
 &ioc_pmu {
 	bootph-all;
+};
+
+&otp {
+	bootph-some-ram;
 };
 
 &pcfg_pull_none {

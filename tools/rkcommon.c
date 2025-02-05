@@ -272,6 +272,10 @@ int rkcommon_check_params(struct image_tool_params *params)
 		return EXIT_FAILURE;
 	}
 
+	if (!strcmp(params->imagename, "rk3506")) {
+		spl_params.images[1].address = 0x00080000;
+	}
+
 	if (!strcmp(params->imagename, "rk3576")) {
 		size = rkcommon_get_aligned_filesize(params, "rk3576-boost.bin");
 		if (size < 0)
