@@ -139,18 +139,21 @@ void board_debug_uart_init(void)
 	if (IS_ENABLED(CONFIG_XPL_BUILD) &&
 	    (IS_ENABLED(CONFIG_TARGET_CHROMEBOOK_BOB) ||
 	     IS_ENABLED(CONFIG_TARGET_CHROMEBOOK_KEVIN))) {
-		rk_setreg(&grf->io_vsel, 1 << 0);
+		rk_setreg(&grf->io_vsel, 1 << 1 | 1 << 0);
+
+		rk_setreg(&pmugrf->soc_con0, 1 << 9 | 1 << 8);
+		rk_clrreg(&pmugrf->gpio0b_iomux, 3 << 2);
 
 		/*
 		 * Let's enable these power rails here, we are already running
 		 * the SPI-Flash-based code.
 		 */
-		spl_gpio_output(gpio, GPIO(BANK_B, 2), 1);  /* PP1500_EN */
-		spl_gpio_set_pull(&pmugrf->gpio0_p, GPIO(BANK_B, 2),
-				  GPIO_PULL_NORMAL);
-
 		spl_gpio_output(gpio, GPIO(BANK_B, 4), 1);  /* PP3000_EN */
 		spl_gpio_set_pull(&pmugrf->gpio0_p, GPIO(BANK_B, 4),
+				  GPIO_PULL_NORMAL);
+
+		spl_gpio_output(gpio, GPIO(BANK_B, 2), 1);  /* PP1500_EN */
+		spl_gpio_set_pull(&pmugrf->gpio0_p, GPIO(BANK_B, 2),
 				  GPIO_PULL_NORMAL);
 	}
 
