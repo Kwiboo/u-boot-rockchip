@@ -207,8 +207,7 @@
 
 #ifdef HAS_FIT
 		fit {
-			type = "blob";
-			filename = "u-boot.itb";
+			insert-template = <&common_part>;
 #else
 		u-boot-img {
 #endif

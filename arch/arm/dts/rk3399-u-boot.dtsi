@@ -51,8 +51,7 @@
 			};
 		};
 		fit {
-			type = "blob";
-			filename = "u-boot.itb";
+			insert-template = <&common_part>;
 			offset = <CONFIG_SYS_SPI_U_BOOT_OFFS>;
 		};
 		u-boot {
