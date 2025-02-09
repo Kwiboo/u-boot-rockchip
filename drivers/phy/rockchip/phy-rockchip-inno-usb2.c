@@ -40,11 +40,13 @@ struct rockchip_usb2phy_port_cfg {
 struct rockchip_usb2phy_cfg {
 	unsigned int reg;
 	struct usb2phy_reg	clkout_ctl;
+	struct usb2phy_reg	clkout_ctl_phy;
 	const struct rockchip_usb2phy_port_cfg port_cfgs[USB2PHY_NUM_PORTS];
 };
 
 struct rockchip_usb2phy {
 	struct regmap *reg_base;
+	struct regmap *phy_base;
 	struct clk phyclk;
 	const struct rockchip_usb2phy_cfg *phy_cfg;
 };
@@ -188,10 +190,20 @@ int rockchip_usb2phy_clk_enable(struct clk *clk)
 	struct udevice *parent = dev_get_parent(clk->dev);
 	struct rockchip_usb2phy *priv = dev_get_priv(parent);
 	const struct rockchip_usb2phy_cfg *phy_cfg = priv->phy_cfg;
+	const struct usb2phy_reg *clkout_ctl;
+	struct regmap *base;
+
+	if (priv->phy_cfg->clkout_ctl_phy.enable) {
+		clkout_ctl = &phy_cfg->clkout_ctl_phy;
+		base = priv->phy_base;
+	} else {
+		clkout_ctl = &phy_cfg->clkout_ctl;
+		base = priv->reg_base;
+	}
 
 	/* turn on 480m clk output if it is off */
-	if (!property_enabled(priv->reg_base, &phy_cfg->clkout_ctl)) {
-		property_enable(priv->reg_base, &phy_cfg->clkout_ctl, true);
+	if (!property_enabled(base, clkout_ctl)) {
+		property_enable(base, clkout_ctl, true);
 
 		/* waiting for the clk become stable */
 		usleep_range(1200, 1300);
@@ -211,9 +223,19 @@ int rockchip_usb2phy_clk_disable(struct clk *clk)
 	struct udevice *parent = dev_get_parent(clk->dev);
 	struct rockchip_usb2phy *priv = dev_get_priv(parent);
 	const struct rockchip_usb2phy_cfg *phy_cfg = priv->phy_cfg;
+	const struct usb2phy_reg *clkout_ctl;
+	struct regmap *base;
+
+	if (priv->phy_cfg->clkout_ctl_phy.enable) {
+		clkout_ctl = &phy_cfg->clkout_ctl_phy;
+		base = priv->phy_base;
+	} else {
+		clkout_ctl = &phy_cfg->clkout_ctl;
+		base = priv->reg_base;
+	}
 
 	/* turn off 480m clk output */
-	property_enable(priv->reg_base, &phy_cfg->clkout_ctl, false);
+	property_enable(base, clkout_ctl, false);
 
 	return 0;
 }
@@ -281,7 +303,10 @@ static int rockchip_usb2phy_probe(struct udevice *dev)
 		return ret;
 	}
 
-	return 0;
+	if (priv->phy_cfg->clkout_ctl_phy.enable)
+		ret = regmap_init_mem_index(dev_ofnode(dev), &priv->phy_base, 0);
+
+	return ret;
 }
 
 static int rockchip_usb2phy_bind(struct udevice *dev)
