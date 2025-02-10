@@ -19,6 +19,12 @@
 #define COMP	"none"
 #endif
 
+#if defined(CONFIG_SPL_SHA256)
+#define HASH	"sha256"
+#elif defined(CONFIG_SPL_CRC32)
+#define HASH	"crc32"
+#endif
+
 #if defined(CONFIG_SPL_FIT) && (defined(CONFIG_ARM64) || defined(CONFIG_SPL_OPTEE_IMAGE))
 #define HAS_FIT
 #endif
@@ -57,7 +63,7 @@
 				};
 #ifdef CONFIG_SPL_FIT_SIGNATURE
 				hash {
-					algo = "sha256";
+					algo = HASH;
 				};
 #endif
 			};
@@ -78,7 +84,7 @@
 				};
 #ifdef CONFIG_SPL_FIT_SIGNATURE
 				hash {
-					algo = "sha256";
+					algo = HASH;
 				};
 #endif
 			};
@@ -98,7 +104,7 @@
 				};
 #ifdef CONFIG_SPL_FIT_SIGNATURE
 				hash {
-					algo = "sha256";
+					algo = HASH;
 				};
 #endif
 			};
@@ -116,7 +122,7 @@
 				};
 #ifdef CONFIG_SPL_FIT_SIGNATURE
 				hash {
-					algo = "sha256";
+					algo = HASH;
 				};
 #endif
 			};
@@ -128,7 +134,7 @@
 				type = "flat_dt";
 #ifdef CONFIG_SPL_FIT_SIGNATURE
 				hash {
-					algo = "sha256";
+					algo = HASH;
 				};
 #endif
 			};
