@@ -1,9 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2020 Rockchip Electronics Co., Ltd
- * Copyright (c) 2024 Radxa Limited
- * Copyright (c) 2024 Yao Zi <ziyao@disroot.org>
- */
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 
 /dts-v1/;
 
@@ -13,11 +8,7 @@
 #include "rk3528.dtsi"
 
 / {
-	model = "Radxa E20C";
-	compatible = "radxa,e20c", "rockchip,rk3528";
-
 	aliases {
-		ethernet0 = &gmac1;
 		i2c1 = &i2c1;
 		mmc0 = &sdhci;
 		mmc1 = &sdmmc;
@@ -42,46 +33,17 @@
 		};
 	};
 
-	gpio-keys {
-		compatible = "gpio-keys";
-		pinctrl-names = "default";
-		pinctrl-0 = <&user_key>;
-
-		button-user {
-			gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_LOW>;
-			label = "USER";
-			linux,code = <BTN_1>;
-			wakeup-source;
-		};
-	};
-
-	leds {
+	leds: leds {
 		compatible = "gpio-leds";
 		pinctrl-names = "default";
-		pinctrl-0 = <&lan_led_g>, <&sys_led_g>, <&wan_led_g>;
+		pinctrl-0 = <&state_led_b>;
 
-		led-lan {
-			color = <LED_COLOR_ID_GREEN>;
-			default-state = "off";
-			function = LED_FUNCTION_LAN;
-			gpios = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "netdev";
-		};
-
-		led-sys {
-			color = <LED_COLOR_ID_GREEN>;
+		led-0 {
+			color = <LED_COLOR_ID_BLUE>;
 			default-state = "on";
 			function = LED_FUNCTION_HEARTBEAT;
-			gpios = <&gpio4 RK_PC1 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio1 RK_PA3 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "heartbeat";
-		};
-
-		led-wan {
-			color = <LED_COLOR_ID_GREEN>;
-			default-state = "off";
-			function = LED_FUNCTION_WAN;
-			gpios = <&gpio4 RK_PC0 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "netdev";
 		};
 	};
 
@@ -125,6 +87,18 @@
 		vin-supply = <&vcc5v0_sys>;
 	};
 
+	vcc_wifi: regulator-3v3-vcc-wifi {
+		compatible = "regulator-fixed";
+		enable-active-high;
+		gpios = <&gpio4 RK_PA4 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&usb_wifi_pwr>;
+		regulator-name = "vcc_wifi";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		vin-supply = <&vcc_3v3>;
+	};
+
 	vcc5v0_sys: regulator-5v0-vcc-sys {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc5v0_sys";
@@ -148,7 +122,7 @@
 
 	vccio_sd: regulator-vccio-sd {
 		compatible = "regulator-gpio";
-		gpios = <&gpio4 RK_PB6 GPIO_ACTIVE_HIGH>;
+		gpios = <&gpio1 RK_PC1 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&sdmmc_vol_ctrl_h>;
 		regulator-name = "vccio_sd";
@@ -181,6 +155,15 @@
 		regulator-max-microvolt = <1006000>;
 		regulator-settling-time-up-us = <250>;
 	};
+
+	rfkill {
+		compatible = "rfkill-gpio";
+		label = "rfkill-wlan";
+		pinctrl-names = "default";
+		pinctrl-0 = <&wifi_reg_on_h>;
+		radio-type = "wlan";
+		shutdown-gpios = <&gpio1 RK_PA6 GPIO_ACTIVE_HIGH>;
+	};
 };
 
 &combphy {
@@ -203,17 +186,6 @@
 	cpu-supply = <&vdd_arm>;
 };
 
-&gmac1 {
-	clock_in_out = "output";
-	phy-handle = <&rgmii_phy>;
-	phy-mode = "rgmii-id";
-	phy-supply = <&vcc_3v3>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&rgmii_miim>, <&rgmii_tx_bus2>, <&rgmii_rx_bus2>,
-		    <&rgmii_rgmii_clk>, <&rgmii_rgmii_bus>;
-	status = "okay";
-};
-
 &i2c1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c1m0_xfer>;
@@ -228,68 +200,46 @@
 	};
 };
 
-&mdio1 {
-	rgmii_phy: ethernet-phy@1 {
-		compatible = "ethernet-phy-ieee802.3-c22";
-		reg = <0x1>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&gmac1_rstn_l>;
-		reset-assert-us = <20000>;
-		reset-deassert-us = <100000>;
-		reset-gpios = <&gpio4 RK_PC2 GPIO_ACTIVE_LOW>;
-	};
-};
-
-&pcie {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pciem1_pins>;
-	reset-gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_HIGH>;
-	vpcie3v3-supply = <&vcc_3v3>;
-	status = "okay";
-};
-
 &pinctrl {
-	ethernet {
-		gmac1_rstn_l: gmac1-rstn-l {
-			rockchip,pins = <4 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
+	bluetooth {
+		bt_wake_host_h: bt-wake-host-h {
+			rockchip,pins = <1 RK_PC2 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
-	};
 
-	gpio-keys {
-		user_key: user-key {
-			rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_up>;
+		host_wake_bt_h: host-wake-bt-h {
+			rockchip,pins = <1 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 
 	leds {
-		lan_led_g: lan-led-g {
-			rockchip,pins = <4 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-
-		sys_led_g: sys-led-g {
-			rockchip,pins = <4 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-
-		wan_led_g: wan-led-g {
-			rockchip,pins = <4 RK_PC0 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-
-	pcie {
-		pcie_reset_g: pcie-reset-g {
-			rockchip,pins = <1 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
+		state_led_b: state-led-b {
+			rockchip,pins = <1 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 
 	sdmmc {
 		sdmmc_vol_ctrl_h: sdmmc-vol-ctrl-h {
-			rockchip,pins = <4 RK_PB6 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <1 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 
 	usb {
 		usb_host_en: usb-host-en {
 			rockchip,pins = <0 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+	wifi {
+		usb_wifi_pwr: usb-wifi-pwr {
+			rockchip,pins = <4 RK_PA4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		wifi_reg_on_h: wifi-reg-on-h {
+			rockchip,pins = <1 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		wifi_wake_host_h: wifi-wake-host-h {
+			rockchip,pins = <1 RK_PA7 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
 	};
 };
@@ -328,6 +278,7 @@
 	cap-mmc-highspeed;
 	cap-sd-highspeed;
 	disable-wp;
+	max-frequency = <100000000>;
 	sd-uhs-sdr104;
 	vmmc-supply = <&vcc_3v3>;
 	vqmmc-supply = <&vccio_sd>;
@@ -344,28 +295,11 @@
 	status = "okay";
 };
 
-&usb_host0_ohci {
-	status = "okay";
-};
-
-&usb_host0_xhci {
-	extcon = <&usb2phy>;
-	maximum-speed = "high-speed";
-	phys = <&usb2phy_otg>;
-	phy-names = "usb2-phy";
-	snps,dis_u2_susphy_quirk;
-	status = "okay";
-};
-
 &usb2phy {
 	status = "okay";
 };
 
 &usb2phy_host {
 	phy-supply = <&vcc5v0_usb20>;
-	status = "okay";
-};
-
-&usb2phy_otg {
 	status = "okay";
 };
