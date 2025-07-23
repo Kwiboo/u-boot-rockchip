@@ -104,6 +104,7 @@ List of mainline supported Rockchip boards:
      - FriendlyElec NanoPi Zero2 (nanopi-zero2-rk3528)
      - Generic RK3528 (generic-rk3528)
      - Radxa E20C (radxa-e20c-rk3528)
+     - Radxa E24C (radxa-e24c-rk3528)
      - Radxa ROCK 2A/2F (rock-2-rk3528)
 
 * rk3566

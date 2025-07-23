@@ -17,6 +17,7 @@ static const struct board_model board_models[] = {
 	{ 63, 278, "rockchip/rk3528-rock-2a.dtb" },
 	{ 291, 392, "rockchip/rk3528-radxa-e20c.dtb" },
 	{ 519, 733, "rockchip/rk3528-rock-2f.dtb" },
+	{ 745, 846, "rockchip/rk3528-radxa-e24c.dtb" },
 };
 
 static const struct board_model *get_board_model(void)
