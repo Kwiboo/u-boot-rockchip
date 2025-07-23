@@ -6,6 +6,7 @@
 	aliases {
 		mmc0 = &sdhci;
 		mmc1 = &sdmmc;
+		spi2 = &sfc;
 	};
 
 	chosen {
@@ -30,6 +31,17 @@
 	};
 };
 
+#ifdef CONFIG_ROCKCHIP_SPI_IMAGE
+&binman {
+	simple-bin-spi {
+		mkimage {
+			args = "-n", CONFIG_SYS_SOC, "-T", "rksd";
+			offset = <0x8000>;
+		};
+	};
+};
+#endif
+
 &cru {
 	bootph-all;
 };
@@ -50,6 +62,16 @@
 };
 
 &emmc_strb {
+	bootph-pre-ram;
+	bootph-some-ram;
+};
+
+&fspi_csn0 {
+	bootph-pre-ram;
+	bootph-some-ram;
+};
+
+&fspi_pins {
 	bootph-pre-ram;
 	bootph-some-ram;
 };
@@ -113,6 +135,11 @@
 &sdmmc_det {
 	bootph-pre-ram;
 	bootph-some-ram;
+};
+
+&sfc {
+	bootph-some-ram;
+	u-boot,spl-sfc-no-dma;
 };
 
 &uart0 {
