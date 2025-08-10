@@ -151,7 +151,7 @@ List of mainline supported Rockchip boards:
      - FriendlyElec NanoPi R6C (nanopi-r6c-rk3588s)
      - FriendlyElec NanoPi R6S (nanopi-r6s-rk3588s)
      - GameForce Ace (gameforce-ace-rk3588s)
-     - Generic RK3588S/RK3588 (generic-rk3588)
+     - Generic RK3582/RK3588S/RK3588 (generic-rk3588)
      - Hardkernel ODROID-M2 (odroid-m2-rk3588s)
      - Indiedroid Nova (nova-rk3588s)
      - Khadas Edge2 (khadas-edge2-rk3588s)
@@ -211,7 +211,7 @@ TPL
 
 For some SoCs U-Boot sources lack of support to inizialize DRAM.
 In these cases, to get a fully functional image following :ref:`PackageWithTPLandSPL`, use DDR binary provided by Rockchip rkbin repository as ROCKCHIP_TPL when building U-Boot.
-Otherwise, follow :ref:`PackageWithRockchipMiniloader`. 
+Otherwise, follow :ref:`PackageWithRockchipMiniloader`.
 
 U-Boot
 ^^^^^^
