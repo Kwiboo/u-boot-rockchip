@@ -100,6 +100,7 @@ List of mainline supported Rockchip boards:
      - Theobroma Systems RK3399-Q7 SoM - Puma (puma_rk3399)
 
 * rk3506
+     - ArmSoM Forge1 (forge1-rk3506b)
      - Generic RK3506 (generic-rk3506)
      - Luckfox Lyra (luckfox-lyra-rk3506)
      - Luckfox Lyra Ultra (luckfox-lyra-ultra-rk3506b)
