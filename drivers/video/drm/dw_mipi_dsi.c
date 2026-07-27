@@ -608,7 +608,7 @@ static unsigned long dw_mipi_dsi_get_lane_rate(struct dw_mipi_dsi *dsi)
 {
 	const struct drm_display_mode *mode = &dsi->mode;
 	unsigned int max_lane_rate = dsi->pdata->max_bit_rate_per_lane / 1000000;
-	unsigned long lane_rate;
+	unsigned long long lane_rate;
 	unsigned long mpclk;
 	unsigned long target_pclk;
 	unsigned long tmp;
@@ -636,11 +636,9 @@ static unsigned long dw_mipi_dsi_get_lane_rate(struct dw_mipi_dsi *dsi)
 			lane_rate = tmp;
 	}
 
-	target_pclk = DIV_ROUND_CLOSEST_ULL(lane_rate * lanes, bpp);
+	target_pclk = DIV_ROUND_CLOSEST_ULL(lane_rate * lanes * USEC_PER_SEC, bpp);
 
-	phy_mipi_dphy_get_default_config(target_pclk * USEC_PER_SEC,
-					 bpp, lanes,
-					 &dsi->phy_opts);
+	phy_mipi_dphy_get_default_config(target_pclk, bpp, lanes, &dsi->phy_opts);
 
 	return dsi->phy_opts.hs_clk_rate;
 }
