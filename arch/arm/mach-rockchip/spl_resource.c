@@ -4,6 +4,7 @@
  */
 
 #include <common.h>
+#include <log.h>
 #include <asm/arch-rockchip/spl_resource.h>
 #include <linux/list.h>
 
@@ -13,13 +14,12 @@ int spl_resource_image_check_header(const struct resource_img_hdr *hdr)
 
 	ret = memcmp(RESOURCE_MAGIC, hdr->magic, RESOURCE_MAGIC_SIZE);
 	if (ret) {
-		debug("bad resource image magic: %s\n",
-		      hdr->magic ? hdr->magic : "none");
+		debug("bad resource image magic: %.4s\n", hdr->magic);
 		ret = -EINVAL;
 	}
 
 	debug("resource image header:\n");
-	debug("magic:%s\n", hdr->magic);
+	debug("magic:%.4s\n", hdr->magic);
 	debug("version:%d\n", hdr->version);
 	debug("c_version:%d\n", hdr->c_version);
 	debug("blks:%d\n", hdr->blks);

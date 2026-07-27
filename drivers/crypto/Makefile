@@ -24,10 +24,9 @@ obj-$(CONFIG_$(PHASE_)CRYPTO_MANAGER) += rockchip/
 obj-y += hash/
 obj-y += hmac/
 obj-y += cipher/
-obj-y += rsa_mod_exp/
+obj-$(CONFIG_$(PHASE_)RSA) += rsa_mod_exp/
 
 obj-$(CONFIG_EXYNOS_ACE_SHA)          += ace_sha.o
 obj-y += fsl/
 obj-y += aspeed/
 obj-y += nuvoton/
-

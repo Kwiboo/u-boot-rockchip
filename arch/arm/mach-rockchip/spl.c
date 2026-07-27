@@ -4,6 +4,7 @@
  */
 
 #include <common.h>
+#include <android_bootloader_message.h>
 #include <version.h>
 #include <button.h>
 #include <cpu_func.h>
@@ -15,8 +16,11 @@
 #include <init.h>
 #include <led.h>
 #include <log.h>
+#include <malloc.h>
+#include <memalign.h>
 #include <misc.h>
 #include <mtd_blk.h>
+#include <part.h>
 #include <power/fuel_gauge.h>
 #include <ram.h>
 #include <serial.h>
@@ -42,6 +46,7 @@
 #ifdef CONFIG_RISCV
 #include <asm/system.h>
 #endif
+#include <linux/input.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -492,29 +497,33 @@ out:
 const char *spl_kernel_partition(struct spl_image_info *spl,
 				 struct spl_load_info *info)
 {
-	struct bootloader_message *bmsg = NULL;
+	struct android_bootloader_message *bmsg = NULL;
 	u32 boot_mode;
-	int ret, cnt;
-	u32 sector = 0;
+	int cnt;
+	ulong read, size;
+	lbaint_t sector = 0;
 
 #ifdef CONFIG_SPL_LIBDISK_SUPPORT
-	disk_partition_t part_info;
+	struct disk_partition part_info;
 
-	ret = part_get_info_by_name(info->priv, PART_MISC, &part_info);
-	if (ret >= 0)
+	if (part_get_info_by_name(info->priv, PART_MISC, &part_info) >= 0)
 		sector = part_info.start;
 #else
 	sector = CONFIG_SPL_MISC_SECTOR;
 #endif
 	if (sector) {
 		cnt = DIV_ROUND_UP(sizeof(*bmsg), info->bl_len);
-		bmsg = memalign(ARCH_DMA_MINALIGN, cnt * info->bl_len);
-		ret = info->read(info, BLK_SIZE(info, sector + BCB_MESSAGE_BLK_OFFSET),
-				 BLK_SIZE(cnt), bmsg);
-		if (ret < BLK_SIZE(cnt) && !strcmp(bmsg->command, "boot-recovery")) {
-			free(bmsg);
-			return PART_RECOVERY;
-		} else {
+		size = BLK_SIZE(info, cnt);
+		bmsg = memalign(ARCH_DMA_MINALIGN, size);
+		if (bmsg) {
+			read = info->read(info,
+					  BLK_SIZE(info, sector + BCB_MESSAGE_BLK_OFFSET),
+					  size, bmsg);
+			if (read == size &&
+			    !strcmp(bmsg->command, "boot-recovery")) {
+				free(bmsg);
+				return PART_RECOVERY;
+			}
 			free(bmsg);
 		}
 	}

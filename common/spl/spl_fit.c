@@ -934,7 +934,7 @@ __weak const char *spl_kernel_partition(struct spl_image_info *spl,
 }
 #endif
 
-static int spl_fit_get_kernel_dtb(const void *fit, int images_noffset)
+static int spl_fit_get_kernel_dtb(const struct spl_fit_info *ctx)
 {
 	const char *name = NULL;
 	int node, index = 0;
@@ -943,8 +943,8 @@ static int spl_fit_get_kernel_dtb(const void *fit, int images_noffset)
 		node = spl_fit_get_image_node(ctx, FIT_FDT_PROP, index);
 		if (node < 0)
 			break;
-		name = fdt_get_name(fit, node, NULL);
-		if(!strcmp(name, "fdt"))
+		name = fdt_get_name(ctx->fit, node, NULL);
+		if (!strcmp(name, "fdt"))
 			return node;
 #if defined(CONFIG_SPL_ROCKCHIP_HWID_DTB)
 		if (spl_find_hwid_dtb(name)) {
@@ -970,20 +970,18 @@ static int spl_load_kernel_fit(struct spl_image_info *spl_image,
 	 * The .its content rule of kernel fit image follows U-Boot proper.
 	 */
 	const char *images[] = { FIT_FDT_PROP, FIT_KERNEL_PROP, FIT_RAMDISK_PROP, };
+	struct spl_fit_info ctx;
 	struct spl_image_info image_info;
 	char fit_header[info->bl_len];
-	int images_noffset;
-	int base_offset;
-	int sector;
+	ulong offset, sector;
 	int node, ret, i;
-	void *fit;
 
 	if (spl_image->next_stage != SPL_NEXT_STAGE_KERNEL)
 		return 0;
 
 #ifdef CONFIG_SPL_LIBDISK_SUPPORT
-	const char *part_name = PART_BOOT;
 	struct disk_partition part_info;
+	const char *part_name;
 
 	part_name = spl_kernel_partition(spl_image, info);
 	if (part_get_info_by_name(info->priv, part_name, &part_info) <= 0) {
@@ -991,13 +989,15 @@ static int spl_load_kernel_fit(struct spl_image_info *spl_image,
 		return -EINVAL;
 	}
 	sector = part_info.start;
+	printf("Trying kernel at 0x%lx sector from '%s' part\n",
+	       sector, part_name);
 #else
 	sector = CONFIG_SPL_KERNEL_BOOT_SECTOR;
+	printf("Trying kernel at 0x%lx sector\n", sector);
 #endif
-	printf("Trying kernel at 0x%x sector from '%s' part\n", sector, part_name);
+	offset = BLK_SIZE(info, sector);
 
-	if (info->read(info, BLK_SIZE(info, sector),
-		       info->bl_len, &fit_header) < info->bl_len) {
+	if (info->read(info, offset, info->bl_len, &fit_header) < info->bl_len) {
 		debug("%s: Failed to read header\n", __func__);
 		return -EIO;
 	}
@@ -1007,47 +1007,25 @@ static int spl_load_kernel_fit(struct spl_image_info *spl_image,
 		return -EINVAL;
 	}
 
-	fit = spl_fit_load_blob(info, sector, fit_header, &base_offset);
-	if (!fit) {
-		debug("%s: Cannot load blob\n", __func__);
-		return -ENODEV;
-	}
-
-	/* verify the configure node by keys, if required */
-#ifdef CONFIG_SPL_FIT_SIGNATURE
-	int conf_noffset;
-
-	conf_noffset = fit_conf_get_node(fit, NULL);
-	if (conf_noffset <= 0) {
-		printf("No default config node\n");
-		return -EINVAL;
-	}
-
-	ret = fit_config_verify(fit, conf_noffset);
-	if (ret) {
-		printf("fit verify configure failed, ret=%d\n", ret);
+	ret = spl_simple_fit_read(&ctx, info, offset, fit_header);
+	if (ret)
 		return ret;
-	}
-	printf("\n");
-#endif
-	images_noffset = fdt_path_offset(fit, FIT_IMAGES_PATH);
-	if (images_noffset < 0) {
-		debug("%s: Cannot find /images node: %d\n",
-		      __func__, images_noffset);
-		return images_noffset;
-	}
+
+	ret = spl_simple_fit_parse(&ctx);
+	if (ret)
+		return ret;
 
 	for (i = 0; i < ARRAY_SIZE(images); i++) {
 		if (!strcmp(images[i], FIT_FDT_PROP))
-			node = spl_fit_get_kernel_dtb(fit, images_noffset);
+			node = spl_fit_get_kernel_dtb(&ctx);
 		else
-			node = spl_fit_get_image_node(ctx, images[i], 0);
+			node = spl_fit_get_image_node(&ctx, images[i], 0);
 		if (node < 0) {
 			debug("No image: %s\n", images[i]);
 			continue;
 		}
 
-		ret = load_simple_fit(info, offset, ctx, node, &image_info);
+		ret = load_simple_fit(info, offset, &ctx, node, &image_info);
 		if (ret)
 			return ret;
 
