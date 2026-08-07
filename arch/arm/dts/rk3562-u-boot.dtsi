@@ -1,0 +1,215 @@
+/*
+ * (C) Copyright 2022 Rockchip Electronics Co., Ltd
+ *
+ * SPDX-License-Identifier:     GPL-2.0+
+ */
+
+/ {
+	aliases {
+		mmc0 = &sdhci;
+		mmc1 = &sdmmc0;
+	};
+
+	chosen {
+		stdout-path = &uart2;
+		u-boot,spl-boot-order = &sdmmc0, &sdhci, &spi_nand, &spi_nor;
+	};
+
+	secure-otp@ff920000 {
+		compatible = "rockchip,rk3562-secure-otp";
+		reg = <0x0 0xff920000 0x0 0x4000>;
+		secure_conf = <0xff020034>;
+		mask_addr = <0x0>;
+		cru_rst_addr = <0xff130438>;
+		bootph-all;
+		status = "okay";
+	};
+};
+
+&sys_grf {
+	bootph-all;
+	status = "okay";
+};
+
+&ioc_grf {
+	bootph-all;
+	status = "okay";
+};
+
+&pmu_grf {
+	bootph-all;
+	status = "okay";
+};
+
+&usbphy_grf {
+	bootph-all;
+	status = "okay";
+};
+
+&firmware {
+	bootph-all;
+};
+
+&scmi {
+	bootph-all;
+};
+
+&scmi_clk {
+	bootph-all;
+};
+
+&scmi_shmem {
+	bootph-all;
+};
+
+&cru {
+	bootph-all;
+	status = "okay";
+};
+
+&crypto {
+	bootph-all;
+	status = "okay";
+};
+
+&rng {
+	bootph-all;
+	status = "okay";
+};
+
+&uart2 {
+	clock-frequency = <24000000>;
+	bootph-all;
+	status = "okay";
+};
+
+&saradc0 {
+	bootph-all;
+	status = "okay";
+};
+
+&psci {
+	bootph-all;
+	status = "okay";
+};
+
+&sdhci {
+	bus-width = <8>;
+	bootph-pre-ram;
+	bootph-some-ram;
+	/delete-property/ pinctrl-names;
+	/delete-property/ pinctrl-0;
+	mmc-hs400-1_8v;
+	mmc-hs400-enhanced-strobe;
+	fixed-emmc-driver-type = <1>;
+	status = "okay";
+};
+
+&sdmmc0 {
+	bootph-pre-ram;
+	bootph-some-ram;
+	pinctrl-names = "default";
+	pinctrl-0 = <&sdmmc0_clk &sdmmc0_cmd &sdmmc0_det &sdmmc0_bus4>;
+	status = "okay";
+};
+
+&sdmmc0_pins {
+	bootph-pre-ram;
+	bootph-some-ram;
+};
+
+&sdmmc0_bus4 {
+	bootph-pre-ram;
+	bootph-some-ram;
+};
+
+&sdmmc0_clk {
+	bootph-pre-ram;
+	bootph-some-ram;
+};
+
+&sdmmc0_cmd {
+	bootph-pre-ram;
+	bootph-some-ram;
+};
+
+&sdmmc0_det {
+	bootph-pre-ram;
+	bootph-some-ram;
+};
+
+&sfc {
+	bootph-all;
+	status = "okay";
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+	spi_nand: flash@0 {
+		bootph-all;
+		compatible = "spi-nand";
+		reg = <0>;
+		spi-tx-bus-width = <1>;
+		spi-rx-bus-width = <4>;
+		spi-max-frequency = <80000000>;
+	};
+
+	spi_nor: flash@1 {
+		bootph-all;
+		compatible = "jedec,spi-nor";
+		label = "sfc_nor";
+		reg = <0>;
+		spi-tx-bus-width = <1>;
+		spi-rx-bus-width = <4>;
+		spi-max-frequency = <80000000>;
+	};
+};
+
+&pinctrl {
+	bootph-all;
+	status = "okay";
+};
+
+&gpio0 {
+	bootph-all;
+};
+
+&gpio1 {
+	bootph-all;
+};
+
+&gpio2 {
+	bootph-all;
+};
+
+&gpio3 {
+	bootph-all;
+};
+
+&gpio4 {
+	bootph-all;
+};
+
+&pcfg_pull_up_drv_level_2 {
+	bootph-all;
+	status = "okay";
+};
+
+&pcfg_pull_up {
+	bootph-all;
+	status = "okay";
+};
+
+&u2phy {
+	bootph-all;
+	status = "okay";
+};
+
+&u2phy_otg {
+	bootph-all;
+	status = "okay";
+};
+
+&optee {
+	bootph-all;
+	status = "okay";
+};

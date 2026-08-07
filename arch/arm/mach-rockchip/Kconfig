@@ -361,8 +361,57 @@ config ROCKCHIP_RK3538
 	imply SPL_SERIAL
 	imply SPL_SYSCON
 	imply PARTITIONS if SUPPORT_USBPLUG
-	help
+ 	help
 	  The Rockchip RK3538 is a ARM-based SoC with quad-core Cortex-A55.
+
+config ROCKCHIP_RK3562
+	bool "Support Rockchip RK3562"
+	select ARM64 if !ARM64_BOOT_AARCH32
+	select SUPPORT_SPL if !ARM64_BOOT_AARCH32
+	select SPL if !ARM64_BOOT_AARCH32
+	select CLK
+	select PINCTRL if !SUPPORT_USBPLUG
+	select RAM
+	select REGMAP
+	select SYSCON
+	select BOARD_LATE_INIT
+	select DM_REGULATOR_FIXED if !SUPPORT_USBPLUG
+	select DM_RESET
+	select GICV2 if !ARM64_BOOT_AARCH32
+	imply BOOTSTD_FULL
+	imply CLK_SCMI
+	imply DM_RNG
+	imply FIT if !SUPPORT_USBPLUG
+	imply LEGACY_IMAGE_FORMAT
+	imply MISC if !SUPPORT_USBPLUG
+	imply MISC_INIT_R if !SUPPORT_USBPLUG
+	imply MMC_HS200_SUPPORT if MMC_SDHCI_ROCKCHIP
+	imply OF_LIBFDT_OVERLAY if !SUPPORT_USBPLUG
+	imply OF_LIVE
+	imply PHY_GIGE if DWC_ETH_QOS_ROCKCHIP
+	imply RNG_ROCKCHIP
+	imply ROCKCHIP_COMMON_BOARD
+	imply ROCKCHIP_COMMON_STACK_ADDR
+	imply ROCKCHIP_EXTERNAL_TPL
+	imply ROCKCHIP_OTP
+	imply SCMI_FIRMWARE
+	imply SPL_ATF
+	imply SPL_ATF_NO_PLATFORM_PARAM if SPL_ATF
+	imply SPL_CLK
+	imply SPL_DM_SEQ_ALIAS
+	imply SPL_LOAD_FIT
+	imply SPL_MMC_HS200_SUPPORT if SPL_MMC && MMC_HS200_SUPPORT
+	imply SPL_OF_CONTROL
+	imply SPL_PINCTRL
+	imply SPL_RAM
+	imply SPL_REGMAP
+	imply SPL_SERIAL
+	imply SPL_SYSCON
+	imply SYS_RELOC_GD_ENV_ADDR
+	imply SYSRESET
+	imply PARTITIONS if SUPPORT_USBPLUG
+	help
+	  The Rockchip RK3562 is a ARM-based SoC with a quad-core Cortex-A53.
 
 config ROCKCHIP_RK3568
 	bool "Support Rockchip RK3568"
@@ -841,6 +890,7 @@ source "arch/arm/mach-rockchip/rk3328/Kconfig"
 source "arch/arm/mach-rockchip/rk3368/Kconfig"
 source "arch/arm/mach-rockchip/rk3399/Kconfig"
 source "arch/arm/mach-rockchip/rk3538/Kconfig"
+source "arch/arm/mach-rockchip/rk3562/Kconfig"
 source "arch/arm/mach-rockchip/rk3568/Kconfig"
 source "arch/arm/mach-rockchip/rk3572/Kconfig"
 source "arch/arm/mach-rockchip/rk3576/Kconfig"

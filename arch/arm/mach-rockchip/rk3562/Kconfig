@@ -1,0 +1,25 @@
+if ROCKCHIP_RK3562
+
+choice
+	prompt "RK3562 board select"
+
+config TARGET_EVB_RK3562
+	bool "EVB_RK3562"
+	select BOARD_LATE_INIT
+	help
+	  RK3562 EVB is a evaluation board for Rockchp RK3562.
+
+endchoice
+
+config ROCKCHIP_BOOT_MODE_REG
+	default 0xff010220
+
+config ROCKCHIP_STIMER_BASE
+	default 0xffa90020
+
+config SYS_SOC
+	default "rk3562"
+
+source board/rockchip/evb_rk3562/Kconfig
+
+endif

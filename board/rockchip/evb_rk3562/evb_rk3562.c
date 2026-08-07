@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * (C) Copyright 2025 Rockchip Electronics Co., Ltd
+ * (C) Copyright 2022 Rockchip Electronics Co., Ltd
  */
 
 #include <common.h>
@@ -10,6 +10,7 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+#if defined(CONFIG_USB_DWC3_GADGET) && !defined(CONFIG_DM_USB_GADGET)
 static struct dwc3_device dwc3_device_data = {
 	.maximum_speed = USB_SPEED_HIGH,
 	.base = 0xfe500000,
