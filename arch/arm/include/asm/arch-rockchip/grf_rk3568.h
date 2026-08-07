@@ -6,6 +6,8 @@
 #ifndef __SOC_ROCKCHIP_RK3568_GRF_H__
 #define __SOC_ROCKCHIP_RK3568_GRF_H__
 
+#include <common.h>
+
 struct rk3568_grf {
 	unsigned int gpio1a_iomux_l;
 	unsigned int gpio1a_iomux_h;
@@ -365,5 +367,33 @@ struct rk3568_pmugrf {
 };
 
 check_member(rk3568_pmugrf, pmu_sdmmc_det_counter, 0x03b0);
+
+struct rk3568_ddrgrf {
+	unsigned int ddr_con0;
+	unsigned int ddr_con1;
+	unsigned int ddr_con2;
+	unsigned int ddr_con3;
+	unsigned int ddr_con4;
+	unsigned int ddr_split_con;
+	unsigned int reserved0[(0x0020 - 0x0014) / 4 - 1];
+	unsigned int ddr_lp_con;
+	unsigned int reserved1[(0x0100 - 0x0020) / 4 - 1];
+	unsigned int ddr_status0;
+	unsigned int ddr_status1;
+	unsigned int ddr_status2;
+	unsigned int ddr_status3;
+	unsigned int ddr_status4;
+	unsigned int ddr_status5;
+	unsigned int ddr_status6;
+	unsigned int ddr_status7;
+	unsigned int ddr_status8;
+	unsigned int ddr_status9;
+	unsigned int reserved2[(0x0130 - 0x0124) / 4 - 1];
+	unsigned int ddr_status10;
+	unsigned int ddr_status11;
+	unsigned int ddr_status12;
+};
+
+check_member(rk3568_ddrgrf, ddr_status12, 0x0138);
 
 #endif

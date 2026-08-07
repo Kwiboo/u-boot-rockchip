@@ -3,6 +3,7 @@
  * (C) Copyright 2021 Rockchip Electronics Co., Ltd
  */
 
+#include <common.h>
 #include <dm.h>
 #include <syscon.h>
 #include <asm/arch-rockchip/clock.h>
@@ -14,6 +15,14 @@ int rockchip_get_clk(struct udevice **devp)
 	return uclass_get_device_by_driver(UCLASS_CLK,
 			DM_DRIVER_GET(rockchip_rk3568_cru), devp);
 }
+
+#if CONFIG_IS_ENABLED(CLK_SCMI)
+int rockchip_get_scmi_clk(struct udevice **devp)
+{
+	return uclass_get_device_by_driver(UCLASS_CLK,
+			DM_DRIVER_GET(scmi_clock), devp);
+}
+#endif
 
 void *rockchip_get_cru(void)
 {

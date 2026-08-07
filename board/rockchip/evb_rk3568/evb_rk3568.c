@@ -6,21 +6,90 @@
 #include <common.h>
 #include <dwc3-uboot.h>
 #include <usb.h>
+#include <linux/delay.h>
+#include <linux/usb/phy-rockchip-naneng-combphy.h>
 #include <asm/io.h>
+#include <asm/arch-rockchip/cpu.h>
+#include <rockusb.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
+#if defined(CONFIG_USB_DWC3_GADGET) && !defined(CONFIG_DM_USB_GADGET)
+#define CRU_BASE		0xfdd20000
+#define CRU_SOFTRST_CON09	0x0424
+#define U3PHY_BASE		0xfe820000
+
 static struct dwc3_device dwc3_device_data = {
-	.maximum_speed = USB_SPEED_HIGH,
+	.maximum_speed = USB_SPEED_SUPER,
 	.base = 0xfcc00000,
 	.dr_mode = USB_DR_MODE_PERIPHERAL,
-	.hsphy_mode = USBPHY_INTERFACE_MODE_UTMIW,
 	.index = 0,
 	.dis_u2_susphy_quirk = 1,
+	.dis_u1u2_quirk = 1,
+	.hsphy_mode = USBPHY_INTERFACE_MODE_UTMIW,
 };
+
+int rkusb_dev_bind_to_udc_data(struct udevice *dev)
+{
+	if (IS_ERR_OR_NULL(dev))
+		return -EINVAL;
+
+	dwc3_device_data.dev = dev;
+
+	return 0;
+}
+
+bool rkusb_usb3_capable(void)
+{
+	return true;
+}
+
+static void usb_reset_otg_controller(void)
+{
+	writel(0x00100010, CRU_BASE + CRU_SOFTRST_CON09);
+	mdelay(1);
+	writel(0x00100000, CRU_BASE + CRU_SOFTRST_CON09);
+	mdelay(1);
+}
 
 int board_usb_init(int index, enum usb_init_type init)
 {
+	u32 ret = 0;
+
+	usb_reset_otg_controller();
+
+#if defined(CONFIG_SUPPORT_USBPLUG)
+	dwc3_device_data.maximum_speed = USB_SPEED_HIGH;
+
+	if (rkusb_switch_usb3_enabled()) {
+		dwc3_device_data.maximum_speed = USB_SPEED_SUPER;
+		ret = rockchip_combphy_usb3_uboot_init(U3PHY_BASE);
+		if (ret) {
+			rkusb_force_to_usb2(true);
+			dwc3_device_data.maximum_speed = USB_SPEED_HIGH;
+		}
+	}
+#else
+	if (soc_is_rk3566()) {
+		rkusb_force_to_usb2(true);
+		dwc3_device_data.maximum_speed = USB_SPEED_HIGH;
+	} else {
+		ret = rockchip_combphy_usb3_uboot_init(U3PHY_BASE);
+		if (ret) {
+			rkusb_force_to_usb2(true);
+			dwc3_device_data.maximum_speed = USB_SPEED_HIGH;
+		}
+	}
+#endif
 	return dwc3_uboot_init(&dwc3_device_data);
 }
+
+#if defined(CONFIG_SUPPORT_USBPLUG)
+int board_usb_cleanup(int index, enum usb_init_type init)
+{
+	dwc3_uboot_exit(index);
+	return 0;
+}
+#endif
+
 #endif
