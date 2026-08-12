@@ -348,9 +348,9 @@ static void __maybe_unused getvar_erase_blocksize(char *var_parameter, char *res
 
 static void __maybe_unused getvar_vboot_state(char *var_parameter, char *response)
 {
+#ifdef CONFIG_OPTEE
 	uint8_t vboot_flag = 0;
 
-#ifdef CONFIG_OPTEE
 	if (optee_read_vbootkey_enable_flag(&vboot_flag)) {
 		fastboot_fail("Can't read vboot flag", response);
 		return;
