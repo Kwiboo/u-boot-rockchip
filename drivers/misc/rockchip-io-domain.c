@@ -11,7 +11,6 @@
 #include <dm/device_compat.h>
 #include <regmap.h>
 #include <syscon.h>
-#include <asm/arch/clock.h>
 #include <fdtdec.h>
 #include <linux/compat.h>
 #include <linux/err.h>
