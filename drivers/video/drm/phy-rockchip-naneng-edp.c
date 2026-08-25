@@ -7,7 +7,9 @@
 
 #include <common.h>
 #include <dm.h>
+#include <dm/device_compat.h>
 #include <generic-phy.h>
+#include <generic-phy-dp.h>
 #include <syscon.h>
 #include <regmap.h>
 #include <asm/io.h>
@@ -289,20 +291,20 @@ static int rockchip_edp_phy_verify_config(struct rockchip_edp_phy *edpphy,
 	return 0;
 }
 
-static int rockchip_edp_phy_configure(struct phy *phy,
-				      union phy_configure_opts *opts)
+static int rockchip_edp_phy_configure(struct phy *phy, void *params)
 {
 	struct rockchip_edp_phy *edpphy = dev_get_priv(phy->dev);
+	struct phy_configure_opts_dp *opts = (struct phy_configure_opts_dp *)params;
 	int ret;
 
-	ret = rockchip_edp_phy_verify_config(edpphy, &opts->dp);
+	ret = rockchip_edp_phy_verify_config(edpphy, opts);
 	if (ret) {
 		dev_err(edpphy->dev, "invalid params for phy configure\n");
 		return ret;
 	}
 
-	if (opts->dp.set_rate) {
-		ret = rockchip_edp_phy_set_rate(edpphy, &opts->dp);
+	if (opts->set_rate) {
+		ret = rockchip_edp_phy_set_rate(edpphy, opts);
 		if (ret) {
 			dev_err(edpphy->dev,
 				"rockchip_edp_phy_set_rate failed\n");
@@ -310,8 +312,8 @@ static int rockchip_edp_phy_configure(struct phy *phy,
 		}
 	}
 
-	if (opts->dp.set_voltages) {
-		ret = rockchip_edp_phy_set_voltages(edpphy, &opts->dp);
+	if (opts->set_voltages) {
+		ret = rockchip_edp_phy_set_voltages(edpphy, opts);
 		if (ret) {
 			dev_err(edpphy->dev,
 				"rockchip_edp_phy_set_voltages failed\n");
@@ -414,5 +416,5 @@ U_BOOT_DRIVER(rockchip_edp_phy) = {
 	.ops		= &rockchip_edp_phy_ops,
 	.of_match	= rockchip_edp_phy_ids,
 	.probe		= rockchip_edp_phy_probe,
-	.priv_auto_alloc_size = sizeof(struct rockchip_edp_phy),
+	.priv_auto	= sizeof(struct rockchip_edp_phy),
 };
