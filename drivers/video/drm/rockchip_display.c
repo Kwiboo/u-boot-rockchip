@@ -1994,7 +1994,7 @@ static int rockchip_display_fixup_dts(void *blob)
 {
 	ofnode route_node, route_subnode, conn_ep, conn_port;
 	const struct device_node *route_sub_devnode;
-	const struct device_node *ep_node, *conn_ep_dev_node;
+	struct device_node *ep_node, *conn_ep_dev_node;
 	u32 phandle;
 	int conn_ep_offset;
 	const char *route_sub_path, *path;
