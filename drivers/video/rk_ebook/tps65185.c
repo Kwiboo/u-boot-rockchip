@@ -7,6 +7,7 @@
 #include <common.h>
 #include <dm.h>
 #include <i2c.h>
+#include <linux/delay.h>
 #include <asm/gpio.h>
 #include "rk_ebc.h"
 
@@ -119,7 +120,7 @@ int tps65185_i2c_write(struct tps65185_priv_data *priv_data, u8 reg, u8 val)
 	int ret;
 	u8 buf[2];
 	struct i2c_msg msg;
-	struct dm_i2c_chip *chip = dev_get_parent_platdata(priv_data->dev);
+	struct dm_i2c_chip *chip = dev_get_parent_plat(priv_data->dev);
 
 	buf[0] = reg;
 	buf[1] = val;
@@ -141,7 +142,7 @@ int tps65185_i2c_read(struct tps65185_priv_data *priv_data, u8 reg, u8 *val)
 {
 	int ret;
 	u8 data;
-	struct dm_i2c_chip *chip = dev_get_parent_platdata(priv_data->dev);
+	struct dm_i2c_chip *chip = dev_get_parent_plat(priv_data->dev);
 	struct i2c_msg msg[] = {
 		{
 			.addr = chip->chip_addr,
@@ -464,6 +465,6 @@ U_BOOT_DRIVER(tps65185_ebc_pwr) = {
 	.probe = tps65185_probe,
 	.ops = &tps65185_funcs,
 	.bind = dm_scan_fdt_dev,
-	.priv_auto_alloc_size = sizeof(struct tps65185_priv_data),
+	.priv_auto = sizeof(struct tps65185_priv_data),
 };
 
