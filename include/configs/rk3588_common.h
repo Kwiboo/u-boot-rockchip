@@ -18,6 +18,8 @@
 #define GICR_BASE			0xfe680000
 #define GICC_BASE			0xfe600000
 
+#define CONFIG_LIB_HW_RAND
+
 /* secure otp */
 #define OTP_UBOOT_ROLLBACK_OFFSET	0x150
 #define OTP_UBOOT_ROLLBACK_WORDS	2	/* 64 bits, 2 words */
@@ -51,11 +53,5 @@
 	ENV_MEM_LAYOUT_SETTINGS		\
 	ROCKCHIP_DEVICE_SETTINGS	\
 	"boot_targets=" BOOT_TARGETS "\0"
-
-
-#define GICD_BASE                       0xfe600000
-#define GICR_BASE                       0xfe680000
-#define GICC_BASE                       0xfe600000
-#define CONFIG_LIB_HW_RAND
 
 #endif /* __CONFIG_RK3588_COMMON_H */
