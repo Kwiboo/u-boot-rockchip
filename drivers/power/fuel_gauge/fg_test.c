@@ -7,6 +7,7 @@
 #include <dm.h>
 #include <common.h>
 #include <power/fuel_gauge.h>
+#include <power/charge_animation.h>
 
 static int fg_test_bat_is_exit(struct udevice *dev)
 {
@@ -63,4 +64,20 @@ U_BOOT_DRIVER(fg_test) = {
 	.probe = fg_test_probe,
 	.ops = &fg_test_ops,
 	.of_match = fg_test_ids,
+};
+
+U_BOOT_DRVINFO(fg_test) = {
+	.name = "fg_test",
+};
+
+static const struct charge_animation_pdata ca_pdata = {
+	.uboot_charge = 1,
+	.android_charge = 0,
+	.low_power_voltage = 3350,
+	.screen_on_voltage = 3400,
+};
+
+U_BOOT_DRVINFO(charge_animation) = {
+	.name = "charge-animation",
+	.plat = &ca_pdata,
 };
