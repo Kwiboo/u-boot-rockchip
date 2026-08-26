@@ -84,12 +84,9 @@ int board_usb_init(int index, enum usb_init_type init)
 	return dwc3_uboot_init(&dwc3_device_data);
 }
 
-#if defined(CONFIG_SUPPORT_USBPLUG)
 int board_usb_cleanup(int index, enum usb_init_type init)
 {
 	dwc3_uboot_exit(index);
 	return 0;
 }
-#endif
-
 #endif
