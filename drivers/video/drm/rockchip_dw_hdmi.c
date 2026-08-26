@@ -5,11 +5,11 @@
  */
 
 #include <common.h>
-#include <boot_rkimg.h>
 #include <asm/io.h>
 #include <asm/gpio.h>
 #include <dm/of_access.h>
 #include <dm/device.h>
+#include <linux/delay.h>
 #include <linux/dw_hdmi.h>
 #include <linux/hdmi.h>
 #include <linux/media-bus-format.h>
@@ -576,7 +576,7 @@ static int rockchip_dw_hdmi_probe(struct udevice *dev)
 	int id;
 	struct rockchip_connector *conn = dev_get_priv(dev);
 
-	id = of_alias_get_id(ofnode_to_np(dev->node), "hdmi");
+	id = of_alias_get_id(ofnode_to_np(dev_ofnode(dev)), "hdmi");
 	if (id < 0)
 		id = 0;
 

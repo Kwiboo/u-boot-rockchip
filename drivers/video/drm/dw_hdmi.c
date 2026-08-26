@@ -11,12 +11,13 @@
 #include <syscon.h>
 #include <asm/gpio.h>
 #include <asm/arch-rockchip/clock.h>
-#include <asm/arch/vendor.h>
+#include <asm/arch-rockchip/vendor.h>
 #include <edid.h>
 #include <dm/device.h>
 #include <dm/of_access.h>
 #include <dm/ofnode.h>
 #include <dm/read.h>
+#include <linux/delay.h>
 #include <linux/hdmi.h>
 #include <linux/media-bus-format.h>
 #include <linux/dw_hdmi.h>
@@ -2338,7 +2339,7 @@ int rockchip_dw_hdmi_init(struct rockchip_connector *conn, struct display_state 
 		(const struct dw_hdmi_plat_data *)conn->data;
 #else
 		(const struct dw_hdmi_plat_data *)dev_get_driver_data(conn->dev);
-	ofnode hdmi_node = conn->dev->node;
+	ofnode hdmi_node = dev_ofnode(conn->dev);
 	struct device_node *ddc_node;
 	int ret;
 #endif
