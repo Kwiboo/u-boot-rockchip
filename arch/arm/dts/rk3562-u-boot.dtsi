@@ -15,6 +15,17 @@
 		u-boot,spl-boot-order = &sdmmc0, &sdhci, &spi_nand, &spi_nor;
 	};
 
+	crypto_s: crypto_s@ff8a8000 {
+		compatible = "rockchip,crypto-v4";
+		reg = <0x0 0xff8a8000 0x0 0x2000>;
+		interrupts = <GIC_SPI 81 IRQ_TYPE_LEVEL_HIGH>;
+		clocks = <&scmi_clk CLK_CORE_CRYPTO>, <&scmi_clk CLK_PKA_CRYPTO>,
+			 <&scmi_clk ACLK_CRYPTO>, <&scmi_clk HCLK_CRYPTO>,
+			 <&scmi_clk PCLK_CRYPTO>;
+		clock-names = "sclk", "pka", "aclk", "pclk", "pclk";
+		status = "disabled";
+	};
+
 	secure-otp@ff920000 {
 		compatible = "rockchip,rk3562-secure-otp";
 		reg = <0x0 0xff920000 0x0 0x4000>;
@@ -68,6 +79,11 @@
 };
 
 &crypto {
+	bootph-all;
+	status = "okay";
+};
+
+&crypto_s {
 	bootph-all;
 	status = "okay";
 };
