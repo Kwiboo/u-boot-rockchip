@@ -26,6 +26,12 @@ config CHARGE_ANIMATION
 	help
 	  This adds a simple function for charge animation display.
 
+config CHARGE_TEST
+	bool "A test Charge simulator support"
+	depends on CHARGE_ANIMATION
+	help
+	  This adds support for a test charge simulator support.
+
 config ROCKCHIP_PM
 	bool "Enable Rockchip PM support"
 	depends on POWER
