@@ -270,16 +270,15 @@ int spl_ab_get_current_slot(struct blk_desc *dev_desc, char *partition, char *sl
 		memcpy(slot, "_b", 2);
 
 	if (last_slot_index != slot_index_to_boot) {
-		last_slot_index = slot_index_to_boot;
-		printf("SPL: A/B-slot: %s, successful: %d, tries-remain: %d (select)\n",
-		       slot,
-		       ab_data.slots[slot_index_to_boot].successful_boot,
-		       ab_data.slots[slot_index_to_boot].tries_remaining);
+		int i;
 
-		printf("SPL: A/B-slot: %s, successful: %d, tries-remain: %d\n",
-		       (!slot_index_to_boot) == 0 ? "_a" : "_b",
-		       ab_data.slots[!slot_index_to_boot].successful_boot,
-		       ab_data.slots[!slot_index_to_boot].tries_remaining);
+		last_slot_index = slot_index_to_boot;
+		for (i = 0; i < 2; i++)
+			printf("SPL: A/B-slot: %s, successful: %d, tries-remain: %d%s\n",
+			       i == 0 ? "_a" : "_b",
+			       ab_data.slots[i].successful_boot,
+			       ab_data.slots[i].tries_remaining,
+			       slot_index_to_boot == i ? " (select)" : "");
 	}
 
 out:
