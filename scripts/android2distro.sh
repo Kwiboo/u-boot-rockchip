@@ -47,8 +47,8 @@ function args_process()
 
 function android2distro()
 {
-	rm distro/ boot/ ${DISTRO_IMG} -rf
-	mkdir -p boot
+	rm distro/ distro/distro/boot/ ${DISTRO_IMG} -rf
+	mkdir -p distro/boot/
 
 	if file ${BOOT_IMG} | grep 'Device Tree Blob' ; then
 		./scripts/fit-unpack.sh -f ${BOOT_IMG} -o distro/
@@ -61,26 +61,26 @@ function android2distro()
 
 	BOOTARGS=`fdtget -ts distro/rk-kernel.dtb /chosen bootargs`
 
-	cp distro/rk-kernel.dtb boot/rk-kernel.dtb
-	cp distro/kernel boot/kernel
+	cp distro/rk-kernel.dtb distro/boot/rk-kernel.dtb
+	cp distro/kernel distro/boot/kernel
 	if [ -f distro/ramdisk ]; then
-		cp distro/ramdisk boot/ramdisk
+		cp distro/ramdisk distro/boot/ramdisk
 	fi
-	mkdir -p boot/extlinux
-	touch boot/extlinux/extlinux.conf
-	echo "label rockchip-linux-kernel" >> boot/extlinux/extlinux.conf
-	echo "    kernel /kernel" >> boot/extlinux/extlinux.conf
-	echo "    fdt /rk-kernel.dtb" >> boot/extlinux/extlinux.conf
+	mkdir -p distro/boot/extlinux
+	touch distro/boot/extlinux/extlinux.conf
+	echo "label rockchip-linux-kernel" >> distro/boot/extlinux/extlinux.conf
+	echo "    kernel /kernel" >> distro/boot/extlinux/extlinux.conf
+	echo "    fdt /rk-kernel.dtb" >> distro/boot/extlinux/extlinux.conf
 	if [ -f distro/ramdisk ]; then
-		echo "    initrd /ramdisk" >> boot/extlinux/extlinux.conf
+		echo "    initrd /ramdisk" >> distro/boot/extlinux/extlinux.conf
 	fi
-	echo "    append ${BOOTARGS}" >> boot/extlinux/extlinux.conf
+	echo "    append ${BOOTARGS}" >> distro/boot/extlinux/extlinux.conf
 
 	SIZE_KB=`ls -lh ${BOOT_IMG} | awk '{ print $5 }' | tr -d 'M'`
 	SIZE_KB=`echo "scale=0;$SIZE_KB/1"|bc -l` # for align down integer
 	SIZE_KB=`expr ${SIZE_KB} + 2 + 1`
 	SIZE_BYTE=$((${SIZE_KB}*1024))
-	genext2fs -b ${SIZE_BYTE} -B 1024 -d boot/ -i 8192 -U ${DISTRO_IMG}
+	genext2fs -b ${SIZE_BYTE} -B 1024 -d distro/boot/ -i 8192 -U ${DISTRO_IMG}
 
 	echo
 	echo "Successful: ${DISTRO_IMG} is ready."
