@@ -29,6 +29,17 @@
 		cru_rst_addr = <0xfdd20470>;
 		bootph-all;
 	};
+
+	bootstd {
+		compatible = "u-boot,boot-std";
+		bootph-all;
+		filename-prefixes = "/", "/boot/";
+
+		extlinux {
+			bootph-all;
+			compatible = "u-boot,extlinux";
+		};
+	};
 };
 
 &firmware {
