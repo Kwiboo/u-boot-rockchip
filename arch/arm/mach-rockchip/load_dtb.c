@@ -10,6 +10,7 @@
 #include <dm.h>
 #include <fs.h>
 #include <image.h>
+#include <part.h>
 #include <sysmem.h>
 #include <asm/arch-rockchip/common.h>
 #include <asm/arch-rockchip/fit.h>
@@ -74,39 +75,33 @@ static int fdt_check_hash(void *fdt_addr, u32 fdt_size,
 #if defined(CONFIG_EARLY_DISTRO_DTB)
 static int distro_dtb_get(void *fdt_addr)
 {
-	const char *cmd = "part list ${devtype} ${devnum} -bootable devplist";
-	char *devnum, *devtype, *devplist;
-	char devnum_part[12];
-	char fdt_hex_str[19];
-	char *fs_argv[5];
+	struct blk_desc *desc;
+	loff_t actread;
+	int part;
+	int ret;
 
-	if (!plat_bootdev() || !fdt_addr)
+	if (!fdt_addr)
+		return -EINVAL;
+
+	desc = plat_bootdev();
+	if (!desc)
 		return -ENODEV;
 
-	if (run_command_list(cmd, -1, 0)) {
-		printf("Failed to find -bootable\n");
-		return -EINVAL;
-	}
+	part = part_get_bootable(desc);
+	if (!part)
+		part = 1;
 
-	devplist = env_get("devplist");
-	if (!devplist)
-		devplist = "1";
+	ret = fs_set_blk_dev_with_part(desc, part);
+	if (ret)
+		return ret;
 
-	devtype = env_get("devtype");
-	devnum = env_get("devnum");
-	sprintf(devnum_part, "%s:%s", devnum, devplist);
-	sprintf(fdt_hex_str, "0x%lx", (ulong)fdt_addr);
+	ret = fs_read(CONFIG_EARLY_DISTRO_DTB_PATH, (ulong)fdt_addr,
+		      0, 0, &actread);
+	if (ret)
+		return ret;
 
-	fs_argv[0] = "load";
-	fs_argv[1] = devtype,
-	fs_argv[2] = devnum_part;
-	fs_argv[3] = fdt_hex_str;
-	fs_argv[4] = CONFIG_EARLY_DISTRO_DTB_PATH;
-
-	if (do_load(NULL, 0, 5, fs_argv, FS_TYPE_ANY))
-		return -EIO;
-
-	if (fdt_check_header(fdt_addr))
+	if (actread < sizeof(struct fdt_header) || fdt_check_header(fdt_addr) ||
+	    fdt_totalsize(fdt_addr) > actread)
 		return -EBADF;
 
 	printf("DTB(Distro): %s\n", CONFIG_EARLY_DISTRO_DTB_PATH);
