@@ -47,6 +47,7 @@ struct pre_serial {
 	u32 enable;
 	u32 id;
 	u32 baudrate;
+	u32 m_mode;
 	ulong addr;
 };
 #endif

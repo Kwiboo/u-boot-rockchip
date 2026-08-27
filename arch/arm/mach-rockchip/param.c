@@ -471,6 +471,7 @@ int param_parse_pre_serial(int *flags)
 		gd->serial.baudrate = t->u.serial.baudrate;
 		gd->serial.addr = t->u.serial.addr;
 		gd->serial.id = t->u.serial.id;
+		gd->serial.m_mode = t->u.serial.m_mode;
 		gd->baudrate = CONFIG_BAUDRATE;
 		if (!gd->serial.enable && flags)
 			/*

@@ -363,6 +363,7 @@ int board_init_f_init_misc(void)
 		gd->serial.baudrate = t->u.serial.baudrate;
 		gd->serial.addr = t->u.serial.addr;
 		gd->serial.id = t->u.serial.id;
+		gd->serial.m_mode = t->u.serial.m_mode;
 		gd->baudrate = t->u.serial.baudrate;
 		if (!gd->serial.enable)
 			boot_flags |= GD_FLG_DISABLE_CONSOLE;
