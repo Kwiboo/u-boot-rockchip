@@ -349,7 +349,15 @@ static int load_simple_fit(struct spl_load_info *info, ulong fit_offset,
 			debug("%s ", genimg_get_type_name(type));
 	}
 
-	if (spl_decompression_enabled()) {
+	/*
+	 * Rockchip may decompress via board_fit_image_post_process() even
+	 * if SPL_GZIP/SPL_LZMA are disabled, image_comp is still needed
+	 * so that the compressed data is staged at comp_addr instead of
+	 * being read directly onto the final load address.
+	 */
+	if (spl_decompression_enabled() ||
+	    (IS_ENABLED(CONFIG_ARCH_ROCKCHIP) &&
+	     CONFIG_IS_ENABLED(FIT_IMAGE_POST_PROCESS))) {
 		fit_image_get_comp(fit, node, &image_comp);
 		debug("%s ", genimg_get_comp_name(image_comp));
 	}
@@ -957,44 +965,17 @@ static int spl_fit_get_kernel_dtb(const struct spl_fit_info *ctx)
 	return node;
 }
 
-static int spl_load_kernel_fit(struct spl_image_info *spl_image,
-			       struct spl_load_info *info)
+static int spl_internal_load_kernel_fit(struct spl_image_info *spl_image,
+					struct spl_load_info *info, ulong sector,
+					const char *images[], int images_count,
+					int *retry_ramdisk)
 {
-	/*
-	 * Never change the image order.
-	 *
-	 * Considering thunder-boot feature, there maybe asynchronous
-	 * loading operation of these images and ramdisk is usually to
-	 * be the last one.
-	 *
-	 * The .its content rule of kernel fit image follows U-Boot proper.
-	 */
-	const char *images[] = { FIT_FDT_PROP, FIT_KERNEL_PROP, FIT_RAMDISK_PROP, };
-	struct spl_fit_info ctx;
 	struct spl_image_info image_info;
+	struct spl_fit_info ctx;
 	char fit_header[info->bl_len];
-	ulong offset, sector;
+	ulong offset;
 	int node, ret, i;
 
-	if (spl_image->next_stage != SPL_NEXT_STAGE_KERNEL)
-		return 0;
-
-#ifdef CONFIG_SPL_LIBDISK_SUPPORT
-	struct disk_partition part_info;
-	const char *part_name;
-
-	part_name = spl_kernel_partition(spl_image, info);
-	if (part_get_info_by_name(info->priv, part_name, &part_info) <= 0) {
-		printf("%s: no partition\n", __func__);
-		return -EINVAL;
-	}
-	sector = part_info.start;
-	printf("Trying kernel at 0x%lx sector from '%s' part\n",
-	       sector, part_name);
-#else
-	sector = CONFIG_SPL_KERNEL_BOOT_SECTOR;
-	printf("Trying kernel at 0x%lx sector\n", sector);
-#endif
 	offset = BLK_SIZE(info, sector);
 
 	if (info->read(info, offset, info->bl_len, &fit_header) < info->bl_len) {
@@ -1002,8 +983,13 @@ static int spl_load_kernel_fit(struct spl_image_info *spl_image,
 		return -EIO;
 	}
 
+	/* During ramdisk retry, allow boot to continue if FIT check fails */
 	if (image_get_magic((void *)&fit_header) != FDT_MAGIC) {
-		printf("%s: Not fit magic\n", __func__);
+		printf("%s: invalid fit magic%s\n", __func__,
+		       (retry_ramdisk && *retry_ramdisk) ?
+		       " when retry ramdisk" : "");
+		if (retry_ramdisk && *retry_ramdisk)
+			return 0; /* Allow boot without ramdisk */
 		return -EINVAL;
 	}
 
@@ -1015,12 +1001,14 @@ static int spl_load_kernel_fit(struct spl_image_info *spl_image,
 	if (ret)
 		return ret;
 
-	for (i = 0; i < ARRAY_SIZE(images); i++) {
+	for (i = 0; i < images_count; i++) {
 		if (!strcmp(images[i], FIT_FDT_PROP))
 			node = spl_fit_get_kernel_dtb(&ctx);
 		else
 			node = spl_fit_get_image_node(&ctx, images[i], 0);
 		if (node < 0) {
+			if (!strcmp(images[i], FIT_RAMDISK_PROP))
+				*retry_ramdisk = 1;
 			debug("No image: %s\n", images[i]);
 			continue;
 		}
@@ -1052,12 +1040,74 @@ static int spl_load_kernel_fit(struct spl_image_info *spl_image,
 	debug("fdt_addr=0x%08lx, entry_point=0x%08lx, entry_point_os=0x%08lx\n",
 	      (ulong)spl_image->fdt_addr,
 	      spl_image->entry_point,
-#if CONFIG_IS_ENABLED(OPTEE_IMAGE) || CONFIG_IS_ENABLED(OPENSBI)
-	      spl_image->entry_point_os);
-#endif
 #if CONFIG_IS_ENABLED(ATF)
 	      spl_image->entry_point_bl33);
+#else
+	      spl_image->entry_point_os);
 #endif
+
+	return 0;
+}
+
+static int spl_load_kernel_fit(struct spl_image_info *spl_image,
+			       struct spl_load_info *info)
+{
+	/*
+	 * Never change the image order.
+	 *
+	 * Considering thunder-boot feature, there maybe asynchronous
+	 * loading operation of these images and ramdisk is usually to
+	 * be the last one.
+	 *
+	 * The .its content rule of kernel fit image follows U-Boot proper.
+	 */
+	const char *images[] = { FIT_FDT_PROP, FIT_KERNEL_PROP, FIT_RAMDISK_PROP, };
+	int ret, retry_ramdisk = 0;
+	ulong sector;
+
+	if (spl_image->next_stage != SPL_NEXT_STAGE_KERNEL)
+		return 0;
+
+	/* boot: kernel/fdt/ramdisk */
+#ifdef CONFIG_SPL_LIBDISK_SUPPORT
+	struct disk_partition part_info;
+	const char *part_name;
+
+	part_name = spl_kernel_partition(spl_image, info);
+	if (part_get_info_by_name(info->priv, part_name, &part_info) <= 0) {
+		printf("%s: no partition\n", __func__);
+		return -EINVAL;
+	}
+	sector = part_info.start;
+	printf("Trying kernel at 0x%lx sector from '%s' part\n",
+	       sector, part_name);
+#else
+	sector = CONFIG_SPL_KERNEL_BOOT_SECTOR;
+	printf("Trying kernel at 0x%lx sector\n", sector);
+#endif
+	ret = spl_internal_load_kernel_fit(spl_image, info, sector,
+					   images, ARRAY_SIZE(images),
+					   &retry_ramdisk);
+	if (ret < 0)
+		return ret;
+
+	/* ramdisk: standalone on rootfs or system{_a,_b} partition ? */
+	if (retry_ramdisk) {
+#ifdef CONFIG_SPL_LIBDISK_SUPPORT
+		if ((part_get_info_by_name(info->priv, PART_ROOTFS, &part_info) <= 0) &&
+		    (part_get_info_by_name(info->priv, PART_SYSTEM, &part_info) <= 0)) {
+			printf("Neither rootfs nor system_a/b partition\n");
+			return 0; /* Allow boot without ramdisk */
+		}
+		sector = part_info.start;
+#else
+		sector = CONFIG_SPL_RAMDISK_BOOT_SECTOR;
+#endif
+		printf("Trying ramdisk fit image at 0x%lx sector\n", sector);
+		return spl_internal_load_kernel_fit(spl_image, info, sector,
+						    &images[2], 1,
+						    &retry_ramdisk);
+	}
 
 	return 0;
 }

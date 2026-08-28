@@ -24,6 +24,7 @@
 #define PART_DTBO		"dtbo"
 #define PART_LOGO		"logo"
 #define PART_SYSTEM		"system"
+#define PART_ROOTFS		"rootfs"
 #define PART_METADATA		"metadata"
 #define PART_USERDATA		"userdata"
 #define PART_META		"meta"
