@@ -44,6 +44,17 @@
 		key_reader_addr = <0xfd980000>;
 		status = "okay";
 	};
+
+	bootstd {
+		compatible = "u-boot,boot-std";
+		bootph-all;
+		filename-prefixes = "/", "/boot/";
+
+		extlinux {
+			bootph-all;
+			compatible = "u-boot,extlinux";
+		};
+	};
 };
 
 &crypto {

@@ -83,6 +83,17 @@
 		mask_addr = <0x2a4d0000>;
 		reg = <0x0 0x2a480000 0x0 0x10000>;
 	};
+
+	bootstd {
+		compatible = "u-boot,boot-std";
+		bootph-all;
+		filename-prefixes = "/", "/boot/";
+
+		extlinux {
+			bootph-all;
+			compatible = "u-boot,extlinux";
+		};
+	};
 };
 
 &hw_decompress {
