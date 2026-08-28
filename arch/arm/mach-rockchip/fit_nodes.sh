@@ -519,7 +519,9 @@ function gen_arm64_configurations()
 
 function gen_arm_configurations()
 {
+# CONFIG_DEFAULT_DEVICE_TREE="rockchip/xxx"
 PLATFORM=`sed -n "/CONFIG_DEFAULT_DEVICE_TREE/p" .config | awk -F "=" '{ print $2 }' | tr -d '"'`
+PLATFORM="${PLATFORM##*/}"
 if grep -q '^CONFIG_FIT_ENABLE_RSASSA_PSS_SUPPORT=y' .config ; then
         ALGO_PADDING="                          padding = \"pss\";"
 fi
