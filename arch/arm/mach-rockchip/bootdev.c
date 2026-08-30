@@ -219,7 +219,15 @@ struct blk_desc *plat_bootdev(void)
 
 void plat_set_bootdev(struct blk_desc *desc)
 {
+	const char *devtype;
+	char devnum[32];
+
+	devtype = blk_get_uclass_name(desc->uclass_id);
+	snprintf(devnum, 32, "%d", desc->devnum);
+
 	g_bootdev = desc;
+	env_set("devtype", devtype);
+	env_set("devnum", devnum);
 }
 
 #ifdef CONFIG_ROCKCHIP_USB_BOOT
@@ -236,12 +244,13 @@ int usb_boot_init(void)
 	if (!strcmp(env_get("devtype"), "mmc") && !strcmp(env_get("devnum"), "1"))
 		return 0;
 
+	printf("=== Trying to boot from usb ===\n");
 	if (!run_command("usb start", -1)) {
 		for (blk_first_device(UCLASS_USB, &dev);
 		     dev;
 		     blk_next_device(&dev)) {
 			desc = dev_get_uclass_plat(dev);
-			printf("Scanning usb %d ...\n", desc->devnum);
+			printf("=== Scanning usb %d ===\n", desc->devnum);
 			if (desc->type == DEV_TYPE_UNKNOWN)
 				continue;
 
@@ -263,10 +272,7 @@ int usb_boot_init(void)
 
 		snprintf(buf, 32, "rkimgtest usb %d", devnum);
 		if (!run_command(buf, -1)) {
-			snprintf(buf, 32, "%d", devnum);
 			plat_set_bootdev(desc);
-			env_set("devtype", "usb");
-			env_set("devnum", buf);
 			printf("=== Booting from usb %d ===\n", devnum);
 			if (!gd->fdt_blob_kern) {
 				fdt_size = fdt_totalsize(gd->fdt_blob);
