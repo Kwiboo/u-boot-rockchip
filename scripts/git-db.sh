@@ -263,13 +263,13 @@ for pathspec in "${pathspecs[@]}"; do
 done
 
 if [ "${#git_pathspecs[@]}" -gt 0 ]; then
-	commits=$(git rev-list --reverse "${rev_filters[@]}" "${commit_args[@]}" -- "${git_pathspecs[@]}")
+	commits=$(git rev-list "${rev_filters[@]}" "${commit_args[@]}" -- "${git_pathspecs[@]}")
 else
-	commits=$(git rev-list --reverse "${rev_filters[@]}" "${commit_args[@]}")
+	commits=$(git rev-list "${rev_filters[@]}" "${commit_args[@]}")
 fi
 
 if [ -n "$max_count" ]; then
-	commits=$(printf '%s\n' $commits | tail -n "$max_count")
+	commits=$(printf '%s\n' $commits | head -n "$max_count")
 fi
 
 for commit in $commits; do
