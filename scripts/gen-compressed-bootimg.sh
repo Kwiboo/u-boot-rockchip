@@ -65,6 +65,11 @@ case ${image_info} in
 	image_type=FIT
 	[[ -x ${FIT_UNPACK} ]] || { echo "ERROR: fit-unpack.sh is not executable: ${FIT_UNPACK}" >&2; exit 1; }
 	[[ -x ${MKIMAGE} ]] || { echo "ERROR: mkimage is not executable: ${MKIMAGE}" >&2; exit 1; }
+	command -v fdtget >/dev/null 2>&1 || { echo "ERROR: fdtget is not available" >&2; exit 1; }
+	fdtget -l "${INPUT_IMAGE}" /images >/dev/null 2>&1 || {
+		echo "ERROR: Input is not a FIT image: ${INPUT_IMAGE}" >&2
+		exit 1
+	}
 	;;
 *)
 	echo "ERROR: Unsupported boot image format: ${image_info}" >&2
@@ -75,7 +80,7 @@ echo "### Detected input format: ${image_type} image"
 
 mkdir -p -- "${OUTPUT_DIR}"
 OUTPUT_DIR=$(cd -- "${OUTPUT_DIR}" && pwd)
-work_dir=$(mktemp -d "${SCRIPT_DIR}/.fit-gen-compressed.XXXXXX")
+work_dir=$(mktemp -d "${SCRIPT_DIR}/.gen-compressed-bootimg.XXXXXX")
 trap 'rm -rf -- "${work_dir}"' EXIT
 
 if [[ ${image_format} == fit ]]; then
@@ -122,6 +127,15 @@ for compression in gzip lzma lz4; do
 		perl -0pi -e \
 			's{(kernel\s*\{.*?data\s*=\s*/incbin/\(")kernel("\);.*?compression\s*=\s*)"none"}{$1kernel.'"${suffix}"'$2"'"${compression}"'"}s' \
 			"${variant_dir}/image.its"
+
+		grep -Fq "kernel.${suffix}" "${variant_dir}/image.its" || {
+			echo "ERROR: failed to replace FIT kernel data in ${variant_dir}/image.its" >&2
+			exit 1
+		}
+		grep -Fq "compression = \"${compression}\"" "${variant_dir}/image.its" || {
+			echo "ERROR: failed to replace FIT kernel compression in ${variant_dir}/image.its" >&2
+			exit 1
+		}
 
 		( cd -- "${variant_dir}" && "${MKIMAGE}" -f image.its -E -p 0x1200 "${output_image}" )
 	else
