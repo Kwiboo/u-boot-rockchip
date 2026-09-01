@@ -231,7 +231,7 @@ static void spl_hotkey_init(void)
 	if (debug_uart_tstc()) {
 		gd->console_evt = debug_uart_getc();
 #endif
-		if (gd->console_evt <= 0x1a) /* 'z' */
+		if (gd->console_evt > 0 && gd->console_evt <= 0x1a) /* 'z' */
 			printf("SPL Hotkey: ctrl+%c\n",
 				gd->console_evt + 'a' - 1);
 	}

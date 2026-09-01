@@ -30,7 +30,7 @@ int hotkey_init(void)
 {
 	if (tstc()) {
 		gd->console_evt = debug_uart_getc();
-		if (gd->console_evt <= 0x1a) /* 'z' */
+		if (gd->console_evt > 0 && gd->console_evt <= 0x1a) /* 'z' */
 			printf("Hotkey: ctrl+%c\n", gd->console_evt + 'a' - 1);
 	}
 
