@@ -28,6 +28,8 @@ DECLARE_GLOBAL_DATA_PTR;
 #define GPIO0A_IOMUX_SEL_H	0x0004
 #define GPIO0B_PULL_L		0x0024
 #define GPIO0B_IE_L		0x002C
+#define GPIO0B_IOMUX_SEL_H	0x2000
+
 #define TOP_IOC_BASE		0x26044000
 #define GPIO1A_IOMUX_SEL_L	0x0020
 #define GPIO1A_IOMUX_SEL_H	0x0024
@@ -209,9 +211,11 @@ void board_set_iomux(enum uclass_id uclass, int devnum, int routing)
 			writel(0xffff1111, TOP_IOC_BASE + GPIO1A_IOMUX_SEL_H);
 			writel(0xffff1111, TOP_IOC_BASE + GPIO1B_IOMUX_SEL_L);
 		} else if (devnum == 1) {
+			/* SDMMC0 DATA, CMD, CLK, DETN, PWREN */
 			writel(0xffff1111, TOP_IOC_BASE + GPIO2A_IOMUX_SEL_L);
 			writel(0x00ff0011, TOP_IOC_BASE + GPIO2A_IOMUX_SEL_H);
 			writel(0xf0001000, GPIO0_IOC_BASE + GPIO0A_IOMUX_SEL_H);
+			writel(0x0f000100, GPIO0_IOC_BASE + GPIO0B_IOMUX_SEL_H);
 			/* Pull up */
 			writel(0x0FFF0FFF, VCCIO_IOC_BASE + VCCIO_IOC_GPIO2A_PUL);
 		}
