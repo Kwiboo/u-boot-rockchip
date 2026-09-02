@@ -220,7 +220,7 @@ config SYS_HZ
 
 config SPL_USE_TINY_PRINTF
 	bool "Enable tiny printf() version in SPL"
-	depends on SPL
+	depends on SPL && !SPL_BOOTSTAGE_PRINTF_TIMESTAMP
 	default y
 	help
 	  This option enables a tiny, stripped down printf version.

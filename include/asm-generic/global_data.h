@@ -482,7 +482,7 @@ struct global_data {
 	ulong sys_start_tick;           /* For report system start-up time */
 	int console_evt;                /* Console event, maybe some hotkey  */
 	u32 pflags;
-  #ifdef CONFIG_BOOTSTAGE_PRINTF_TIMESTAMP
+  #if CONFIG_IS_ENABLED(BOOTSTAGE_PRINTF_TIMESTAMP)
 	int new_line;
   #endif
   #if CONFIG_IS_ENABLED(FIT_ROLLBACK_PROTECT)

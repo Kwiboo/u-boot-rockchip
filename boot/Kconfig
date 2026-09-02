@@ -1368,6 +1368,12 @@ config BOOTSTAGE_PRINTF_TIMESTAMP
 	help
 	  Enabling this will support printf timestamp.
 
+config SPL_BOOTSTAGE_PRINTF_TIMESTAMP
+	bool "Support printf timestamp in SPL"
+	depends on SPL
+	help
+	  Enabling this will support printf timestamp in SPL.
+
 config SHOW_BOOT_PROGRESS
 	bool "Show boot progress in a board-specific manner"
 	help
