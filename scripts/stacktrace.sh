@@ -10,7 +10,7 @@ set -e
 SKIP_CHECK=
 FILTERED_ARGS=()
 for arg in "$@"; do
-	if [ "${arg}" = "-i" ]; then
+	if [ "${arg}" = "-f" ]; then
 		SKIP_CHECK=y
 	else
 		FILTERED_ARGS+=("${arg}")
@@ -28,7 +28,7 @@ if [ ${#FILTERED_ARGS[@]} -eq 0 ] || [ ${#FILTERED_ARGS[@]} -gt 2 ]; then
 	echo "Param:"
 	echo "	<file>: stacktrace info file"
 	echo "	<type>: none, spl, tpl"
-	echo "	-i: ignore backtrace build validation"
+	echo "	-f: force to translate backtrace"
 	echo
 	echo "Example:"
 	echo "	./scripts/stacktrace.sh ./dump.txt"
