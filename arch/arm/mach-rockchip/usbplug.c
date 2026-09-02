@@ -173,7 +173,7 @@ int board_init(void)
 
 int board_init_f_init_misc(void)
 {
-	int boot_flags = 0;
+	int boot_flags;
 
 #ifdef CONFIG_ARM64
 	asm volatile("mrs %0, cntfrq_el0" : "=r" (gd->arch.timer_rate_hz));
@@ -181,11 +181,7 @@ int board_init_f_init_misc(void)
 	asm volatile("mrc p15, 0, %0, c14, c0, 0" : "=r" (gd->arch.timer_rate_hz));
 #endif
 
-	param_parse_pre_serial(&boot_flags);
-
-#if defined(CONFIG_DISABLE_CONSOLE)
-	boot_flags |= GD_FLG_DISABLE_CONSOLE;
-#endif
+	boot_flags = param_parse_pre_serial();
 
 	return boot_flags;
 }

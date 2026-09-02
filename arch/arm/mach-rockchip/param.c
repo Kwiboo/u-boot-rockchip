@@ -458,8 +458,10 @@ phys_size_t param_simple_parse_ddr_mem(int init_bank)
 }
 #endif
 
-int param_parse_pre_serial(int *flags)
+int param_parse_pre_serial(void)
 {
+	int flags = 0;
+
 #if defined(CONFIG_ROCKCHIP_PRELOADER_SERIAL) && \
     defined(CONFIG_ROCKCHIP_PRELOADER_ATAGS)
 	struct tag *t;
@@ -469,16 +471,16 @@ int param_parse_pre_serial(int *flags)
 		gd->serial.using_pre_serial = 1;
 		gd->serial.enable = t->u.serial.enable;
 		gd->serial.baudrate = t->u.serial.baudrate;
+		gd->baudrate = t->u.serial.baudrate;
 		gd->serial.addr = t->u.serial.addr;
 		gd->serial.id = t->u.serial.id;
 		gd->serial.m_mode = t->u.serial.m_mode;
-		gd->baudrate = CONFIG_BAUDRATE;
-		if (!gd->serial.enable && flags)
+		if (!gd->serial.enable)
 			/*
 			 * The flags in gd have not been updated yet,
 			 * at this time nothing should be printed.
 			 */
-			*flags |= GD_FLG_DISABLE_CONSOLE;
+			flags |= GD_FLG_DISABLE_CONSOLE;
 		else
 			debug("preloader: enable=%d, addr=0x%lx, baudrate=%d, id=%d\n",
 				gd->serial.enable, gd->serial.addr,
@@ -486,11 +488,17 @@ int param_parse_pre_serial(int *flags)
 	} else
 #endif
 	{
-		gd->baudrate = CONFIG_BAUDRATE;
+		gd->serial.using_pre_serial = 0;
+		gd->serial.enable = 1;
 		gd->serial.baudrate = CONFIG_BAUDRATE;
+		gd->baudrate = CONFIG_BAUDRATE;
 		gd->serial.addr = CONFIG_DEBUG_UART_BASE;
 	}
 
-	return 0;
-}
+	/* The highest priority to turn off (override) console */
+#ifdef CONFIG_DISABLE_CONSOLE
+	flags |= GD_FLG_DISABLE_CONSOLE;
+#endif
 
+	return flags;
+}

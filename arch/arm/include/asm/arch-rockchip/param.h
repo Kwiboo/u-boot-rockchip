@@ -69,9 +69,9 @@ int param_parse_assign_bootdev(char **devtype, char **devnum, char **routing);
 /**
  * param_parse_pre_serial() - Parse and Init serial according to pre-loader serial.
  *
- * @return 0 on success, otherwise failed.
+ * @return boot flags to apply to gd, or 0 when no flags are needed.
  */
-int param_parse_pre_serial(int *flags);
+int param_parse_pre_serial(void);
 
 #ifdef CONFIG_PSTORE
 /**

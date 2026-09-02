@@ -659,7 +659,7 @@ void arch_preboot_os(uint32_t bootm_state)
 
 int board_init_f_init_misc(void)
 {
-	int boot_flags = 0;
+	int boot_flags;
 
 #ifdef CONFIG_ARM64
 	asm volatile("mrs %0, cntfrq_el0" : "=r" (gd->arch.timer_rate_hz));
@@ -675,12 +675,7 @@ int board_init_f_init_misc(void)
 #ifdef CONFIG_PSTORE
 	param_parse_pstore();
 #endif
-	param_parse_pre_serial(&boot_flags);
-
-	/* The highest priority to turn off (override) console */
-#if defined(CONFIG_DISABLE_CONSOLE)
-	boot_flags |= GD_FLG_DISABLE_CONSOLE;
-#endif
+	boot_flags = param_parse_pre_serial();
 
 	return boot_flags;
 }

@@ -335,7 +335,7 @@ int board_fit_config_name_match(const char *name)
 
 int board_init_f_init_misc(void)
 {
-	int boot_flags = 0;
+	int boot_flags;
 
 #ifdef CONFIG_ARM64
 	asm volatile("mrs %0, cntfrq_el0" : "=r" (gd->arch.timer_rate_hz));
@@ -351,39 +351,7 @@ int board_init_f_init_misc(void)
 #ifdef CONFIG_PSTORE
 	param_parse_pstore();
 #endif
-	/* pre-loader serial */
-#if defined(CONFIG_ROCKCHIP_PRELOADER_SERIAL) && \
-    defined(CONFIG_ROCKCHIP_PRELOADER_ATAGS)
-	struct tag *t;
-
-	t = atags_get_tag(ATAG_SERIAL);
-	if (t) {
-		gd->serial.using_pre_serial = 1;
-		gd->serial.enable = t->u.serial.enable;
-		gd->serial.baudrate = t->u.serial.baudrate;
-		gd->serial.addr = t->u.serial.addr;
-		gd->serial.id = t->u.serial.id;
-		gd->serial.m_mode = t->u.serial.m_mode;
-		gd->baudrate = t->u.serial.baudrate;
-		if (!gd->serial.enable)
-			boot_flags |= GD_FLG_DISABLE_CONSOLE;
-		debug("preloader: enable=%d, addr=0x%x, baudrate=%d, id=%d\n",
-		      t->u.serial.enable, (u32)t->u.serial.addr,
-		      t->u.serial.baudrate, t->u.serial.id);
-	} else
-#endif
-	{
-		gd->baudrate = CONFIG_BAUDRATE;
-		gd->serial.baudrate = CONFIG_BAUDRATE;
-		gd->serial.addr = CONFIG_DEBUG_UART_BASE;
-		gd->serial.using_pre_serial = 0;
-		gd->serial.enable = 1;
-	}
-
-	/* The highest priority to turn off (override) console */
-#if defined(CONFIG_DISABLE_CONSOLE)
-	boot_flags |= GD_FLG_DISABLE_CONSOLE;
-#endif
+	boot_flags = param_parse_pre_serial();
 
 	return boot_flags;
 }
