@@ -12,18 +12,8 @@ CMD_ARGS=$1
 
 ########################################### User can modify #############################################
 RKBIN_TOOLS=../rkbin/tools
-CROSS_COMPILE_ARM32=../prebuilts/gcc/linux-x86/arm/gcc-arm-10.3-2021.07-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-
-CROSS_COMPILE_ARM64=../prebuilts/gcc/linux-x86/aarch64/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-
-if [ ! -f ${CROSS_COMPILE_ARM32}gcc ]; then
-	CROSS_COMPILE_ARM32=/opt/prebuilts/gcc/linux-x86/arm/gcc-arm-10.3-2021.07-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-
-fi
-if [ ! -f ${CROSS_COMPILE_ARM64}gcc ]; then
-	CROSS_COMPILE_ARM64=/opt/prebuilts/gcc/linux-x86/aarch64/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-
-fi
-CROSS_COMPILE_RISCV=../prebuilts/gcc/linux-x86/riscv64/Xuantie-900-gcc-linux-6.6.36-musl64-x86_64-V3.3.0/bin/riscv64-unknown-linux-musl-
-if [ ! -f ${CROSS_COMPILE_RISCV}gcc ]; then
-	CROSS_COMPILE_RISCV=/opt/prebuilts/gcc/linux-x86/riscv64/Xuantie-900-gcc-linux-6.6.36-musl64-x86_64-V3.3.0/bin/riscv64-unknown-linux-musl-
-fi
+# In select_toolchain()
+CROSS_COMPILE=
 ########################################### User not touch #############################################
 # Declare global INI file searching index name for every chip, update in select_chip_info()
 RKCHIP=
@@ -51,7 +41,6 @@ PLAT_TYPE="RKFW" # default
 
 SRCTREE=`pwd`
 SCRIPT_FIT="${SRCTREE}/scripts/fit.sh"
-
 SCRIPT_ATF="${SRCTREE}/scripts/atf.sh"
 SCRIPT_TOS="${SRCTREE}/scripts/tos.sh"
 SCRIPT_SPL="${SRCTREE}/scripts/spl.sh"
@@ -145,9 +134,7 @@ function process_args()
 				;;
 			CROSS_COMPILE=*)  # set CROSS_COMPILE
 				ARG_COMPILE="y"
-				CROSS_COMPILE_ARM32=${1#*=}
-				CROSS_COMPILE_ARM64=${1#*=}
-				CROSS_COMPILE_RISCV=${1#*=}
+				CROSS_COMPILE=${1#*=}
 				if [ ${CMD_ARGS} == $1 ]; then
 					shift 1
 					CMD_ARGS=$1
@@ -302,39 +289,40 @@ function process_args()
 
 function select_toolchain()
 {
+	CROSS_COMPILE_PRIMARY=
+	CROSS_COMPILE_FALLBACK=
+
 	# If no outer CROSS_COMPILE, look for it from CC_FILE.
 	if [ "${ARG_COMPILE}" != "y" ]; then
 		if [ -f ${CC_FILE} ]; then
-			CROSS_COMPILE_ARM32=`cat ${CC_FILE}`
-			CROSS_COMPILE_ARM64=`cat ${CC_FILE}`
-			CROSS_COMPILE_RISCV=`cat ${CC_FILE}`
+			CROSS_COMPILE=`cat ${CC_FILE}`
+			CROSS_COMPILE_PRIMARY=${CROSS_COMPILE}
+			CROSS_COMPILE_FALLBACK=${CROSS_COMPILE}
 		else
 			if grep -q '^CONFIG_RISCV=y' .config ; then
-				CROSS_COMPILE_RISCV=$(cd `dirname ${CROSS_COMPILE_RISCV}`; pwd)"/riscv64-unknown-linux-musl-"
+				CROSS_COMPILE_PRIMARY=../prebuilts/gcc/linux-x86/riscv64/Xuantie-900-gcc-linux-6.6.36-musl64-x86_64-V3.3.0/bin/riscv64-unknown-linux-musl-
+				CROSS_COMPILE_FALLBACK=/opt/prebuilts/gcc/linux-x86/riscv64/Xuantie-900-gcc-linux-6.6.36-musl64-x86_64-V3.3.0/bin/riscv64-unknown-linux-musl-
 			elif grep -q '^CONFIG_ARM64=y' .config ; then
-				CROSS_COMPILE_ARM64=$(cd `dirname ${CROSS_COMPILE_ARM64}`; pwd)"/aarch64-none-linux-gnu-"
+				CROSS_COMPILE_PRIMARY=../prebuilts/gcc/linux-x86/aarch64/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-
+				CROSS_COMPILE_FALLBACK=/opt/prebuilts/gcc/linux-x86/aarch64/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-
 			else
-				CROSS_COMPILE_ARM32=$(cd `dirname ${CROSS_COMPILE_ARM32}`; pwd)"/arm-none-linux-gnueabihf-"
+				CROSS_COMPILE_PRIMARY=../prebuilts/gcc/linux-x86/arm/gcc-arm-10.3-2021.07-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-
+				CROSS_COMPILE_FALLBACK=/opt/prebuilts/gcc/linux-x86/arm/gcc-arm-10.3-2021.07-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-
+			fi
+			CROSS_COMPILE=${CROSS_COMPILE_PRIMARY}
+			if [ ! -f ${CROSS_COMPILE}gcc ]; then
+				CROSS_COMPILE=${CROSS_COMPILE_FALLBACK}
 			fi
 		fi
+	else
+		CROSS_COMPILE_PRIMARY=${CROSS_COMPILE}
+		CROSS_COMPILE_FALLBACK=${CROSS_COMPILE}
 	fi
 
-	if grep -q '^CONFIG_RISCV=y' .config ; then
-		TOOLCHAIN=${CROSS_COMPILE_RISCV}
-		TOOLCHAIN_NM=${CROSS_COMPILE_RISCV}nm
-		TOOLCHAIN_OBJDUMP=${CROSS_COMPILE_RISCV}objdump
-		TOOLCHAIN_ADDR2LINE=${CROSS_COMPILE_RISCV}addr2line
-	elif grep -q '^CONFIG_ARM64=y' .config ; then
-		TOOLCHAIN=${CROSS_COMPILE_ARM64}
-		TOOLCHAIN_NM=${CROSS_COMPILE_ARM64}nm
-		TOOLCHAIN_OBJDUMP=${CROSS_COMPILE_ARM64}objdump
-		TOOLCHAIN_ADDR2LINE=${CROSS_COMPILE_ARM64}addr2line
-	else
-		TOOLCHAIN=${CROSS_COMPILE_ARM32}
-		TOOLCHAIN_NM=${CROSS_COMPILE_ARM32}nm
-		TOOLCHAIN_OBJDUMP=${CROSS_COMPILE_ARM32}objdump
-		TOOLCHAIN_ADDR2LINE=${CROSS_COMPILE_ARM32}addr2line
-	fi
+	TOOLCHAIN=${CROSS_COMPILE}
+	TOOLCHAIN_NM=${TOOLCHAIN}nm
+	TOOLCHAIN_OBJDUMP=${TOOLCHAIN}objdump
+	TOOLCHAIN_ADDR2LINE=${TOOLCHAIN}addr2line
 
 	# Make the toolchain path absolute: the SPL link rule in
 	# scripts/Makefile.xpl does `cd $(obj)` before invoking $(LD),
@@ -353,7 +341,9 @@ function select_toolchain()
 	esac
 
 	if [ ! `which ${TOOLCHAIN}gcc` ]; then
-		echo "ERROR: No find ${TOOLCHAIN}gcc"
+		echo "ERROR: Can not find any toolchain:"
+		echo "    option1: ${CROSS_COMPILE_PRIMARY}"
+		echo "    option2: ${CROSS_COMPILE_FALLBACK}"
 		exit 1
 	fi
 
