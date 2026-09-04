@@ -486,6 +486,16 @@ ulong clk_round_rate(struct clk *clk, ulong rate);
 ulong clk_set_rate(struct clk *clk, ulong rate);
 
 /**
+ * clk_set_phase() - Adjust the phase shift of a clock signal.
+ * @clk:	A clock struct that was previously successfully requested by
+ *		clk_request/get_by_*().
+ * @degrees:	Number of degrees the signal is shifted.
+ *
+ * Return: zero on success, or -ve error code.
+ */
+int clk_set_phase(struct clk *clk, int degrees);
+
+/**
  * clk_set_parent() - Set current clock parent.
  * @clk:	A clock struct that was previously successfully requested by
  *		clk_request/get_by_*().
@@ -589,6 +599,11 @@ static inline ulong clk_round_rate(struct clk *clk, ulong rate)
 }
 
 static inline ulong clk_set_rate(struct clk *clk, ulong rate)
+{
+	return -ENOSYS;
+}
+
+static inline int clk_set_phase(struct clk *clk, int degrees)
 {
 	return -ENOSYS;
 }
