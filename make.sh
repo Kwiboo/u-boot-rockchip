@@ -147,6 +147,7 @@ function process_args()
 				ARG_COMPILE="y"
 				CROSS_COMPILE_ARM32=${1#*=}
 				CROSS_COMPILE_ARM64=${1#*=}
+				CROSS_COMPILE_RISCV=${1#*=}
 				if [ ${CMD_ARGS} == $1 ]; then
 					shift 1
 					CMD_ARGS=$1
@@ -334,6 +335,22 @@ function select_toolchain()
 		TOOLCHAIN_OBJDUMP=${CROSS_COMPILE_ARM32}objdump
 		TOOLCHAIN_ADDR2LINE=${CROSS_COMPILE_ARM32}addr2line
 	fi
+
+	# Make the toolchain path absolute: the SPL link rule in
+	# scripts/Makefile.xpl does `cd $(obj)` before invoking $(LD),
+	# which breaks relative CROSS_COMPILE paths.
+	case "${TOOLCHAIN}" in
+		/*) ;;
+		*/*)
+			if [ -d "$(dirname "${TOOLCHAIN}")" ]; then
+				TOOLCHAIN="$(cd "$(dirname "${TOOLCHAIN}")" && pwd)/$(basename "${TOOLCHAIN}")"
+				TOOLCHAIN_NM=${TOOLCHAIN}nm
+				TOOLCHAIN_OBJDUMP=${TOOLCHAIN}objdump
+				TOOLCHAIN_ADDR2LINE=${TOOLCHAIN}addr2line
+			fi
+			;;
+		*) ;;	# bare prefix, resolved via PATH
+	esac
 
 	if [ ! `which ${TOOLCHAIN}gcc` ]; then
 		echo "ERROR: No find ${TOOLCHAIN}gcc"
