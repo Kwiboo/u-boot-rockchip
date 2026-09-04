@@ -105,6 +105,7 @@
 &mmc {
 	bootph-all;
 	cap-mmc-highspeed;
+	mmc-hs200-1_8v;
 	no-sdio;
 	no-sd;
 	disable-wp;
